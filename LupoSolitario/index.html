@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description"
+        content="Lupo Solitario - Fuga dalle Tenebre. Gioco di libri-game online con salvataggio cloud.">
+    <meta name="theme-color" content="#8b5cf6">
+
+    <title>Lupo Solitario - Fuga dalle Tenebre</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="./public/img/favicon.ico" type="image/x-icon">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="./manifest.json">
+
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="./public/img/logo.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@700&display=swap"
+        rel="stylesheet">
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="./src/styles/main.css">
+    <link rel="stylesheet" href="./src/styles/layout.css">
+</head>
+
+<body>
+    <div id="app">
+        <div class="loading-screen">
+            <div class="spinner"></div>
+            <p>Caricamento...</p>
+        </div>
+    </div>
+
+    <!-- Global Console Helpers -->
+    <script>
+        window.easyMode = function(enable = null) {
+            const current = localStorage.getItem('lupo_easy_mode') === 'true';
+            const target = enable === null ? !current : !!enable;
+            localStorage.setItem('lupo_easy_mode', target ? 'true' : 'false');
+
+            if (window.gameState) {
+                window.gameState.setEasyMode(target);
+            }
+
+            if (target) {
+                console.log('%c🟢 EASY MODE ATTIVATA!', 'color: #22c55e; font-weight: bold; font-size: 14px;');
+                console.log('%cLe scelte migliori per completare la storia sono ora evidenziate in verde.', 'color: #a7f3d0;');
+            } else {
+                console.log('%c🔴 EASY MODE DISATTIVATA!', 'color: #ef4444; font-weight: bold; font-size: 14px;');
+            }
+            return target ? 'Easy Mode: ON' : 'Easy Mode: OFF';
+        };
+        console.log('%c💡 Suggerimento: Digita easyMode() in console per attivare/disattivare la Easy Mode!', 'color: #8b5cf6; font-weight: bold;');
+    </script>
+
+    <!-- Main App Script (ES Module) -->
+    <script type="module" src="./src/app.js"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registered:', registration);
+                    })
+                    .catch(error => {
+                        console.log('❌ Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+
+</html>

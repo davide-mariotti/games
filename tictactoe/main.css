@@ -1,0 +1,120 @@
+/* - - - - - - - - - - */
+/* - - Tic Tac Toe - - */
+/* - - - - - - - - - - */
+
+.tictactoe-page-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+#tictactoe-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.turn-container {
+  display: flex;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+  padding: 5px;
+  position: relative;
+  width: 200px;
+}
+
+.turn-box {
+  flex: 1;
+  text-align: center;
+  padding: 10px 0;
+  font-weight: 800;
+  font-size: 1.2rem;
+  z-index: 2;
+  transition: color 0.3s;
+}
+
+.turn-box.active {
+  color: black;
+}
+
+.turn-indicator {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: calc(50% - 5px);
+  height: calc(100% - 10px);
+  background: var(--color-primary);
+  border-radius: 50px;
+  z-index: 1;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.turn-indicator.o-turn {
+  transform: translateX(100%);
+}
+
+.main-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 15px;
+  width: 100%;
+  max-width: 450px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+}
+
+.box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: clamp(2rem, 10vw, 4rem);
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  height: 100%;
+}
+
+.box:hover:not(:empty) {
+  cursor: default;
+}
+
+.box:hover:empty {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.box.winner {
+  background: var(--color-primary);
+  color: black;
+  box-shadow: 0 0 20px var(--color-primary-glow);
+}
+
+#results {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  margin: 1rem 0;
+  min-height: 3rem;
+}
+
+.game-info {
+  margin-top: 3rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-md);
+  text-align: left;
+}
+
+.game-info h3 {
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+}
+
+.game-info li {
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
+}

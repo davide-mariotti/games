@@ -1,0 +1,128 @@
+/* - - - - - - - - - - */
+/* - - Obbligo Verità - */
+/* - - - - - - - - - - */
+
+.obbligo-page-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Card Styling */
+.game-card-display {
+    min-height: 200px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    transition: all 0.3s;
+}
+
+.question-text {
+    font-size: 1.8rem;
+    line-height: 1.4;
+    font-weight: 600;
+    color: white;
+    text-align: center;
+}
+
+/* Action Buttons */
+.action-buttons-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.choice-btn {
+    padding: 1.5rem;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1.2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.btn-truth {
+    background: var(--color-primary);
+    color: black;
+    box-shadow: 0 0 20px var(--color-primary-glow);
+}
+
+.btn-truth:hover:not(:disabled) {
+    background: #059669;
+    transform: translateY(-3px);
+}
+
+.btn-dare {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.btn-dare:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-3px);
+}
+
+.choice-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Stats */
+.counters-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.counter-glass {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    text-align: center;
+}
+
+.counter-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.5;
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.counter-val {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* Reset Button */
+.reset-container {
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 600px) {
+    .action-buttons-row {
+        grid-template-columns: 1fr;
+    }
+
+    .question-text {
+        font-size: 1.4rem;
+    }
+
+    .choice-btn {
+        padding: 1.2rem;
+    }
+}

@@ -1,0 +1,347 @@
+// Tests for the combat math shared by every book (COMBAT_TABLE lookups, Kai
+// Discipline bonuses/penalties, the Sommerswerd, and combatModifiers). This
+// logic is reused unchanged across all books, so a regression here breaks
+// every book at once - worth protecting with tests as more books are added.
+//
+// Run with: npm test  (needs --experimental-test-module-mocks, see package.json)
+import { test, mock } from 'node:test';
+import assert from 'node:assert/strict';
+
+// destiny-table.js normally returns a real random 0-9 roll. Mocked here so
+// combat outcomes are deterministic and assertable exactly.
+let mockRollQueue = [];
+mock.module('../src/components/destiny-table.js', {
+  exports: {
+    getRandomDestinyNumber: () => {
+      if (mockRollQueue.length === 0) throw new Error('mockRollQueue exhausted - set rolls before calling fightRound()');
+      return mockRollQueue.shift();
+    },
+    shuffleArray: (arr) => arr
+  }
+});
+
+// save-manager.js reaches out to a Firebase CDN import at module load time,
+// which Node's ESM loader can't resolve. Stubbed so game-state.js is safely
+// importable outside a browser.
+mock.module('../src/save-manager.js', {
+  exports: { saveManager: { scheduleAutoSave: () => {} } }
+});
+
+// game-state.js reads localStorage at module load time (easyMode persistence),
+// which doesn't exist outside a browser - stubbed so it's importable here.
+globalThis.localStorage ??= { getItem: () => null, setItem: () => {} };
+
+const { gameState } = await import('../src/game-state.js');
+const { combatManager } = await import('../src/components/combat-manager.js');
+
+function resetGameState(characterOverrides = {}) {
+  gameState.resetGame();
+  gameState.setCharacter({
+    combattivita: 20,
+    resistenza: 20,
+    resistenzaMax: 20,
+    artiRamas: [],
+    armi: [],
+    zaino: [],
+    corone: 0,
+    pasti: 0,
+    oggettiSpeciali: [],
+    ...characterOverrides
+  });
+}
+
+test('calculateForceRatio: base ratio is simply Combattivita difference', () => {
+  resetGameState({ combattivita: 20 });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 10 });
+  assert.equal(combatManager.calculateForceRatio(), 5);
+});
+
+test('calculateForceRatio: Psicolaser adds +2 unless the enemy is immune', () => {
+  resetGameState({ combattivita: 20, artiRamas: ['Psicolaser'] });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 10 });
+  assert.equal(combatManager.calculateForceRatio(), 7);
+
+  resetGameState({ combattivita: 20, artiRamas: ['Psicolaser'] });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 10, immuneToPsicolaser: true });
+  assert.equal(combatManager.calculateForceRatio(), 5);
+});
+
+test('calculateForceRatio: psicolaserBonusOverride reduces the bonus for partially-immune enemies', () => {
+  resetGameState({ combattivita: 20, artiRamas: ['Psicolaser'] });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 10, psicolaserBonusOverride: 1 });
+  assert.equal(combatManager.calculateForceRatio(), 6);
+
+  resetGameState({ combattivita: 20, artiRamas: [] });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 10, psicolaserBonusOverride: 1 });
+  assert.equal(combatManager.calculateForceRatio(), 5);
+});
+
+test('calculateForceRatio: Scherma +2 only when the mastered weapon is actually equipped', () => {
+  resetGameState({ combattivita: 20, artiRamas: ['Scherma'], weaponMastery: 'Ascia', armi: ['Ascia'] });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 10 });
+  assert.equal(combatManager.calculateForceRatio(), 7);
+
+  resetGameState({ combattivita: 20, artiRamas: ['Scherma'], weaponMastery: 'Ascia', armi: ['Mazza'] });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 10 });
+  assert.equal(combatManager.calculateForceRatio(), 5);
+});
+
+test('calculateForceRatio: Sommerswerd grants +8 without sword-type Scherma mastery', () => {
+  resetGameState({ combattivita: 20, zaino: ['Spada del Sole'] });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 10 });
+  assert.equal(combatManager.calculateForceRatio(), 13);
+});
+
+test('calculateForceRatio: Sommerswerd grants +10 total with a sword-type Scherma mastery', () => {
+  resetGameState({ combattivita: 20, zaino: ['Spada del Sole'], artiRamas: ['Scherma'], weaponMastery: 'Spada' });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 10 });
+  assert.equal(combatManager.calculateForceRatio(), 15);
+});
+
+test('calculateForceRatio: Spada d\'Osso di Kalkoth grants +1 only while wielded - see Book 3 section 4', () => {
+  resetGameState({ combattivita: 20, armi: ['Spada d\'Osso di Kalkoth'] });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 10 });
+  assert.equal(combatManager.calculateForceRatio(), 6);
+
+  resetGameState({ combattivita: 20, oggettiSpeciali: ['Spada d\'Osso di Kalkoth'] });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 10 });
+  assert.equal(combatManager.calculateForceRatio(), 5, 'no bonus while merely carried, not equipped');
+});
+
+test('calculateForceRatio: enemy Mindblast applies -2 unless the hero has Psicoschermo', () => {
+  resetGameState({ combattivita: 20 });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 10, mindblast: true });
+  assert.equal(combatManager.calculateForceRatio(), 3);
+
+  resetGameState({ combattivita: 20, artiRamas: ['Psicoschermo'] });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 10, mindblast: true });
+  assert.equal(combatManager.calculateForceRatio(), 5);
+});
+
+test('calculateForceRatio: playerPenaltyNoItem applies only while the item is missing', () => {
+  resetGameState({ combattivita: 20 });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 10, playerPenaltyNoItem: { item: 'Torcia', penalty: -3 } });
+  assert.equal(combatManager.calculateForceRatio(), 2, 'no Torcia -> penalty applies');
+
+  resetGameState({ combattivita: 20, zaino: ['Torcia'] });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 10, playerPenaltyNoItem: { item: 'Torcia', penalty: -3 } });
+  assert.equal(combatManager.calculateForceRatio(), 5, 'has Torcia -> no penalty');
+});
+
+test('calculateForceRatio: playerBonusIfItem applies only while holding the item - mirror of playerPenaltyNoItem, see Book 5 section 253', () => {
+  resetGameState({ combattivita: 20 });
+  combatManager.startCombat({ name: 'Dhorgaan', combattivita: 15, resistenza: 10, playerBonusIfItem: { item: 'Mazza Ingioiellata', value: 5 } });
+  assert.equal(combatManager.calculateForceRatio(), 5, 'no item -> no bonus');
+
+  resetGameState({ combattivita: 20, oggettiSpeciali: ['Mazza Ingioiellata'] });
+  combatManager.startCombat({ name: 'Dhorgaan', combattivita: 15, resistenza: 10, playerBonusIfItem: { item: 'Mazza Ingioiellata', value: 5 } });
+  assert.equal(combatManager.calculateForceRatio(), 10, 'has item -> bonus applies');
+});
+
+test('calculateForceRatio: playerCombatPenalty is waived by psicoschermoPreventsLoss + Psicoschermo', () => {
+  resetGameState({ combattivita: 20, artiRamas: ['Psicoschermo'] });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 10, playerCombatPenalty: 4, psicoschermoPreventsLoss: true });
+  assert.equal(combatManager.calculateForceRatio(), 5);
+
+  resetGameState({ combattivita: 20 });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 10, playerCombatPenalty: 4, psicoschermoPreventsLoss: true });
+  assert.equal(combatManager.calculateForceRatio(), 1);
+});
+
+test('calculateForceRatio: combatModifiers "firstRound" bonus only applies to round 1', () => {
+  mockRollQueue = [5];
+  resetGameState({ combattivita: 20 });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 999, combatModifiers: [{ type: 'firstRound', value: 2 }] });
+  assert.equal(combatManager.calculateForceRatio(), 7);
+
+  combatManager.fightRound();
+  assert.equal(combatManager.calculateForceRatio(), 5);
+});
+
+test('calculateForceRatio: combatModifiers "firstRound" with rounds:N applies for the first N rounds, not just round 1', () => {
+  mockRollQueue = [5, 5, 5];
+  resetGameState({ combattivita: 20 });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 999, combatModifiers: [{ type: 'firstRound', value: -4, rounds: 2 }] });
+  assert.equal(combatManager.calculateForceRatio(), 1, 'round 1 (index 0) is still penalized');
+
+  combatManager.fightRound();
+  assert.equal(combatManager.calculateForceRatio(), 1, 'round 2 (index 1) is also penalized');
+
+  combatManager.fightRound();
+  assert.equal(combatManager.calculateForceRatio(), 5, 'round 3 (index 2) is no longer penalized');
+});
+
+test('calculateForceRatio: combatModifiers "noKaiArt" penalty respects the "subsequent" rounds option', () => {
+  mockRollQueue = [5];
+  resetGameState({ combattivita: 20 });
+  combatManager.startCombat({
+    name: 'Enemy', combattivita: 15, resistenza: 999,
+    combatModifiers: [{ type: 'noKaiArt', name: 'Psicoschermo', value: -2, rounds: 'subsequent' }]
+  });
+  assert.equal(combatManager.calculateForceRatio(), 5, 'round 1 is unaffected');
+
+  combatManager.fightRound();
+  assert.equal(combatManager.calculateForceRatio(), 3, 'round 2 onward takes the penalty');
+
+  resetGameState({ combattivita: 20, artiRamas: ['Psicoschermo'] });
+  combatManager.startCombat({
+    name: 'Enemy', combattivita: 15, resistenza: 999,
+    combatModifiers: [{ type: 'noKaiArt', name: 'Psicoschermo', value: -2, rounds: 'subsequent' }]
+  });
+  mockRollQueue = [5];
+  combatManager.fightRound();
+  assert.equal(combatManager.calculateForceRatio(), 5, 'owning the named art waives the penalty entirely');
+});
+
+test('fightRound: Sommerswerd doubles ENDURANCE lost by undead enemies, but only for undead', () => {
+  // combattivita 15 + Sommerswerd(+8) vs 15 => ratio 8; table['8'][destinyNumber=1] = [enemyDamage 8, heroDamage 3]
+  mockRollQueue = [1];
+  resetGameState({ combattivita: 15, resistenza: 20, resistenzaMax: 20, zaino: ['Spada del Sole'] });
+  combatManager.startCombat({ name: 'Helghast', combattivita: 15, resistenza: 30, undead: true });
+  combatManager.fightRound();
+  assert.equal(gameState.getState().combatState.currentEnemyResistenza, 14, '30 - (8*2)');
+  assert.equal(gameState.getState().character.resistenza, 17, 'hero damage is never doubled');
+
+  mockRollQueue = [1];
+  resetGameState({ combattivita: 15, resistenza: 20, resistenzaMax: 20, zaino: ['Spada del Sole'] });
+  combatManager.startCombat({ name: 'Ordinary enemy', combattivita: 15, resistenza: 30, undead: false });
+  combatManager.fightRound();
+  assert.equal(gameState.getState().combatState.currentEnemyResistenza, 22, '30 - 8, not doubled without undead flag');
+});
+
+test('fightRound: enduranceLossAfterRoundsFromRoll rolls once at combat start for how many rounds the hero can hold his breath, then adds extra loss past that - see Book 4 sections 194/234', () => {
+  // queue[0] is consumed once by engageNextEnemy's oxygen roll (-> safeRounds = 2,
+  // no Telecinesi bonus); queue[1..] are consumed one per fightRound() call, each
+  // with ratio 0/destinyNumber 0 -> table['0'][0] = [enemyDamage 12, heroDamage 0].
+  mockRollQueue = [2, 0, 0, 0];
+  resetGameState({ combattivita: 15, resistenza: 20, resistenzaMax: 20, artiRamas: [] });
+  combatManager.startCombat({
+    name: 'Piovra Gigante', combattivita: 15, resistenza: 999,
+    enduranceLossAfterRoundsFromRoll: { lossPerRound: 2 }
+  });
+
+  combatManager.fightRound(); // round 1 (rounds.length was 0 < 2 safe rounds)
+  combatManager.fightRound(); // round 2 (rounds.length was 1 < 2 safe rounds)
+  assert.equal(gameState.getState().character.resistenza, 20, 'still within the safe rounds, no extra loss');
+
+  combatManager.fightRound(); // round 3 (rounds.length was 2 >= 2 safe rounds)
+  assert.equal(gameState.getState().character.resistenza, 18, '0 base heroDamage + 2 oxygen penalty');
+});
+
+test('fightRound: allyDamagePerRound adds a flat extra ENDURANCE loss to the enemy every round, independent of the hero\'s own roll - see Book 3 section 180', () => {
+  mockRollQueue = [0]; // ratio 0, destinyNumber 0 -> table['0'][0] = [enemyDamage 12, heroDamage 0]
+  resetGameState({ combattivita: 15, resistenza: 20, resistenzaMax: 20 });
+  combatManager.startCombat({ name: 'Kalkoth', combattivita: 15, resistenza: 35, allyDamagePerRound: 3 });
+  combatManager.fightRound();
+  assert.equal(gameState.getState().combatState.currentEnemyResistenza, 20, '35 - (12+3)');
+});
+
+test('fightRound: doubleEnemyEnduranceLoss doubles ENDURANCE lost by the enemy regardless of weapon - see Book 2 section 306', () => {
+  mockRollQueue = [0]; // ratio 0, destinyNumber 0 -> table['0'][0] = [enemyDamage 12, heroDamage 0]
+  resetGameState({ combattivita: 15, resistenza: 20, resistenzaMax: 20 });
+  combatManager.startCombat({ name: 'Border Guard', combattivita: 15, resistenza: 24, doubleEnemyEnduranceLoss: true });
+  combatManager.fightRound();
+  assert.equal(gameState.getState().combatState.currentEnemyResistenza, 0, '24 - (12*2), clamped at 0');
+});
+
+test('fightRound: playerEnduranceLossPerRound adds a flat ENDURANCE loss every round, waived by the given Kai Discipline - see Book 2 section 332', () => {
+  mockRollQueue = [0]; // ratio 0, destinyNumber 0 -> table['0'][0] = [enemyDamage 12, heroDamage 0]
+  resetGameState({ combattivita: 15, resistenza: 20, resistenzaMax: 20, artiRamas: [] });
+  combatManager.startCombat({
+    name: 'Helghast', combattivita: 15, resistenza: 30,
+    playerEnduranceLossPerRound: { value: 2, waivedByKaiArt: 'Psicoschermo' }
+  });
+  combatManager.fightRound();
+  assert.equal(gameState.getState().character.resistenza, 18, '20 - (0 + 2) without Psicoschermo');
+
+  mockRollQueue = [0];
+  resetGameState({ combattivita: 15, resistenza: 20, resistenzaMax: 20, artiRamas: ['Psicoschermo'] });
+  combatManager.startCombat({
+    name: 'Helghast', combattivita: 15, resistenza: 30,
+    playerEnduranceLossPerRound: { value: 2, waivedByKaiArt: 'Psicoschermo' }
+  });
+  combatManager.fightRound();
+  assert.equal(gameState.getState().character.resistenza, 20, 'waived entirely with Psicoschermo');
+});
+
+test('fightRound: noPlayerLossRounds modifier zeroes hero damage only during the protected rounds', () => {
+  mockRollQueue = [1, 1];
+  resetGameState({ combattivita: 15, resistenza: 20, resistenzaMax: 20 });
+  combatManager.startCombat({
+    name: 'Surprised enemy', combattivita: 15, resistenza: 999,
+    combatModifiers: [{ type: 'noPlayerLossRounds', rounds: 1 }]
+  });
+
+  combatManager.fightRound();
+  assert.equal(gameState.getState().character.resistenza, 20, 'round 1 is protected');
+
+  combatManager.fightRound();
+  assert.equal(gameState.getState().character.resistenza, 15, 'round 2 takes normal damage');
+});
+
+test('endCombat: lastCombatSummary tracks damageDealt (enemy) alongside damageTaken (hero)', () => {
+  // combattivita 15 + Sommerswerd(+8) vs 15 => ratio 8; table['8'][destinyNumber=1] = [enemyDamage 8, heroDamage 3]
+  mockRollQueue = [1];
+  resetGameState({ combattivita: 15, resistenza: 20, resistenzaMax: 20, zaino: ['Spada del Sole'] });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 30 });
+  combatManager.fightRound();
+  combatManager.endCombat('victory');
+  assert.deepEqual(gameState.getState().lastCombatSummary, { rounds: 1, damageTaken: 3, damageDealt: 8 });
+});
+
+test('canPlayerFlee: respects fleeAfterRounds gating', () => {
+  mockRollQueue = [1, 1];
+  resetGameState({ combattivita: 15, resistenza: 20, resistenzaMax: 20 });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 999, canFlee: true, fleeAfterRounds: 2 });
+
+  assert.equal(combatManager.canPlayerFlee(), false);
+  combatManager.fightRound();
+  assert.equal(combatManager.canPlayerFlee(), false);
+  combatManager.fightRound();
+  assert.equal(combatManager.canPlayerFlee(), true);
+});
+
+test('fightRound: forceEndAfterRounds cuts the combat short (neither side dead) once the round cap is reached', () => {
+  // ratio 0, destinyNumber 5 -> table['0'][5] = [enemyDamage 7, heroDamage 2] - nobody dies with these HP totals
+  mockRollQueue = [5, 5];
+  resetGameState({ combattivita: 15, resistenza: 20, resistenzaMax: 20 });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 999, forceEndAfterRounds: 2, forceEndSection: 394 });
+
+  assert.equal(combatManager.fightRound(), 'ongoing', 'round 1: cap not reached yet');
+  assert.equal(combatManager.fightRound(), 'force-end', 'round 2: cap reached, neither side dead');
+});
+
+test('fightRound: forceEndAfterRounds does not override a real victory/defeat reached within the cap', () => {
+  mockRollQueue = [1]; // ratio 8, destinyNumber 1 -> table['8'][1] = [enemyDamage 8, heroDamage 3]
+  resetGameState({ combattivita: 23, resistenza: 20, resistenzaMax: 20 });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 8, forceEndAfterRounds: 3, forceEndSection: 394 });
+  assert.equal(combatManager.fightRound(), 'victory');
+});
+
+test('multi-enemy queue: defeating one enemy automatically engages the next', () => {
+  mockRollQueue = [0]; // ratio 0, destinyNumber 0 -> table['0'][0] = [enemyDamage 12, heroDamage 0]
+  resetGameState({ combattivita: 15, resistenza: 20, resistenzaMax: 20 });
+  combatManager.startCombat([
+    { name: 'Enemy A', combattivita: 15, resistenza: 10 },
+    { name: 'Enemy B', combattivita: 15, resistenza: 10 }
+  ]);
+
+  const result = combatManager.fightRound();
+  assert.equal(result, 'next-enemy');
+  assert.equal(gameState.getState().combatState.enemy, 'Enemy B');
+});
+
+test('multi-enemy queue: canFlee/fleeSection are read fresh from each enemy, not just the first - see Book 2 sections 90/185/296/298', () => {
+  mockRollQueue = [0];
+  resetGameState({ combattivita: 15, resistenza: 20, resistenzaMax: 20 });
+  combatManager.startCombat([
+    { name: 'Enemy A', combattivita: 15, resistenza: 10, canFlee: true, fleeSection: 42 },
+    { name: 'Enemy B', combattivita: 15, resistenza: 10, canFlee: true, fleeSection: 42 }
+  ]);
+  assert.equal(combatManager.combatData.fleeSection, 42, 'first enemy carries its own fleeSection');
+
+  combatManager.fightRound();
+  assert.equal(combatManager.combatData.name, 'Enemy B');
+  assert.equal(combatManager.canFlee, true, 'flee stays available once the fight moves to the next enemy, as long as that enemy also allows it');
+  assert.equal(combatManager.combatData.fleeSection, 42, 'the section that navigateToSection/fleeCombat must read this from, not currentSection.combat (which has no .fleeSection on an array)');
+});
