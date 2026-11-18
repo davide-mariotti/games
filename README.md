@@ -33,7 +33,8 @@
 ### How it's organised
 
 One folder per game, each with its own `index.html`. `index.html` at the root is the list of games.
-`shared/` holds the styles and script the smaller games used to take from the old website.
+`shared/arcade.css` and `shared/arcade.js` are the kit of the rebuilt arcade games (Fruit Catcher, Digital Jump): site colours, icons, sound, menus.
+`shared/legacy.*` is what the older games still take from the old website, until they get rebuilt too.
 The repo is served as it is by GitHub Pages (`.nojekyll`): push to `main` and it's online.
 
 ### Support
@@ -64,7 +65,8 @@ The code is [MIT](LICENSE). Lupo Solitario's texts belong to their authors and a
 ### Com'è organizzata
 
 Una cartella per gioco, ognuna col suo `index.html`. L'`index.html` nella radice è l'elenco dei giochi.
-`shared/` contiene gli stili e lo script che i giochi più piccoli prendevano dal vecchio sito.
+`shared/arcade.css` e `shared/arcade.js` sono il kit dei giochi arcade rifatti (Fruit Catcher, Digital Jump): colori del sito, icone, suoni, menu.
+`shared/legacy.*` è quello che i giochi più vecchi prendono ancora dal vecchio sito, finché non tocca anche a loro.
 La repo viene servita così com'è da GitHub Pages (`.nojekyll`): push su `main` ed è online.
 
 ### Supporto

@@ -15,6 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/games/shared/arcade.css">
   <link rel="stylesheet" href="main.css">
 </head>
 <body>
@@ -54,12 +55,12 @@
           <h1>Fruit <span class="serif grad">Catcher</span></h1>
           <p class="lead" data-it="Prendi la frutta, evita le bombe. Più ne prendi di fila, più vale.">Catch the fruit, dodge the bombs. The longer the streak, the more it's worth.</p>
           <ul class="legend">
-            <li><i data-icon="apple" class="c-fruit"></i><span data-it="Frutta, +10 per la combo">Fruit, +10 times the combo</span></li>
-            <li><i data-icon="star" class="c-gold"></i><span data-it="Stella, +50">Star, +50</span></li>
-            <li><i data-icon="bomb" class="c-bomb"></i><span data-it="Bomba, perdi un cuore">Bomb, costs a heart</span></li>
-            <li><i data-icon="magnet" class="c-power"></i><span data-it="Calamita, la frutta viene da te">Magnet, fruit comes to you</span></li>
-            <li><i data-icon="snowflake" class="c-power"></i><span data-it="Gelo, tutto rallenta">Freeze, the world slows down</span></li>
-            <li><i data-icon="shield" class="c-power"></i><span data-it="Scudo, para una bomba">Shield, blocks one bomb</span></li>
+            <li><i data-icon="apple" class="c-accent"></i><span data-it="Frutta, +10 per la combo">Fruit, +10 times the combo</span></li>
+            <li><i data-icon="star" class="c-lime solid"></i><span data-it="Stella, +50">Star, +50</span></li>
+            <li><i data-icon="bomb" class="c-danger"></i><span data-it="Bomba, perdi un cuore">Bomb, costs a heart</span></li>
+            <li><i data-icon="magnet" class="c-ink"></i><span data-it="Calamita, la frutta viene da te">Magnet, fruit comes to you</span></li>
+            <li><i data-icon="snowflake" class="c-ink"></i><span data-it="Gelo, tutto rallenta">Freeze, the world slows down</span></li>
+            <li><i data-icon="shield" class="c-ink"></i><span data-it="Scudo, para una bomba">Shield, blocks one bomb</span></li>
           </ul>
           <button class="btn btn-primary" id="play" type="button"><i data-icon="play"></i><span data-it="Gioca">Play</span></button>
           <p class="hint" data-it="Mouse, dito o frecce &larr; &rarr; · P per la pausa">Mouse, finger or &larr; &rarr; keys · P to pause</p>
@@ -95,6 +96,7 @@
     <a href="https://ko-fi.com/Z0X32ATNHL" data-it="Offrimi un caffè">Buy me a coffee</a>
   </div></footer>
 
+  <script src="/games/shared/arcade.js"></script>
   <script src="main.js"></script>
 </body>
 </html>

@@ -1,8 +1,7 @@
-// Fruit Catcher: plain canvas, no libraries.
-// Icons: Lucide 1.74.0 (https://lucide.dev, ISC license).
+// Fruit Catcher: plain canvas, no libraries. Shared helpers (icons, sound, overlays) in /games/shared/arcade.js.
 'use strict';
 
-const ICONS = {
+Object.assign(ICONS, {
   apple: '<path d="M12 6.528V3a1 1 0 0 1 1-1h0"/><path d="M18.237 21A15 15 0 0 0 22 11a6 6 0 0 0-10-4.472A6 6 0 0 0 2 11a15.1 15.1 0 0 0 3.763 10 3 3 0 0 0 3.648.648 5.5 5.5 0 0 1 5.178 0A3 3 0 0 0 18.237 21"/>',
   cherry: '<path d="M2 17a5 5 0 0 0 10 0c0-2.76-2.5-5-5-3-2.5-2-5 .24-5 3Z"/><path d="M12 17a5 5 0 0 0 10 0c0-2.76-2.5-5-5-3-2.5-2-5 .24-5 3Z"/><path d="M7 14c3.22-2.91 4.29-8.75 5-12 1.66 2.38 4.94 9 5 12"/><path d="M22 9c-4.29 0-7.14-2.33-10-7 5.71 0 10 4.67 10 7Z"/>',
   grape: '<path d="M22 5V2l-5.89 5.89"/><circle cx="16.6" cy="15.89" r="3"/><circle cx="8.11" cy="7.4" r="3"/><circle cx="12.35" cy="11.65" r="3"/><circle cx="13.91" cy="5.85" r="3"/><circle cx="18.15" cy="10.09" r="3"/><circle cx="6.56" cy="13.2" r="3"/><circle cx="10.8" cy="17.44" r="3"/><circle cx="5" cy="19" r="3"/>',
@@ -10,19 +9,11 @@ const ICONS = {
   banana: '<path d="M4 13c3.5-2 8-2 10 2a5.5 5.5 0 0 1 8 5"/><path d="M5.15 17.89c5.52-1.52 8.65-6.89 7-12C11.55 4 11.5 2 13 2c3.22 0 5 5.5 5 8 0 6.5-4.2 12-10.49 12C5.11 22 2 22 2 20c0-1.5 1.14-1.55 3.15-2.11Z"/>',
   star: '<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/>',
   bomb: '<circle cx="11" cy="13" r="9"/><path d="M14.35 4.65 16.3 2.7a2.41 2.41 0 0 1 3.4 0l1.6 1.6a2.4 2.4 0 0 1 0 3.4l-1.95 1.95"/><path d="m22 2-1.5 1.5"/>',
-  magnet: '<path d="m12 15 4 4"/><path d="M2.352 10.648a1.205 1.205 0 0 0 0 1.704l2.296 2.296a1.205 1.205 0 0 0 1.704 0l6.029-6.029a1 1 0 1 1 3 3l-6.029 6.029a1.205 1.205 0 0 0 0 1.704l2.296 2.296a1.205 1.205 0 0 0 1.704 0l6.365-6.367A1 1 0 0 0 8.716 4.282z"/><path d="m5 8 4 4"/>',
   snowflake: '<path d="m10 20-1.25-2.5L6 18"/><path d="M10 4 8.75 6.5 6 6"/><path d="m14 20 1.25-2.5L18 18"/><path d="m14 4 1.25 2.5L18 6"/><path d="m17 21-3-6h-4"/><path d="m17 3-3 6 1.5 3"/><path d="M2 12h6.5L10 9"/><path d="m20 10-1.5 2 1.5 2"/><path d="M22 12h-6.5L14 15"/><path d="m4 10 1.5 2L4 14"/><path d="m7 21 3-6-1.5-3"/><path d="m7 3 3 6h4"/>',
   shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
   heart: '<path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/>',
-  play: '<path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/>',
-  pause: '<rect x="14" y="3" width="5" height="18" rx="1"/><rect x="5" y="3" width="5" height="18" rx="1"/>',
-  'rotate-ccw': '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
-  'volume-2': '<path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728"/>',
-  'volume-x': '<path d="M11 4.702a.7.7 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.7.7 0 0 0 11 19.298z"/><path d="m16.5 14.5 5-5"/><path d="m16.5 9.5 5 5"/>',
-};
+});
 
-// One green, a lime for gold, white for power-ups, a single red for danger.
-const COLOR = { accent: '#2fe37f', lime: '#c6f36b', ink: '#ecf3ee', danger: '#ff5a5f', spark: '#ffc08a' };
 const FRUITS = ['apple', 'cherry', 'grape', 'citrus', 'banana'];
 const KIND = {
   apple: { color: COLOR.accent, type: 'fruit' },
@@ -38,66 +29,17 @@ const KIND = {
 };
 const DURATION = { magnet: 7, snowflake: 6 }; // seconds; the shield lasts until a bomb hits it
 const BEST_KEY = 'fruitcatcher_highscore'; // same key as the old Phaser version, so records survive
+const TXT = IT ? { level: 'Livello', blocked: 'Parata!' } : { level: 'Level', blocked: 'Blocked!' };
 
-const IT = (navigator.language || '').toLowerCase().startsWith('it');
-const TXT = IT
-  ? { level: 'Livello', blocked: 'Parata!', sound: 'Audio', pause: 'Pausa', area: 'Area di gioco' }
-  : { level: 'Level', blocked: 'Blocked!', sound: 'Sound', pause: 'Pause', area: 'Game area' };
-
-const store = {
-  get: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
-  set: (k, v) => { try { localStorage.setItem(k, v); } catch { /* private mode: no records, still playable */ } },
-};
-
-const $ = (id) => document.getElementById(id);
-const svgIcon = (name) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]}</svg>`;
-const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-if (IT) {
-  document.documentElement.lang = 'it';
-  document.querySelectorAll('[data-it]').forEach((el) => (el.innerHTML = el.dataset.it));
-  document.querySelectorAll('a[href="/"]').forEach((a) => (a.href = '/it/'));
-}
-document.querySelectorAll('[data-icon]').forEach((el) => (el.innerHTML = svgIcon(el.dataset.icon)));
-
+setupPage();
 const stage = $('stage');
 const cvs = $('game');
 const ctx = cvs.getContext('2d');
 const ui = {
-  score: $('score'), best: $('best'), level: $('level'), combo: $('combo'), banner: $('banner'), mute: $('mute'),
-  menu: $('menu'), paused: $('paused'), over: $('over'), final: $('final'), record: $('record'),
+  score: $('score'), best: $('best'), level: $('level'), combo: $('combo'), final: $('final'), record: $('record'),
   hearts: [...$('lives').children], chips: [...document.querySelectorAll('.chip')],
 };
-cvs.setAttribute('aria-label', TXT.area);
-$('pause').setAttribute('aria-label', TXT.pause);
-
-/* ---------- sprites: each icon drawn once with its neon glow baked in ---------- */
-const SPRITE = 128;
-const PAD = 48;
-const SPRITE_SCALE = (SPRITE + PAD * 2) / SPRITE;
 const sprites = {};
-
-function makeSprites() {
-  return Promise.all(Object.entries(KIND).map(async ([name, k]) => {
-    const fill = k.type === 'gold' ? 1 : k.type === 'power' ? 0 : 0.14;
-    const img = new Image();
-    img.src = 'data:image/svg+xml,' + encodeURIComponent(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="${SPRITE}" height="${SPRITE}" viewBox="0 0 24 24" fill="${k.color}" fill-opacity="${fill}" stroke="${k.color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]}</svg>`);
-    await img.decode();
-    const c = document.createElement('canvas');
-    c.width = c.height = SPRITE + PAD * 2;
-    const g = c.getContext('2d');
-    g.shadowColor = k.color;
-    if (k.type === 'power') { // a ring, so power-ups read as pick-ups and not as fruit
-      g.globalAlpha = 0.5; g.strokeStyle = k.color; g.lineWidth = 5; g.shadowBlur = 18;
-      g.beginPath(); g.arc(c.width / 2, c.height / 2, SPRITE * 0.66, 0, Math.PI * 2); g.stroke();
-      g.globalAlpha = 1;
-    }
-    g.shadowBlur = 36; g.drawImage(img, PAD, PAD);
-    g.shadowBlur = 10; g.drawImage(img, PAD, PAD);
-    sprites[name] = c;
-  }));
-}
 
 /* ---------- state ---------- */
 let W = 0, H = 0, u = 0;
@@ -106,45 +48,22 @@ let state = 'menu'; // menu | play | paused | dying | over
 let items = [], parts = [], rings = [], floats = [];
 let score = 0, lives = 3, streak = 0, mult = 1, maxStreak = 0, caught = 0, level = 1, elapsed = 0, spawnT = 0, shake = 0, dieT = 0;
 let best = Number(store.get(BEST_KEY)) || 0;
-let muted = store.get('fruitcatcher_muted') === '1';
 let pointerX = null;
 const keys = new Set();
 const power = { magnet: 0, snowflake: 0, shield: 0 };
 const dust = Array.from({ length: 70 }, () => ({ x: Math.random(), y: Math.random(), z: 0.2 + Math.random() * 0.8 }));
 
 function resize() {
-  const r = stage.getBoundingClientRect();
-  const ow = W || r.width, oh = H || r.height;
-  const dpr = Math.min(devicePixelRatio || 1, 2);
-  W = r.width; H = r.height;
-  cvs.width = Math.round(W * dpr); cvs.height = Math.round(H * dpr);
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const ow = W, oh = H;
+  ({ w: W, h: H } = fitCanvas(cvs, ctx));
   u = Math.max(28, Math.min(54, Math.min(W, H * 0.8) / 11));
   B.w = u * 2.8; B.h = u * 0.95;
   B.y = H - B.h - Math.max(u, 30);
-  B.x = (B.x * W) / ow || W / 2;
-  for (const it of items) { it.x *= W / ow; it.y *= H / oh; it.vy *= H / oh; it.py = it.y; }
+  B.x = ow ? (B.x * W) / ow : W / 2;
+  if (ow) for (const it of items) { it.x *= W / ow; it.y *= H / oh; it.vy *= H / oh; it.py = it.y; }
 }
 new ResizeObserver(resize).observe(stage);
 
-/* ---------- sound: tiny synth blips, no files ---------- */
-let ac = null;
-function tone(f, d = 0.12, type = 'sine', v = 0.06, to = 0, at = 0) {
-  if (muted) return;
-  try {
-    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
-    if (ac.state === 'suspended') ac.resume();
-  } catch { return; }
-  const t = ac.currentTime + at, o = ac.createOscillator(), g = ac.createGain();
-  o.type = type; o.frequency.setValueAtTime(f, t);
-  if (to) o.frequency.exponentialRampToValueAtTime(to, t + d);
-  g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(v, t + 0.012);
-  g.gain.exponentialRampToValueAtTime(0.0001, t + d);
-  o.connect(g).connect(ac.destination);
-  o.start(t); o.stop(t + d + 0.05);
-}
-const NOTES = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.66, 1318.51, 1567.98];
 const sfx = {
   catch: (n) => tone(NOTES[Math.min(n - 1, NOTES.length - 1)], 0.14, 'triangle', 0.07),
   gold: () => [4, 6, 8].forEach((j, i) => tone(NOTES[j], 0.18, 'triangle', 0.06, 0, i * 0.06)),
@@ -159,30 +78,11 @@ const sfx = {
 };
 
 /* ---------- HUD ---------- */
-function bump(el) { el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }
 function hearts() { ui.hearts.forEach((h, i) => h.classList.toggle('lost', i >= lives)); }
 function comboChip() { ui.combo.textContent = 'x' + mult; ui.combo.classList.toggle('on', mult > 1); }
 function chips() {
   for (const c of ui.chips) c.classList.toggle('on', power[c.dataset.p] > 0);
   stage.classList.toggle('slow', power.snowflake > 0);
-}
-function banner(text) {
-  ui.banner.innerHTML = '<span></span>';
-  ui.banner.firstChild.textContent = text;
-  ui.banner.classList.remove('show'); void ui.banner.offsetWidth; ui.banner.classList.add('show');
-}
-function flash() {
-  stage.classList.remove('hit'); void stage.offsetWidth; stage.classList.add('hit');
-  clearTimeout(flash.t); flash.t = setTimeout(() => stage.classList.remove('hit'), 650);
-}
-function show(id) {
-  for (const o of [ui.menu, ui.paused, ui.over]) o.hidden = o.id !== id;
-  if (id) setTimeout(() => $(id).querySelector('button').focus({ preventScroll: true }), 50);
-}
-function muteIcon() {
-  ui.mute.innerHTML = svgIcon(muted ? 'volume-x' : 'volume-2');
-  ui.mute.setAttribute('aria-label', TXT.sound);
-  ui.mute.setAttribute('aria-pressed', String(muted));
 }
 
 /* ---------- effects ---------- */
@@ -473,12 +373,7 @@ function gameOver() {
   if (record) { best = score; store.set(BEST_KEY, best); ui.best.textContent = best; }
   ui.record.classList.toggle('on', record);
   $('s-fruit').textContent = caught; $('s-combo').textContent = maxStreak; $('s-level').textContent = level;
-  const t0 = performance.now(), total = score;
-  (function count(t) { // the final score counts up
-    const p = Math.min(1, (t - t0) / 900);
-    ui.final.textContent = Math.round(total * (1 - (1 - p) ** 3));
-    if (p < 1) requestAnimationFrame(count);
-  })(t0);
+  countUp(ui.final, score);
   show('over');
 }
 
@@ -504,8 +399,8 @@ $('play').onclick = start;
 $('again').onclick = start;
 $('resume').onclick = togglePause;
 $('pause').onclick = (e) => { e.currentTarget.blur(); togglePause(); };
-ui.mute.onclick = (e) => { e.currentTarget.blur(); muted = !muted; store.set('fruitcatcher_muted', muted ? '1' : '0'); muteIcon(); };
 
 ui.best.textContent = best;
-muteIcon();
-makeSprites().then(() => requestAnimationFrame((t) => { last = t; frame(t); }));
+Promise.all(Object.entries(KIND).map(async ([name, k]) => {
+  sprites[name] = await neonSprite(name, k.color, k.type === 'gold' ? 1 : k.type === 'power' ? 0 : 0.14, k.type === 'power');
+})).then(() => requestAnimationFrame((t) => { last = t; frame(t); }));
