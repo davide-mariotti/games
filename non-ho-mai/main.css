@@ -1,151 +1,38 @@
-/* - - - - - - - - - - */
-/* - - Non Ho Mai - - - */
-/* - - - - - - - - - - */
+/* Non ho mai: only what the shared arcade kit (/games/shared/arcade.css) doesn't cover */
+.hud .best { margin-top: .3rem; }
 
-.social-game-container {
-    max-width: 800px;
-    margin: 0 auto;
-}
+.arena { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; padding: 4.5rem 1.25rem 1.5rem; }
 
-.question-card {
-    min-height: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2.5rem;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--radius-lg);
-    margin-bottom: 2.5rem;
-    position: relative;
-    overflow: hidden;
-}
+/* the card, with two more of the deck peeking out behind it */
+.card { position: relative; width: min(34rem, 100%); min-height: min(22rem, 52svh); display: flex; flex-direction: column; justify-content: center; padding: 2rem clamp(1.25rem, 5vw, 2.5rem); border-radius: 1.5rem; border: 1px solid var(--line-strong); background: linear-gradient(160deg, #121a16, var(--surface) 60%); box-shadow: 0 30px 80px -30px rgb(0 0 0 / .8), 0 0 70px -30px rgb(47 227 127 / .4); cursor: pointer; }
+.card::before, .card::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; border: 1px solid var(--line); background: #090c0b; }
+.card::before { transform: rotate(-3deg) translateY(.4rem); }
+.card::after { transform: rotate(2.5deg) translateY(.7rem); }
+.face.deal { animation: deal .55s var(--ease); }
+.cat { display: flex; align-items: center; gap: .45rem; min-height: 1rem; font: .72rem "Geist Mono", monospace; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+.cat svg { width: 1rem; height: 1rem; filter: drop-shadow(0 0 6px rgb(47 227 127 / .6)); }
+.lead-in { margin-top: 1.1rem; font-size: clamp(1.7rem, 6vw, 2.4rem); line-height: 1.1; }
+.lead-in .serif { padding-right: .1em; }
+.q { margin-top: .5rem; font-size: clamp(1.45rem, 5.2vw, 2.3rem); line-height: 1.18; letter-spacing: -.025em; font-weight: 600; text-wrap: balance; }
+#next svg { order: 1; }
 
-.question-text {
-    font-size: 1.8rem;
-    line-height: 1.4;
-    font-weight: 600;
-    color: white;
-    text-align: center;
-    z-index: 1;
-}
+/* menu: categories as toggles, then play / start over */
+.cats { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; margin: 1.5rem 0 1.75rem; border: 0; }
+.cats label { position: relative; display: inline-flex; align-items: center; gap: .5rem; padding: .6rem .95rem; border-radius: 999px; border: 1px solid var(--line-strong); background: rgb(255 255 255 / .03); color: var(--muted); font-size: .9rem; cursor: pointer; transition: border-color .25s, background .25s, color .25s, box-shadow .25s; }
+.cats input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+.cats svg { width: 1.05rem; height: 1.05rem; }
+.cats label:has(:checked) { border-color: rgb(47 227 127 / .6); background: rgb(47 227 127 / .1); color: var(--ink); box-shadow: 0 0 24px -8px rgb(47 227 127 / .7); }
+.cats label:has(:checked) svg { color: var(--accent); }
+.cats label:has(:focus-visible) { outline: 2px solid var(--accent); outline-offset: 3px; }
+.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; }
+.btn[hidden] { display: none; }
+.btn:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-ghost { background: transparent; border: 1px solid var(--line-strong); }
+.btn-ghost:hover { border-color: rgb(47 227 127 / .5); background: rgb(47 227 127 / .06); }
 
-.next-btn-container {
-    display: flex;
-    justify-content: center;
-    padding: 1rem;
-}
+@keyframes deal { from { opacity: 0; transform: translateX(1.5rem) rotate(1.5deg); filter: blur(10px); } }
 
-.big-round-btn {
-    width: 180px;
-    height: 180px;
-    border-radius: 50%;
-    border: none;
-    background: var(--color-primary);
-    color: black;
-    font-weight: 800;
-    font-size: 1.5rem;
-    letter-spacing: 2px;
-    box-shadow: 0 0 30px var(--color-primary-glow);
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-transform: uppercase;
-}
-
-.big-round-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 50px var(--color-primary-glow);
-    background: #059669;
-}
-
-.big-round-btn:active {
-    transform: scale(0.95);
-}
-
-/* Stats */
-.game-stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.stat-item {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--radius-md);
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.stat-label {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    opacity: 0.5;
-    margin-bottom: 0.3rem;
-}
-
-.stat-value {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: var(--color-primary);
-}
-
-/* Reset Button */
-.reset-btn-top {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s;
-}
-
-.reset-btn-top:hover {
-    background: rgba(255, 12, 12, 0.2);
-    border-color: rgba(255, 12, 12, 0.3);
-    transform: rotate(180deg);
-}
-
-/* Categories UI */
-.category-wrapper {
-    margin-bottom: 2rem;
-}
-
-#categorySelect {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    padding: 0.8rem 1.5rem;
-    border-radius: 50px;
-    width: 100%;
-    max-width: 300px;
-    margin: 0 auto;
-    display: block;
-}
-
-@media (max-width: 600px) {
-    .question-text {
-        font-size: 1.3rem;
-    }
-
-    .big-round-btn {
-        width: 140px;
-        height: 140px;
-        font-size: 1.2rem;
-    }
+@media (max-width: 560px) {
+  .arena { gap: 1.25rem; padding-inline: 1rem; }
+  .cats label { padding: .5rem .8rem; font-size: .85rem; }
 }
