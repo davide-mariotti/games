@@ -1,4 +1,4 @@
-// Shared by the arcade games (Fruit Catcher, Digital Jump, Snake, Maze Rush, Tic-Tac-Toe, War Run): language, icons, storage, sound, HUD and overlays.
+// Shared by the rebuilt games (the list is in the README): language, icons, storage, sound, HUD and overlays.
 // Load before the game's main.js; everything here is a plain global.
 // Icons: Lucide 1.74.0 (https://lucide.dev, ISC license). Each game adds its own with Object.assign(ICONS, ...).
 'use strict';

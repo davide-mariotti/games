@@ -1,489 +1,178 @@
----
----
-<!DOCTYPE html>
-<html lang="it">
-
+<!doctype html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wordle Italiano</title>
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-
-    <!-- Main Site CSS -->
-    <link href="/games/shared/legacy.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-
-    <!-- Bootstrap (Required for site layout variables if used in main.css) -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Wordle Italiano · Davide Mariotti</title>
+  <meta name="description" content="Wordle in Italian: a word a day, free play, a timed mode and a hard one. Stats, achievements and an optional leaderboard.">
+  <link rel="canonical" href="https://davide-mariotti.github.io/games/wordle/">
+  <meta property="og:title" content="Wordle Italiano · Davide Mariotti">
+  <meta property="og:description" content="Guess the Italian word in six tries. A new one every day.">
+  <meta property="og:image" content="https://davide-mariotti.github.io/og.png">
+  <meta name="theme-color" content="#050706">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/games/shared/arcade.css">
+  <link rel="stylesheet" href="main.css">
 </head>
-
 <body>
-    <nav class="dm-bar"><a class="dm-logo" href="/" aria-label="Davide Mariotti, home">dm<span>.</span></a><a href="/games/">&larr; All games</a></nav>
+  <header><div class="bar">
+    <a class="logo" href="/" aria-label="Davide Mariotti, home"><svg viewBox="7.5 12.5 108.8 68" role="img" aria-label="dm."><path d="M45,20V73M45,58A15,15 0 1 1 45,57.99M45,54A11,11 0 0 1 67,54V73M67,54A11,11 0 0 1 89,54V73" fill="none" stroke="#ecf3ee" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/><circle cx="107.7" cy="71.9" r="6.6" fill="#2fe37f"/></svg></a>
+    <a class="back" href="/games/" data-it="&larr; Tutti i giochi">&larr; All games</a>
+  </div></header>
 
-    <div class="container py-5 mt-5">
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-8 col-lg-6">
-                <!-- Game Wrapper with Glass Effect -->
-                <div class="glass-panel p-4 d-flex flex-column align-items-center" style="min-height: 80vh;">
+  <main>
+    <section class="stage" id="stage">
+      <canvas id="game" aria-hidden="true"></canvas>
 
-                    <!-- Game Header (Internal) -->
-                    <div
-                        class="w-100 d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
-                        <!-- Left Side: Login / Profile -->
-                        <div class="menu-left d-flex align-items-center">
-                            <button id="login-btn" class="btn btn-sm btn-outline-light rounded-pill px-3"
-                                style="font-size: 0.8rem;">
-                                Login
-                            </button>
-                            <div id="user-profile" class="hidden d-flex align-items-center gap-2"
-                                style="cursor: pointer;">
-                                <img id="user-avatar" src="user.png" alt="User"
-                                    class="rounded-circle border border-success" style="width: 32px; height: 32px;">
-                            </div>
-                        </div>
-
-                        <h1 class="h3 m-0 text-gradient text-uppercase fw-bold">Wordle IT</h1>
-
-                        <div class="menu-right d-flex gap-2">
-                            <button id="achievements-btn"
-                                class="btn btn-sm btn-outline-light rounded-circle p-2 d-flex align-items-center justify-content-center"
-                                aria-label="Achievements" style="width: 40px; height: 40px;">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20">
-                                    <path fill="currentColor" d="M12 2L9 9H2l6 5-2 8 6-4 6 4-2-8 6-5h-7z" />
-                                </svg>
-                            </button>
-                            <button id="leaderboard-btn"
-                                class="btn btn-sm btn-outline-light rounded-circle p-2 d-flex align-items-center justify-content-center"
-                                aria-label="Classifica" style="width: 40px; height: 40px;">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20">
-                                    <path fill="currentColor"
-                                        d="M16 11V3H8v6H2v12h20V11h-6zm-6-6h4v14h-4V5zm-6 6h4v8H4v-8zm16 8h-4v-6h4v6z" />
-                                </svg>
-                            </button>
-                            <button id="stats-btn"
-                                class="btn btn-sm btn-outline-light rounded-circle p-2 d-flex align-items-center justify-content-center"
-                                aria-label="Statistiche" style="width: 40px; height: 40px;">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20">
-                                    <path fill="currentColor"
-                                        d="M16,6L16,6h2v12h-2V6z M12,18h2V10h-2V18z M8,18h2v-4H8V18z M2,20v2h20v-2H2z">
-                                    </path>
-                                </svg>
-                            </button>
-                            <button id="help-btn"
-                                class="btn btn-sm btn-outline-light rounded-circle p-2 d-flex align-items-center justify-content-center"
-                                aria-label="Istruzioni" style="width: 40px; height: 40px;">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20">
-                                    <path fill="currentColor"
-                                        d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8 8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z">
-                                    </path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Mode Selector -->
-                    <div class="mode-selector mb-3 d-flex gap-2 justify-content-center flex-wrap">
-                        <button class="mode-btn active" data-mode="practice">✨ Practice</button>
-                        <button class="mode-btn" data-mode="timed">⏱️ Timed</button>
-                        <button class="mode-btn" data-mode="hard">💪 Hard</button>
-                    </div>
-
-                    <!-- Timer (visible only in timed mode) -->
-                    <div id="timer-container" class="timer-container hidden mb-3">
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="timer-label small opacity-75">Tempo:</span>
-                            <span id="timer-display" class="timer-display fw-bold">30</span>
-                            <span class="small opacity-75">secondi</span>
-                        </div>
-                        <div class="progress-bar-container mt-2">
-                            <div id="timer-progress" class="timer-progress-bar"></div>
-                        </div>
-                    </div>
-
-                    <!-- Hard Mode Indicator -->
-                    <div id="hard-mode-indicator" class="hard-mode-indicator hidden mb-2">
-                        💪 <span class="small">Modalità Hard Attiva - Usa tutte le lettere trovate!</span>
-                    </div>
-
-                    <div id="game-container" class="d-flex flex-column align-items-center w-100 flex-grow-1">
-                        <div id="board-container" class="mb-4">
-                            <div id="board"></div>
-                        </div>
-
-                        <div id="keyboard-container" class="w-100">
-                            <div class="keyboard-row">
-                                <button data-key="Q">Q</button>
-                                <button data-key="W">W</button>
-                                <button data-key="E">E</button>
-                                <button data-key="R">R</button>
-                                <button data-key="T">T</button>
-                                <button data-key="Y">Y</button>
-                                <button data-key="U">U</button>
-                                <button data-key="I">I</button>
-                                <button data-key="O">O</button>
-                                <button data-key="P">P</button>
-                            </div>
-                            <div class="keyboard-row">
-                                <button data-key="A">A</button>
-                                <button data-key="S">S</button>
-                                <button data-key="D">D</button>
-                                <button data-key="F">F</button>
-                                <button data-key="G">G</button>
-                                <button data-key="H">H</button>
-                                <button data-key="J">J</button>
-                                <button data-key="K">K</button>
-                                <button data-key="L">L</button>
-                            </div>
-                            <div class="keyboard-row">
-                                <button data-key="ENTER" class="key-large">INVIO</button>
-                                <button data-key="Z">Z</button>
-                                <button data-key="X">X</button>
-                                <button data-key="C">C</button>
-                                <button data-key="V">V</button>
-                                <button data-key="B">B</button>
-                                <button data-key="N">N</button>
-                                <button data-key="M">M</button>
-                                <button data-key="BACKSPACE" class="key-large">←</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <div class="hud">
+        <h1 class="brand"><span class="serif grad">Wordle</span> <span class="kicker">IT</span></h1>
+        <div class="hud-r">
+          <button class="icon-btn" id="help-btn" type="button" aria-label="How to play" data-it-label="Come si gioca"><i data-icon="circle-help"></i></button>
+          <button class="icon-btn" id="stats-btn" type="button" aria-label="Stats" data-it-label="Statistiche"><i data-icon="chart-column"></i></button>
+          <button class="icon-btn" id="account-btn" type="button" aria-label="Account" data-it-label="Account"><i data-icon="user"></i></button>
+          <button class="icon-btn" id="mute" type="button" aria-label="Sound"></button>
         </div>
-    </div>
+      </div>
 
-    <footer class="dm-foot">Made by <a href="/">Davide Mariotti</a> &middot; <a href="https://ko-fi.com/Z0X32ATNHL">buy me a coffee</a></footer>
-
-    <!-- Modals -->
-
-    <div id="modal" class="game-modal hidden">
-        <div class="glass-panel modal-content border border-secondary shadow-lg">
-            <span class="close-btn position-absolute top-0 end-0 p-3 fs-3" style="cursor: pointer;"
-                data-target="modal">&times;</span>
-            <h2 class="h4 text-gradient mb-3">COME GIOCARE</h2>
-            <p>Indovina la parola nascosta in 6 tentativi.</p>
-            <p>Ogni tentativo deve essere una parola valida di 5 lettere. Premi Invio per inviare.</p>
-            <p>Dopo ogni tentativo, il colore delle tessere cambierà per mostrarti quanto sei andato vicino a
-                indovinare la parola.</p>
-            <hr class="border-secondary my-3">
-            <div class="examples">
-                <p><strong>Esempi</strong></p>
-                <div class="example-row d-flex gap-2 mb-2">
-                    <div class="tile" data-state="correct">G</div>
-                    <div class="tile">A</div>
-                    <div class="tile">T</div>
-                    <div class="tile">T</div>
-                    <div class="tile">O</div>
-                </div>
-                <p class="small">La lettera <strong>G</strong> è nella parola e nel posto giusto.</p>
-                <div class="example-row d-flex gap-2 mb-2">
-                    <div class="tile">P</div>
-                    <div class="tile" data-state="present">I</div>
-                    <div class="tile">A</div>
-                    <div class="tile">N</div>
-                    <div class="tile">O</div>
-                </div>
-                <p class="small">La lettera <strong>I</strong> è nella parola ma nel posto sbagliato.</p>
-                <div class="example-row d-flex gap-2 mb-2">
-                    <div class="tile">M</div>
-                    <div class="tile">A</div>
-                    <div class="tile">N</div>
-                    <div class="tile" data-state="absent">G</div>
-                    <div class="tile">O</div>
-                </div>
-                <p class="small">La lettera <strong>G</strong> non è nella parola in nessun posto.</p>
-            </div>
+      <div class="play">
+        <div class="modes" role="tablist" aria-label="Mode">
+          <button type="button" role="tab" data-mode="daily"><i data-icon="calendar"></i><span data-it="Oggi">Daily</span></button>
+          <button type="button" role="tab" data-mode="practice"><i data-icon="infinity"></i><span data-it="Libera">Free</span></button>
+          <button type="button" role="tab" data-mode="timed"><i data-icon="timer"></i><span data-it="A tempo">Timed</span></button>
+          <button type="button" role="tab" data-mode="hard"><i data-icon="dumbbell"></i><span data-it="Difficile">Hard</span></button>
         </div>
-    </div>
+        <div class="note" id="note"></div>
+        <div class="clock" id="clock" hidden><b id="clock-bar"></b><span id="clock-left">30</span></div>
 
-    <div id="stats-modal" class="game-modal hidden">
-        <div class="glass-panel modal-content border border-secondary shadow-lg text-center">
-            <span class="close-btn position-absolute top-0 end-0 p-3 fs-3" style="cursor: pointer;"
-                data-target="stats-modal">&times;</span>
-            <h2 class="h4 text-gradient mb-4">STATISTICHE</h2>
+        <div class="board-wrap"><div class="board" id="board" role="grid" aria-label="Guesses"></div></div>
+        <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
 
-            <!-- Word Result Message -->
-            <div id="word-result-message" class="mb-3 p-3 rounded"
-                style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); display: none;">
-                <p id="word-result-text" class="mb-2"></p>
-                <a id="word-result-link" href="#" target="_blank" rel="noopener noreferrer" class="text-decoration-none"
-                    style="color: #10b981; font-weight: 600;">
-                    Scopri di più su 1parola.it →
-                </a>
-            </div>
-
-            <div id="statistics" class="d-flex justify-content-center gap-4 mb-4">
-                <div class="statistic-container">
-                    <div class="statistic h2 fw-bold mb-0" id="total-played">0</div>
-                    <div class="label small opacity-75">Giocate</div>
-                </div>
-                <div class="statistic-container">
-                    <div class="statistic h2 fw-bold mb-0" id="win-pct">0</div>
-                    <div class="label small opacity-75">% Vittorie</div>
-                </div>
-                <div class="statistic-container">
-                    <div class="statistic h2 fw-bold mb-0" id="current-streak">0</div>
-                    <div class="label small opacity-75">Streak</div>
-                </div>
-                <div class="statistic-container">
-                    <div class="statistic h2 fw-bold mb-0" id="max-streak">0</div>
-                    <div class="label small opacity-75">Max Streak</div>
-                </div>
-            </div>
-
-
-            <!-- Stats Tabs -->
-            <ul class="nav nav-pills nav-fill mb-3" id="stats-tabs">
-                <li class="nav-item">
-                    <a class="nav-link active" id="overview-tab" data-tab="overview" href="#">Panoramica</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="graphs-tab" data-tab="graphs" href="#">Grafici</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="heatmap-tab" data-tab="heatmap" href="#">Heatmap</a>
-                </li>
-            </ul>
-
-            <!-- Tab Content: Overview -->
-            <div id="tab-overview" class="tab-content-stats">
-                <h3 class="h5 mb-3">DISTRIBUZIONE TENTATIVI</h3>
-                <div id="guess-distribution" class="mb-4">
-                    <!-- Graph bars will be injected here -->
-                </div>
-            </div>
-
-            <!-- Tab Content: Graphs -->
-            <div id="tab-graphs" class="tab-content-stats hidden">
-                <h3 class="h6 mb-3">Progressi nel Tempo</h3>
-                <div class="chart-container mb-4" style="position: relative; height: 200px;">
-                    <canvas id="progress-chart"></canvas>
-                </div>
-                <h3 class="h6 mb-3">Win Rate per Tentativo</h3>
-                <div class="chart-container mb-3" style="position: relative; height: 180px;">
-                    <canvas id="winrate-chart"></canvas>
-                </div>
-            </div>
-
-            <!-- Tab Content: Heatmap -->
-            <div id="tab-heatmap" class="tab-content-stats hidden">
-                <h3 class="h6 mb-3">Attività Giornaliera</h3>
-                <div id="heatmap-container" class="mb-3">
-                    <!-- Heatmap will be generated here -->
-                </div>
-                <div class="d-flex gap-2 align-items-center justify-content-center small opacity-75">
-                    <span>Meno</span>
-                    <div class="heatmap-legend">
-                        <div class="heatmap-cell" data-level="0"></div>
-                        <div class="heatmap-cell" data-level="1"></div>
-                        <div class="heatmap-cell" data-level="2"></div>
-                        <div class="heatmap-cell" data-level="3"></div>
-                        <div class="heatmap-cell" data-level="4"></div>
-                    </div>
-                    <span>Più</span>
-                </div>
-            </div>
-
-
-            <div id="footer-actions" class="d-flex justify-content-center gap-2">
-                <button id="play-again-btn" class="btn btn-glow px-4 py-2">GIOCA DI NUOVO</button>
-                <button id="share-btn" class="btn btn-success px-4 py-2 d-flex align-items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                        class="bi bi-share-fill" viewBox="0 0 16 16">
-                        <path
-                            d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5" />
-                    </svg>
-                    CONDIVIDI
-                </button>
-            </div>
-
-            <!-- Reset Stats Button -->
-            <div class="text-center mt-3 pt-3 border-top border-secondary">
-                <button id="reset-stats-btn" class="btn btn-outline-danger btn-sm px-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="16" class="me-1">
-                        <path fill="currentColor"
-                            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-                    </svg>
-                    Azzera Tutte le Statistiche
-                </button>
-            </div>
+        <div class="keyboard" id="keyboard">
+          <div><button data-key="q">Q</button><button data-key="w">W</button><button data-key="e">E</button><button data-key="r">R</button><button data-key="t">T</button><button data-key="y">Y</button><button data-key="u">U</button><button data-key="i">I</button><button data-key="o">O</button><button data-key="p">P</button></div>
+          <div><button data-key="a">A</button><button data-key="s">S</button><button data-key="d">D</button><button data-key="f">F</button><button data-key="g">G</button><button data-key="h">H</button><button data-key="j">J</button><button data-key="k">K</button><button data-key="l">L</button></div>
+          <div><button data-key="enter" class="wide" aria-label="Enter" data-it-label="Invio"><i data-icon="corner-down-left"></i></button><button data-key="z">Z</button><button data-key="x">X</button><button data-key="c">C</button><button data-key="v">V</button><button data-key="b">B</button><button data-key="n">N</button><button data-key="m">M</button><button data-key="backspace" class="wide" aria-label="Delete" data-it-label="Cancella"><i data-icon="delete"></i></button></div>
         </div>
-    </div>
+      </div>
 
-    <!-- Leaderboard Modal -->
-    <div id="leaderboard-modal" class="game-modal hidden">
-        <div class="glass-panel modal-content border border-secondary shadow-lg text-center">
-            <span class="close-btn position-absolute top-0 end-0 p-3 fs-3" style="cursor: pointer;"
-                data-target="leaderboard-modal">&times;</span>
-            <h2 class="h4 text-gradient mb-3">CLASSIFICA GLOBALE</h2>
+      <div class="unlock" id="unlock" aria-live="polite"></div>
 
-            <!-- Leaderboard Filters -->
-            <div class="leaderboard-filters mb-3 d-flex gap-2 justify-content-center flex-wrap">
-                <button class="filter-btn active" data-period="daily">📅 Oggi</button>
-                <button class="filter-btn" data-period="weekly">📆 Settimana</button>
-                <button class="filter-btn" data-period="monthly">📊 Mese</button>
-                <button class="filter-btn" data-period="alltime">🏆 Sempre</button>
-            </div>
-
-
-            <div id="leaderboard-list" class="text-start" style="max-height: 300px; overflow-y: auto;">
-                <div class="d-flex justify-content-center p-3">
-                    <div class="spinner-border text-success" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                </div>
-                <!-- Leaderboard items injected here -->
-            </div>
+      <div class="overlay" id="help" hidden>
+        <div class="panel">
+          <button class="close" type="button" aria-label="Close" data-it-label="Chiudi"><i data-icon="x"></i></button>
+          <p class="kicker" data-it="Come si gioca">How to play</p>
+          <h2 class="serif grad" data-it="Sei tentativi.">Six tries.</h2>
+          <p class="lead" data-it="Indovina la parola italiana di cinque lettere. Ogni tentativo dev'essere una parola vera. Dopo l'invio, le tessere ti dicono quanto ci sei andato vicino.">Guess the five-letter Italian word. Every try must be a real word. Once you send it, the tiles tell you how close you got.</p>
+          <div class="examples">
+            <div class="mini"><span class="t correct">G</span><span class="t">A</span><span class="t">T</span><span class="t">T</span><span class="t">O</span></div>
+            <p data-it="<b>G</b> è nella parola, al posto giusto."><b>G</b> is in the word, in the right spot.</p>
+            <div class="mini"><span class="t">P</span><span class="t present">I</span><span class="t">A</span><span class="t">N</span><span class="t">O</span></div>
+            <p data-it="<b>I</b> è nella parola, ma in un altro posto."><b>I</b> is in the word, in another spot.</p>
+            <div class="mini"><span class="t">M</span><span class="t">A</span><span class="t">N</span><span class="t absent">G</span><span class="t">O</span></div>
+            <p data-it="<b>G</b> non c'è proprio."><b>G</b> isn't in the word at all.</p>
+          </div>
+          <ul class="legend">
+            <li><i data-icon="calendar" class="c-accent"></i><span data-it="<b>Oggi</b>: la stessa parola per tutti, una al giorno">Daily: the same word for everyone, one a day</span></li>
+            <li><i data-icon="infinity" class="c-accent"></i><span data-it="<b>Libera</b>: una parola nuova quando vuoi">Free: a new word whenever you like</span></li>
+            <li><i data-icon="timer" class="c-lime"></i><span data-it="<b>A tempo</b>: 30 secondi dopo il primo tentativo">Timed: 30 seconds after the first try</span></li>
+            <li><i data-icon="dumbbell" class="c-danger"></i><span data-it="<b>Difficile</b>: gli indizi trovati vanno riusati">Hard: every clue you find must be used</span></li>
+          </ul>
+          <button class="btn btn-primary" type="button" data-close><i data-icon="play"></i><span data-it="Gioca">Play</span></button>
         </div>
-    </div>
+      </div>
 
-    <!-- Profile Modal -->
-    <div id="profile-modal" class="game-modal hidden">
-        <div class="glass-panel modal-content border border-secondary shadow-lg text-center">
-            <span class="close-btn position-absolute top-0 end-0 p-3 fs-3" style="cursor: pointer;"
-                data-target="profile-modal">&times;</span>
-            <h2 class="h4 text-gradient mb-4">PROFILO UTENTE</h2>
-
-            <div class="d-flex flex-column align-items-center mb-4">
-                <img id="profile-modal-avatar" src="user.png" alt="Avatar"
-                    class="rounded-circle border border-2 border-success mb-3 shadow"
-                    style="width: 80px; height: 80px; object-fit: cover;">
-                <p id="profile-modal-email" class="small opacity-75 mb-3">email@example.com</p>
-
-                <!-- Edit Form -->
-                <div class="w-100 text-start">
-                    <div class="mb-3">
-                        <label for="edit-display-name" class="form-label small text-uppercase fw-bold opacity-75">Nome
-                            Visualizzato</label>
-                        <input type="text" id="edit-display-name"
-                            class="form-control bg-dark text-white border-secondary" placeholder="Il tuo nome">
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit-photo-url" class="form-label small text-uppercase fw-bold opacity-75">URL
-                            Avatar</label>
-                        <input type="text" id="edit-photo-url" class="form-control bg-dark text-white border-secondary"
-                            placeholder="https://...">
-                    </div>
-                </div>
-            </div>
-
-            <div class="d-flex justify-content-center gap-3 mb-4">
-                <div class="p-3 rounded border border-secondary bg-black bg-opacity-25 flex-grow-1">
-                    <div class="h3 fw-bold text-success mb-0" id="profile-total-games">0</div>
-                    <div class="small opacity-75">Partite</div>
-                </div>
-                <div class="p-3 rounded border border-secondary bg-black bg-opacity-25 flex-grow-1">
-                    <div class="h3 fw-bold text-success mb-0" id="profile-total-wins">0</div>
-                    <div class="small opacity-75">Vittorie</div>
-                </div>
-            </div>
-
-            <div class="d-flex justify-content-between gap-2">
-                <button id="logout-btn" class="btn btn-outline-danger px-4 rounded-pill">Logout</button>
-                <button id="save-profile-btn" class="btn btn-primary px-4 rounded-pill">Salva Modifiche</button>
-            </div>
+      <div class="overlay" id="result" hidden>
+        <div class="panel">
+          <button class="close" type="button" aria-label="Close" data-it-label="Chiudi"><i data-icon="x"></i></button>
+          <p class="kicker" id="r-kicker"></p>
+          <div class="reveal" id="r-word"></div>
+          <p class="lead" id="r-text"></p>
+          <a class="meaning" id="r-link" href="https://1parola.it/" target="_blank" rel="noopener"><span data-it="Cosa vuol dire? Su 1parola.it">What does it mean? On 1parola.it</span><i data-icon="external-link"></i></a>
+          <dl class="stats" id="r-stats"></dl>
+          <div class="dist" id="r-dist"></div>
+          <p class="next" id="r-next" hidden></p>
+          <div class="actions">
+            <button class="btn btn-ghost" id="share" type="button"><i data-icon="share-2"></i><span data-it="Condividi">Share</span></button>
+            <button class="btn btn-primary" id="again" type="button"><i data-icon="rotate-ccw"></i><span id="again-label" data-it="Nuova parola">New word</span></button>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <!-- Achievements Modal -->
-    <div id="achievements-modal" class="game-modal hidden">
-        <div class="glass-panel modal-content border border-secondary shadow-lg text-center">
-            <span class="close-btn position-absolute top-0 end-0 p-3 fs-3" style="cursor: pointer;"
-                data-target="achievements-modal">&times;</span>
-            <h2 class="h4 text-gradient mb-4">🏆 ACHIEVEMENTS</h2>
+      <div class="overlay" id="board-stats" hidden>
+        <div class="panel wide-panel">
+          <button class="close" type="button" aria-label="Close" data-it-label="Chiudi"><i data-icon="x"></i></button>
+          <div class="tabs" role="tablist">
+            <button type="button" role="tab" data-tab="numbers"><i data-icon="chart-column"></i><span data-it="Numeri">Stats</span></button>
+            <button type="button" role="tab" data-tab="awards"><i data-icon="trophy"></i><span data-it="Traguardi">Awards</span></button>
+            <button type="button" role="tab" data-tab="ranks"><i data-icon="crown"></i><span data-it="Classifica">Ranking</span></button>
+          </div>
 
-            <div id="achievements-grid" class="achievements-grid">
-                <!-- Achievements will be dynamically inserted here -->
+          <section class="tab" data-tab="numbers">
+            <dl class="stats" id="s-stats"></dl>
+            <h3 class="kicker" data-it="Tentativi per vittoria">Tries per win</h3>
+            <div class="dist" id="s-dist"></div>
+            <h3 class="kicker" data-it="Ultime 30 partite">Last 30 games</h3>
+            <svg class="spark" id="s-spark" viewBox="0 0 300 60" aria-hidden="true"></svg>
+            <h3 class="kicker" data-it="Ultime 12 settimane">Last 12 weeks</h3>
+            <div class="heat" id="s-heat"></div>
+            <button class="btn-text danger" id="reset" type="button"><i data-icon="trash-2"></i><span id="reset-label" data-it="Azzera le statistiche">Reset stats</span></button>
+          </section>
+
+          <section class="tab" data-tab="awards" hidden>
+            <p class="count" id="a-count"></p>
+            <div class="awards" id="awards"></div>
+          </section>
+
+          <section class="tab" data-tab="ranks" hidden>
+            <div class="chips" id="periods">
+              <button type="button" data-period="today" data-it="Oggi">Today</button>
+              <button type="button" data-period="week" data-it="Settimana">Week</button>
+              <button type="button" data-period="month" data-it="Mese">Month</button>
+              <button type="button" data-period="all" data-it="Sempre">All time</button>
             </div>
-
-            <div class="mt-3 small opacity-75">
-                <span id="unlocked-count">0</span> / <span id="total-count">0</span> sbloccati
-            </div>
+            <ol class="ranks" id="ranks"></ol>
+            <p class="small" id="ranks-note" data-it="In classifica vanno le parole del giorno, una per giocatore. Serve l'accesso con Google.">The ranking counts daily words, one line per player. Google sign-in required.</p>
+          </section>
         </div>
-    </div>
+      </div>
 
-    <!-- Reset Stats Confirmation Modal -->
-    <div id="reset-confirm-modal" class="game-modal hidden">
-        <div class="glass-panel modal-content border border-danger shadow-lg text-center" style="max-width: 500px;">
-            <span class="close-btn position-absolute top-0 end-0 p-3 fs-3" style="cursor: pointer;"
-                data-target="reset-confirm-modal">&times;</span>
-
-            <h2 class="h5 mb-3">⚠️ Conferma Cancellazione Statistiche</h2>
-
-            <div class="alert alert-danger mb-3">
-                <strong>ATTENZIONE!</strong> Questa azione è <strong>irreversibile</strong>.
+      <div class="overlay" id="account" hidden>
+        <div class="panel">
+          <button class="close" type="button" aria-label="Close" data-it-label="Chiudi"><i data-icon="x"></i></button>
+          <div id="signed-out">
+            <p class="kicker">Account</p>
+            <h2 class="serif grad" data-it="In classifica.">On the board.</h2>
+            <p class="lead" data-it="Con Google le statistiche ti seguono su ogni dispositivo e le parole del giorno vanno in classifica. Salvo nome, foto del profilo e risultati, nient'altro. Senza accesso si gioca lo stesso.">Sign in with Google and your stats follow you on every device, and daily words go on the board. I keep your name, profile picture and results, nothing else. You can play without it.</p>
+            <button class="btn btn-primary" id="login" type="button"><i data-icon="log-in"></i><span data-it="Accedi con Google">Sign in with Google</span></button>
+            <p class="small" id="offline-note" hidden data-it="Il servizio di accesso non risponde: sei offline o è bloccato.">The sign-in service doesn't answer: you're offline or it's blocked.</p>
+          </div>
+          <div id="signed-in" hidden>
+            <img class="avatar" id="me-photo" alt="" referrerpolicy="no-referrer">
+            <p class="small" id="me-email"></p>
+            <label class="field"><span data-it="Nome in classifica">Name on the board</span><input id="me-name" maxlength="24" autocomplete="nickname"></label>
+            <div class="actions">
+              <button class="btn btn-ghost" id="logout" type="button"><i data-icon="log-out"></i><span data-it="Esci">Sign out</span></button>
+              <button class="btn btn-primary" id="save-name" type="button" data-it="Salva">Save</button>
             </div>
-
-            <div class="text-start mb-3">
-                <p class="mb-2">Verranno eliminate <strong>TUTTE</strong> le seguenti informazioni:</p>
-                <ul class="small">
-                    <li>📊 Tutte le statistiche (partite giocate, vinte, streak)</li>
-                    <li>🏆 Tutti gli achievement sbloccati</li>
-                    <li>📈 Cronologia delle partite e grafici</li>
-                    <li>🗓️ Heatmap attività giornaliera</li>
-                    <li>☁️ Dati sincronizzati sul cloud (se autenticato)</li>
-                </ul>
-            </div>
-
-            <div class="alert alert-warning mb-3">
-                <small>💡 <strong>Suggerimento:</strong> Se vuoi solo ricominciare da zero, considera di disconnetterti
-                    e giocare in modalità ospite.</small>
-            </div>
-
-            <div class="form-check mb-3 text-start">
-                <input class="form-check-input" type="checkbox" id="confirm-reset-checkbox">
-                <label class="form-check-label small" for="confirm-reset-checkbox">
-                    Ho letto e compreso che questa azione cancellerà definitivamente tutti i miei dati e non può essere
-                    annullata.
-                </label>
-            </div>
-
-            <div class="d-flex gap-2 justify-content-center">
-                <button id="cancel-reset-btn" class="btn btn-secondary px-4">Annulla</button>
-                <button id="confirm-reset-btn" class="btn btn-danger px-4" disabled>
-                    🗑️ Cancella Tutto
-                </button>
-            </div>
+          </div>
         </div>
-    </div>
+      </div>
+    </section>
+  </main>
 
-    <!-- Achievement Notification Toast -->
-    <div id="achievement-notification" class="achievement-notification hidden">
-        <div class="achievement-icon" id="achievement-notif-icon">🏆</div>
-        <div class="achievement-details">
-            <div class="achievement-title">Achievement Sbloccato!</div>
-            <div class="achievement-name" id="achievement-notif-name"></div>
-            <div class="achievement-desc small opacity-75" id="achievement-notif-desc"></div>
-        </div>
-    </div>
+  <footer><div class="bar">
+    <span data-it="Fatto da <a href=&quot;/&quot;>Davide Mariotti</a>">Made by <a href="/">Davide Mariotti</a></span>
+    <a href="https://ko-fi.com/Z0X32ATNHL" data-it="Offrimi un caffè">Buy me a coffee</a>
+  </div></footer>
 
-    <input type="text" id="native-keyboard-input" autocomplete="off" autocorrect="off" autocapitalize="off"
-        spellcheck="false"
-        style="position: absolute; opacity: 0; height: 0; width: 0; bottom: 0; left: 0; z-index: -1;">
-
-    <div id="message-container"></div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-    <script type="module" src="main.js"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('SW registered'))
-                    .catch(err => console.log('SW registration failed', err));
-            });
-        }
-    </script>
+  <script src="/games/shared/arcade.js"></script>
+  <script src="icons.js"></script>
+  <script type="module" src="main.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  </script>
 </body>
-
 </html>

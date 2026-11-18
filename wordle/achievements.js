@@ -1,406 +1,59 @@
-// Achievements Configuration
-export const ACHIEVEMENTS = {
-    FIRST_WIN: {
-        id: 'first_win',
-        name: 'Prima Vittoria',
-        description: 'Vinci la tua prima partita',
-        icon: '🎉',
-        rarity: 'common',
-        check: (stats, gameData) => stats.gamesWon >= 1
-    },
-    PERFECT_GAME: {
-        id: 'perfect',
-        name: 'Perfetto!',
-        description: 'Indovina al primo tentativo',
-        icon: '💎',
-        rarity: 'legendary',
-        check: (stats, gameData) => gameData && gameData.won && gameData.attempts === 1
-    },
-    WEEK_STREAK: {
-        id: 'streak_7',
-        name: 'Una Settimana',
-        description: 'Mantieni uno streak di 7 giorni',
-        icon: '🔥',
-        rarity: 'rare',
-        check: (stats) => stats.currentStreak >= 7
-    },
-    MONTH_STREAK: {
-        id: 'streak_30',
-        name: 'Un Mese',
-        description: 'Mantieni uno streak di 30 giorni',
-        icon: '🏆',
-        rarity: 'legendary',
-        check: (stats) => stats.currentStreak >= 30
-    },
-    SPEED_DEMON: {
-        id: 'speed',
-        name: 'Velocissimo',
-        description: 'Vinci in modalità timed con 20+ secondi rimasti',
-        icon: '⚡',
-        rarity: 'rare',
-        check: (stats, gameData) => gameData && gameData.mode === 'timed' && gameData.won && gameData.timeRemaining >= 20
-    },
-    UNDER_PRESSURE: {
-        id: 'clutch',
-        name: 'Sangue Freddo',
-        description: 'Vinci in modalità timed con meno di 5 secondi',
-        icon: '🧊',
-        rarity: 'epic',
-        check: (stats, gameData) => gameData && gameData.mode === 'timed' && gameData.won && gameData.timeRemaining < 5 && gameData.timeRemaining >= 0
-    },
-    VETERAN: {
-        id: 'veteran',
-        name: 'Veterano',
-        description: 'Gioca 100 partite',
-        icon: '🎖️',
-        rarity: 'rare',
-        check: (stats) => stats.gamesPlayed >= 100
-    },
-    MASTER: {
-        id: 'master',
-        name: 'Maestro',
-        description: 'Vinci 50 partite',
-        icon: '👑',
-        rarity: 'epic',
-        check: (stats) => stats.gamesWon >= 50
-    },
-    HARD_MODE_WIN: {
-        id: 'hard_win',
-        name: 'Difficoltà Superata',
-        description: 'Vinci una partita in modalità Hard',
-        icon: '💪',
-        rarity: 'rare',
-        check: (stats, gameData) => gameData && gameData.mode === 'hard' && gameData.won
-    },
-    HARD_MODE_MASTER: {
-        id: 'hard_master',
-        name: 'Maestro Hard',
-        description: 'Vinci 20 partite in modalità Hard',
-        icon: '🔱',
-        rarity: 'legendary',
-        check: (stats) => (stats.hardModeWins || 0) >= 20
-    },
-    EFFICIENT: {
-        id: 'efficient',
-        name: 'Efficiente',
-        description: 'Vinci con 3 tentativi o meno per 5 volte',
-        icon: '🎯',
-        rarity: 'epic',
-        check: (stats) => {
-            const quick = (stats.guesses[1] || 0) + (stats.guesses[2] || 0) + (stats.guesses[3] || 0);
-            return quick >= 5;
-        }
-    },
-    LUCKY: {
-        id: 'lucky',
-        name: 'Fortunato',
-        description: 'Vinci al sesto tentativo',
-        icon: '🍀',
-        rarity: 'common',
-        check: (stats, gameData) => gameData && gameData.won && gameData.attempts === 6
-    },
-    COMEBACK: {
-        id: 'comeback',
-        name: 'Ritorno',
-        description: 'Vinci dopo aver perso una partita',
-        icon: '↩️',
-        rarity: 'common',
-        check: (stats, gameData) => {
-            // This will be checked with game history
-            return gameData && gameData.isComeback;
-        }
-    },
-    CONSISTENT: {
-        id: 'consistent',
-        name: 'Costante',
-        description: 'Mantieni un 80%+ di vittorie con almeno 20 partite',
-        icon: '📈',
-        rarity: 'epic',
-        check: (stats) => {
-            if (stats.gamesPlayed < 20) return false;
-            const winRate = (stats.gamesWon / stats.gamesPlayed) * 100;
-            return winRate >= 80;
-        }
-    },
-    NIGHT_OWL: {
-        id: 'night_owl',
-        name: 'Gufo Notturno',
-        description: 'Vinci una partita dopo le 23:00',
-        icon: '🦉',
-        rarity: 'common',
-        check: (stats, gameData) => {
-            if (!gameData || !gameData.won || !gameData.date) return false;
-            const hour = new Date(gameData.date).getHours();
-            return hour >= 23 || hour < 6;
-        }
-    },
-    EARLY_BIRD: {
-        id: 'early_bird',
-        name: 'Mattiniero',
-        description: 'Vinci una partita prima delle 7:00',
-        icon: '🌅',
-        rarity: 'common',
-        check: (stats, gameData) => {
-            if (!gameData || !gameData.won || !gameData.date) return false;
-            const hour = new Date(gameData.date).getHours();
-            return hour >= 5 && hour < 7;
-        }
-    },
-    QUICK_LEARNER: {
-        id: 'quick_learner',
-        name: 'Apprendimento Rapido',
-        description: 'Vinci 3 partite consecutive',
-        icon: '🧠',
-        rarity: 'rare',
-        check: (stats, gameData) => {
-            if (!stats.gameHistory || stats.gameHistory.length < 3) return false;
-            const lastThree = stats.gameHistory.slice(-3);
-            return lastThree.every(g => g.won);
-        }
-    },
-    NO_HINTS: {
-        id: 'no_hints',
-        name: 'Intuizione Pura',
-        description: 'Vinci usando solo 10 lettere totali o meno',
-        icon: '💡',
-        rarity: 'epic',
-        check: (stats, gameData) => {
-            // This would need to track total unique letters used
-            // For now, approximate with winning in 2 attempts
-            return gameData && gameData.won && gameData.attempts <= 2;
-        }
-    },
-    TIMED_MASTER: {
-        id: 'timed_master',
-        name: 'Maestro del Tempo',
-        description: 'Vinci 10 partite in modalità Timed',
-        icon: '⏰',
-        rarity: 'rare',
-        check: (stats) => (stats.timedModeWins || 0) >= 10
-    },
-    TRIPLE_THREAT: {
-        id: 'triple_threat',
-        name: 'Tripletta',
-        description: 'Vinci almeno una partita in ogni modalità',
-        icon: '⭐',
-        rarity: 'rare',
-        check: (stats) => {
-            const practiceWins = stats.gamesWon - (stats.hardModeWins || 0) - (stats.timedModeWins || 0);
-            return practiceWins > 0 && (stats.hardModeWins || 0) > 0 && (stats.timedModeWins || 0) > 0;
-        }
-    },
-    UNSTOPPABLE: {
-        id: 'unstoppable',
-        name: 'Inarrestabile',
-        description: 'Vinci 5 partite di fila senza perdere',
-        icon: '🔥',
-        rarity: 'epic',
-        check: (stats, gameData) => {
-            if (!stats.gameHistory || stats.gameHistory.length < 5) return false;
-            const lastFive = stats.gameHistory.slice(-5);
-            return lastFive.every(g => g.won);
-        }
-    },
-    COLLECTOR: {
-        id: 'collector',
-        name: 'Collezionista',
-        description: 'Sblocca 10 achievement',
-        icon: '🎖️',
-        rarity: 'epic',
-        check: (stats) => (stats.achievements || []).length >= 10
-    },
-    DEDICATION: {
-        id: 'dedication',
-        name: 'Dedizione',
-        description: 'Gioca per 7 giorni diversi',
-        icon: '📅',
-        rarity: 'rare',
-        check: (stats) => {
-            if (!stats.gameHistory || stats.gameHistory.length < 7) return false;
-            const uniqueDays = new Set();
-            stats.gameHistory.forEach(game => {
-                const dateKey = new Date(game.date).toISOString().split('T')[0];
-                uniqueDays.add(dateKey);
-            });
-            return uniqueDays.size >= 7;
-        }
-    },
-    FLAWLESS_WEEK: {
-        id: 'flawless_week',
-        name: 'Settimana Perfetta',
-        description: 'Vinci tutte le partite in 7 giorni consecutivi',
-        icon: '💯',
-        rarity: 'legendary',
-        check: (stats) => {
-            if (!stats.gameHistory || stats.gameHistory.length < 7) return false;
+// Wordle achievements. The ids are the ones already saved in players' stats: never rename them.
+// check(stats, game): stats already include the game just finished; game = { won, attempts, mode, timeRemaining, date }.
+const quickWins = (s) => (s.guesses[1] || 0) + (s.guesses[2] || 0) + (s.guesses[3] || 0);
+const rate = (s) => (s.gamesPlayed ? (s.gamesWon / s.gamesPlayed) * 100 : 0);
+const lastWon = (s, n) => (s.gameHistory || []).length >= n && s.gameHistory.slice(-n).every((g) => g.won);
+const hour = (g) => new Date(g.date).getHours();
+const dayKey = (t) => new Date(t).toDateString();
+const timed = (g, test) => g && g.won && g.mode === 'timed' && g.timeRemaining != null && test(g.timeRemaining);
 
-            // Check if there are games in last 7 days and all are wins
-            const now = Date.now();
-            const sevenDaysAgo = now - (7 * 24 * 60 * 60 * 1000);
-            const recentGames = stats.gameHistory.filter(g => g.date >= sevenDaysAgo);
+// [id, icon, rarity, [name, description] in Italian, [name, description] in English, check]
+const LIST = [
+  ['first_win', 'party-popper', 'common', ['Prima vittoria', 'Vinci la prima partita'], ['First win', 'Win your first game'], (s) => s.gamesWon >= 1],
+  ['perfect', 'gem', 'legendary', ['Perfetto', 'Indovina al primo tentativo'], ['Perfect', 'Guess it on the first try'], (s, g) => g && g.won && g.attempts === 1],
+  ['streak_7', 'flame', 'rare', ['Sette di fila', '7 vittorie di fila'], ['Seven in a row', 'Win 7 games in a row'], (s) => s.currentStreak >= 7],
+  ['streak_30', 'trophy', 'legendary', ['Trenta di fila', '30 vittorie di fila'], ['Thirty in a row', 'Win 30 games in a row'], (s) => s.currentStreak >= 30],
+  ['speed', 'zap', 'rare', ['Velocissimo', 'Vinci a tempo con 20 secondi o più'], ['Lightning', 'Win a timed game with 20+ seconds left'], (s, g) => timed(g, (t) => t >= 20)],
+  ['clutch', 'snowflake', 'epic', ['Sangue freddo', 'Vinci a tempo con meno di 5 secondi'], ['Ice cold', 'Win a timed game with under 5 seconds left'], (s, g) => timed(g, (t) => t < 5)],
+  ['veteran', 'medal', 'rare', ['Veterano', 'Gioca 100 partite'], ['Veteran', 'Play 100 games'], (s) => s.gamesPlayed >= 100],
+  ['master', 'crown', 'epic', ['Maestro', 'Vinci 50 partite'], ['Master', 'Win 50 games'], (s) => s.gamesWon >= 50],
+  ['hard_win', 'dumbbell', 'rare', ['Difficoltà superata', 'Vinci una partita difficile'], ['Hard won', 'Win a hard game'], (s, g) => g && g.won && g.mode === 'hard'],
+  ['hard_master', 'swords', 'legendary', ['Maestro del difficile', 'Vinci 20 partite difficili'], ['Hard master', 'Win 20 hard games'], (s) => (s.hardModeWins || 0) >= 20],
+  ['efficient', 'target', 'epic', ['Efficiente', 'Vinci 15 volte in 3 tentativi o meno'], ['Efficient', 'Win 15 times in 3 tries or fewer'], (s) => quickWins(s) >= 15],
+  ['lucky', 'clover', 'common', ['Fortunato', "Vinci all'ultimo tentativo"], ['Lucky', 'Win on the last try'], (s, g) => g && g.won && g.attempts === 6],
+  ['comeback', 'undo-2', 'common', ['Ritorno', 'Vinci subito dopo una sconfitta'], ['Bounce back', 'Win right after a loss'], (s, g) => g && g.won && (s.gameHistory || []).length >= 2 && !s.gameHistory[s.gameHistory.length - 2].won],
+  ['consistent', 'trending-up', 'epic', ['Costante', "Almeno l'80% di vittorie su 20 partite"], ['Consistent', '80%+ wins over 20+ games'], (s) => s.gamesPlayed >= 20 && rate(s) >= 80],
+  ['night_owl', 'moon', 'common', ['Gufo notturno', 'Vinci tra le 23 e le 6'], ['Night owl', 'Win between 11 pm and 6 am'], (s, g) => g && g.won && (hour(g) >= 23 || hour(g) < 6)],
+  ['early_bird', 'sunrise', 'common', ['Mattiniero', 'Vinci tra le 5 e le 7'], ['Early bird', 'Win between 5 and 7 am'], (s, g) => g && g.won && hour(g) >= 5 && hour(g) < 7],
+  ['quick_learner', 'brain', 'rare', ['Ci prendo gusto', '3 vittorie di fila'], ['On a roll', 'Win 3 games in a row'], (s) => lastWon(s, 3)],
+  ['no_hints', 'lightbulb', 'epic', ['Intuizione pura', 'Vinci in 2 tentativi o meno'], ['Pure intuition', 'Win in 2 tries or fewer'], (s, g) => g && g.won && g.attempts <= 2],
+  ['timed_master', 'alarm-clock', 'rare', ['Maestro del tempo', 'Vinci 10 partite a tempo'], ['Time keeper', 'Win 10 timed games'], (s) => (s.timedModeWins || 0) >= 10],
+  ['triple_threat', 'layers', 'rare', ['Tripletta', 'Vinci una partita libera, una a tempo e una difficile'], ['Triple threat', 'Win a free, a timed and a hard game'], (s) => s.gamesWon - (s.hardModeWins || 0) - (s.timedModeWins || 0) > 0 && s.hardModeWins > 0 && s.timedModeWins > 0],
+  ['unstoppable', 'rocket', 'epic', ['Inarrestabile', '5 vittorie di fila'], ['Unstoppable', 'Win 5 games in a row'], (s) => lastWon(s, 5)],
+  ['collector', 'award', 'epic', ['Collezionista', 'Sblocca 10 traguardi'], ['Collector', 'Unlock 10 achievements'], (s) => (s.achievements || []).length >= 10],
+  ['dedication', 'calendar-days', 'rare', ['Dedizione', 'Gioca in 7 giorni diversi'], ['Dedication', 'Play on 7 different days'], (s) => new Set((s.gameHistory || []).map((g) => dayKey(g.date))).size >= 7],
+  ['flawless_week', 'sparkles', 'legendary', ['Settimana perfetta', 'Gioca e vinci tutto per 7 giorni di fila'], ['Flawless week', 'Play and win everything 7 days running'], (s) => {
+    const recent = (s.gameHistory || []).filter((g) => g.date >= Date.now() - 7 * 864e5);
+    return new Set(recent.map((g) => dayKey(g.date))).size >= 7 && recent.every((g) => g.won);
+  }],
+  ['speedrunner', 'gauge', 'rare', ['Speedrunner', 'Vinci a tempo con 25 secondi o più'], ['Speedrunner', 'Win a timed game with 25+ seconds left'], (s, g) => timed(g, (t) => t >= 25)],
+  ['close_call', 'hourglass', 'epic', ['Per un soffio', 'Vinci a tempo con meno di 3 secondi'], ['Close call', 'Win a timed game with under 3 seconds left'], (s, g) => timed(g, (t) => t < 3)],
+  ['comeback_kid', 'heart-pulse', 'rare', ['Rimonta', 'Vinci dopo 3 sconfitte di fila'], ['Comeback kid', 'Win after 3 losses in a row'], (s, g) => {
+    const h = s.gameHistory || [];
+    return g && g.won && h.length >= 4 && h.slice(-4, -1).every((x) => !x.won);
+  }],
+  ['overachiever', 'star', 'legendary', ['Superstar', 'Sblocca 15 traguardi'], ['Superstar', 'Unlock 15 achievements'], (s) => (s.achievements || []).length >= 15],
+  ['weekend_warrior', 'gamepad-2', 'common', ['Guerriero del weekend', 'Vinci di sabato o di domenica'], ['Weekend warrior', 'Win on a Saturday or Sunday'], (s, g) => g && g.won && [0, 6].includes(new Date(g.date).getDay())],
+  ['midweek_champion', 'sun', 'common', ['Gobba superata', 'Vinci di mercoledì'], ['Hump day', 'Win on a Wednesday'], (s, g) => g && g.won && new Date(g.date).getDay() === 3],
+  ['centurion', 'shield-check', 'legendary', ['Centurione', 'Vinci 100 partite'], ['Centurion', 'Win 100 games'], (s) => s.gamesWon >= 100],
+  ['grand_master', 'graduation-cap', 'legendary', ['Gran maestro', 'Almeno il 90% di vittorie su 30 partite'], ['Grand master', '90%+ wins over 30+ games'], (s) => s.gamesPlayed >= 30 && rate(s) >= 90],
+  ['sharp_mind', 'crosshair', 'rare', ['Mente acuta', 'Vinci 5 volte in 3 tentativi o meno'], ['Sharp mind', 'Win 5 times in 3 tries or fewer'], (s) => quickWins(s) >= 5],
+  ['persistence', 'footprints', 'rare', ['Perseveranza', 'Gioca 50 partite'], ['Persistence', 'Play 50 games'], (s) => s.gamesPlayed >= 50],
+  ['time_lord', 'timer', 'epic', ['Signore del tempo', 'Vinci 25 partite a tempo'], ['Time lord', 'Win 25 timed games'], (s) => (s.timedModeWins || 0) >= 25],
+  ['hard_legend', 'mountain', 'legendary', ['Leggenda del difficile', 'Vinci 50 partite difficili'], ['Hard legend', 'Win 50 hard games'], (s) => (s.hardModeWins || 0) >= 50],
+];
 
-            if (recentGames.length < 7) return false;
+export const ACHIEVEMENTS = LIST.map(([id, icon, rarity, it, en, check]) => ({ id, icon, rarity, it, en, check }));
 
-            // Check for games on each of the last 7 days
-            const gameDays = new Set();
-            recentGames.forEach(game => {
-                const dateKey = new Date(game.date).toISOString().split('T')[0];
-                gameDays.add(dateKey);
-            });
-
-            return gameDays.size >= 7 && recentGames.every(g => g.won);
-        }
-    },
-    SPEEDRUNNER: {
-        id: 'speedrunner',
-        name: 'Speedrunner',
-        description: 'Vinci in modalità Timed con 25+ secondi rimasti',
-        icon: '⚡',
-        rarity: 'rare',
-        check: (stats, gameData) => {
-            return gameData && gameData.mode === 'timed' && gameData.won && (gameData.timeRemaining >= 25);
-        }
-    },
-    CLOSE_CALL: {
-        id: 'close_call',
-        name: 'Per un Soffio',
-        description: 'Vinci in modalità Timed con meno di 3 secondi',
-        icon: '😰',
-        rarity: 'epic',
-        check: (stats, gameData) => {
-            return gameData && gameData.mode === 'timed' && gameData.won && gameData.timeRemaining < 3 && gameData.timeRemaining >= 0;
-        }
-    },
-    COMEBACK_KID: {
-        id: 'comeback_kid',
-        name: 'Rimonta',
-        description: 'Vinci dopo aver avuto una serie di 3+ sconfitte',
-        icon: '💪',
-        rarity: 'rare',
-        check: (stats, gameData) => {
-            if (!gameData || !gameData.won || !stats.gameHistory || stats.gameHistory.length < 4) return false;
-            const lastFour = stats.gameHistory.slice(-4);
-            return !lastFour[0].won && !lastFour[1].won && !lastFour[2].won && lastFour[3].won;
-        }
-    },
-    OVERACHIEVER: {
-        id: 'overachiever',
-        name: 'Superstar',
-        description: 'Sblocca 15 achievement',
-        icon: '⭐',
-        rarity: 'legendary',
-        check: (stats) => (stats.achievements || []).length >= 15
-    },
-    WEEKEND_WARRIOR: {
-        id: 'weekend_warrior',
-        name: 'Guerriero del Weekend',
-        description: 'Vinci una partita di sabato o domenica',
-        icon: '🎮',
-        rarity: 'common',
-        check: (stats, gameData) => {
-            if (!gameData || !gameData.won || !gameData.date) return false;
-            const day = new Date(gameData.date).getDay();
-            return day === 0 || day === 6; // Sunday or Saturday
-        }
-    },
-    MIDWEEK_CHAMPION: {
-        id: 'midweek_champion',
-        name: 'Campione Infrasettimanale',
-        description: 'Vinci una partita di mercoledì',
-        icon: '🐪',
-        rarity: 'common',
-        check: (stats, gameData) => {
-            if (!gameData || !gameData.won || !gameData.date) return false;
-            const day = new Date(gameData.date).getDay();
-            return day === 3; // Wednesday
-        }
-    },
-    CENTURION: {
-        id: 'centurion',
-        name: 'Centurione',
-        description: 'Vinci 100 partite totali',
-        icon: '💯',
-        rarity: 'legendary',
-        check: (stats) => stats.gamesWon >= 100
-    },
-    GRAND_MASTER: {
-        id: 'grand_master',
-        name: 'Gran Maestro',
-        description: 'Raggiungi il 90%+ di vittorie con 30+ partite',
-        icon: '👑',
-        rarity: 'legendary',
-        check: (stats) => {
-            if (stats.gamesPlayed < 30) return false;
-            const winRate = (stats.gamesWon / stats.gamesPlayed) * 100;
-            return winRate >= 90;
-        }
-    },
-    SHARP_MIND: {
-        id: 'sharp_mind',
-        name: 'Mente Acuta',
-        description: 'Vinci 5 volte con 3 tentativi o meno',
-        icon: '🎯',
-        rarity: 'rare',
-        check: (stats) => {
-            const quickWins = (stats.guesses[1] || 0) + (stats.guesses[2] || 0) + (stats.guesses[3] || 0);
-            return quickWins >= 5;
-        }
-    },
-    PERSISTENCE: {
-        id: 'persistence',
-        name: 'Perseveranza',
-        description: 'Gioca 50 partite totali',
-        icon: '🏃',
-        rarity: 'rare',
-        check: (stats) => stats.gamesPlayed >= 50
-    },
-    TIME_LORD: {
-        id: 'time_lord',
-        name: 'Signore del Tempo',
-        description: 'Vinci 25 partite in modalità Timed',
-        icon: '⏳',
-        rarity: 'epic',
-        check: (stats) => (stats.timedModeWins || 0) >= 25
-    },
-    HARD_MODE_LEGEND: {
-        id: 'hard_legend',
-        name: 'Leggenda Hard',
-        description: 'Vinci 50 partite in modalità Hard',
-        icon: '🔱',
-        rarity: 'legendary',
-        check: (stats) => (stats.hardModeWins || 0) >= 50
-    }
-};
-
-// Get all achievements as array
-export function getAllAchievements() {
-    return Object.values(ACHIEVEMENTS);
-}
-
-// Check which achievements should be unlocked based on current stats and game data
-export function checkAchievements(stats, gameData = null, currentAchievements = []) {
-    const newlyUnlocked = [];
-
-    for (const achievement of getAllAchievements()) {
-        // Skip if already unlocked
-        if (currentAchievements.includes(achievement.id)) continue;
-
-        // Check if condition is met
-        if (achievement.check(stats, gameData)) {
-            newlyUnlocked.push(achievement);
-        }
-    }
-
-    return newlyUnlocked;
-}
-
-// Get rarity color
-export function getRarityColor(rarity) {
-    const colors = {
-        common: '#9CA3AF',
-        rare: '#3B82F6',
-        epic: '#A855F7',
-        legendary: '#F59E0B'
-    };
-    return colors[rarity] || colors.common;
-}
+// achievements the player has just earned (and didn't have yet)
+export const earned = (stats, game, unlocked) => ACHIEVEMENTS.filter((a) => !unlocked.includes(a.id) && a.check(stats, game));

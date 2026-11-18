@@ -1,1489 +1,545 @@
-import { loginWithGoogle, logoutUser, onAuthChange, saveGameScore, getLeaderboard, getUserStats, saveUserStats, updateUserProfile } from './firebase.js?v=2';
-import { ACHIEVEMENTS, getAllAchievements, checkAchievements, getRarityColor } from './achievements.js';
+// Wordle Italiano: plain DOM, no libraries. Shared helpers in /games/shared/arcade.js, icons in icons.js.
+// Firebase (sign-in, cloud stats, ranking) is imported on demand: without it the game works the same.
+import { ACHIEVEMENTS, earned } from './achievements.js';
 
-// Version logging for cache debugging
-const VERSION = '2.7.0';
-const BUILD_DATE = '2026-02-03 00:42';
-console.log(`%c🎮 Wordle Enhanced v${VERSION}`, 'color: #10b981; font-size: 16px; font-weight: bold');
-console.log(`%c📅 Build: ${BUILD_DATE}`, 'color: #3b82f6; font-size: 12px');
-console.log(`%c✨ Features: Static Keyboard, 36 Achievements, Mobile UI Fixed, Advanced Stats`, 'color: #8b5cf6; font-size: 10px');
+const LEN = 5, TRIES = 6, TIMED = 30;
+const GUEST_KEY = 'wordle-it-stats'; // same key as before: guests keep their numbers
+const DAILY_KEY = 'wordle-it-daily';
+const MODE_KEY = 'wordle-it-mode';
+const HELP_KEY = 'wordle-it-help';
+const RARITY = { common: '#9aaba1', rare: COLOR.accent, epic: COLOR.lime, legendary: COLOR.ink };
+const TXT = IT ? {
+  short: 'Mancano lettere', unknown: 'Non è nel dizionario', timeUp: 'Tempo scaduto!',
+  hardPos: (l, p) => `La ${l} va in posizione ${p}`, hardUse: (l) => `Devi usare la ${l}`,
+  praise: ['Geniale!', 'Magnifico!', 'Impressionante!', 'Splendido!', 'Ottimo!', 'Per un pelo!'],
+  won: (n) => `Indovinata in ${n} ${n === 1 ? 'tentativo' : 'tentativi'}.`, lost: 'Questa volta no. Era questa.',
+  kicker: { daily: (n) => `Parola del giorno n. ${n}`, practice: 'Partita libera', timed: 'A tempo', hard: 'Difficile' },
+  note: { daily: (n) => `Parola n. ${n} · uguale per tutti`, practice: 'Una parola nuova a ogni partita', timed: '30 secondi dal primo tentativo', hard: 'Gli indizi trovati vanno riusati' },
+  next: (t) => `Prossima parola tra <b>${t}</b>`, playFree: 'Gioca libera', newWord: 'Nuova parola', done: 'La parola di oggi l\'hai già giocata',
+  stats: ['Giocate', 'Vinte %', 'Serie', 'Serie max'], copied: 'Copiato negli appunti', hi: (n) => `Ciao ${n}!`, bye: 'Sei uscito',
+  saved: 'Salvato', loginFail: 'Accesso non riuscito', resetAsk: 'Sicuro? Tocca di nuovo', resetDone: 'Statistiche azzerate',
+  resetLabel: 'Azzera le statistiche', unlocked: 'Traguardo sbloccato', awards: (a, b) => `${a} di ${b} sbloccati`,
+  rarity: { common: 'comune', rare: 'raro', epic: 'epico', legendary: 'leggendario' }, empty: 'Nessuno ancora. Potresti essere tu.',
+  offline: 'Classifica non raggiungibile: sei offline?', loading: 'Carico...', anon: 'Anonimo', ranked: 'In classifica!',
+  state: { correct: 'al posto giusto', present: 'in un altro posto', absent: 'assente' }, noSpark: 'Servono almeno due partite',
+} : {
+  short: 'Not enough letters', unknown: 'Not in the word list', timeUp: 'Time\'s up!',
+  hardPos: (l, p) => `${l} must be letter ${p}`, hardUse: (l) => `You must use ${l}`,
+  praise: ['Genius!', 'Magnificent!', 'Impressive!', 'Splendid!', 'Great!', 'Phew!'],
+  won: (n) => `Got it in ${n} ${n === 1 ? 'try' : 'tries'}.`, lost: 'Not this time. This was the word.',
+  kicker: { daily: (n) => `Daily word #${n}`, practice: 'Free game', timed: 'Timed', hard: 'Hard' },
+  note: { daily: (n) => `Word #${n} · the same for everyone`, practice: 'A new word every game', timed: '30 seconds from the first try', hard: 'Every clue you find must be used' },
+  next: (t) => `Next word in <b>${t}</b>`, playFree: 'Play free', newWord: 'New word', done: 'You\'ve already played today\'s word',
+  stats: ['Played', 'Win %', 'Streak', 'Best'], copied: 'Copied to the clipboard', hi: (n) => `Hi ${n}!`, bye: 'Signed out',
+  saved: 'Saved', loginFail: 'Sign-in didn\'t work', resetAsk: 'Sure? Tap again', resetDone: 'Stats reset',
+  resetLabel: 'Reset stats', unlocked: 'Achievement unlocked', awards: (a, b) => `${a} of ${b} unlocked`,
+  rarity: { common: 'common', rare: 'rare', epic: 'epic', legendary: 'legendary' }, empty: 'Nobody yet. Could be you.',
+  offline: 'The ranking can\'t be reached: are you offline?', loading: 'Loading...', anon: 'Anonymous', ranked: 'On the board!',
+  state: { correct: 'right spot', present: 'another spot', absent: 'not in the word' }, noSpark: 'Needs at least two games',
+};
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Game Elements
-    const board = document.getElementById('board');
-    const keyboardContainer = document.getElementById('keyboard-container');
-    const messageContainer = document.getElementById('message-container');
+setupPage();
+if (IT) document.querySelectorAll('[data-it-label]').forEach((el) => el.setAttribute('aria-label', el.dataset.itLabel));
+const stage = $('stage');
+const boardEl = $('board');
+const keyEls = {};
+document.querySelectorAll('[data-key]').forEach((b) => (keyEls[b.dataset.key] = b));
 
-    // Buttons
-    const helpBtn = document.getElementById('help-btn');
-    const statsBtn = document.getElementById('stats-btn');
-    const leaderboardBtn = document.getElementById('leaderboard-btn');
-    const achievementsBtn = document.getElementById('achievements-btn');
-    const loginBtn = document.getElementById('login-btn');
-    const userProfileEl = document.getElementById('user-profile');
-    const userAvatarEl = document.getElementById('user-avatar');
-    const logoutBtn = document.getElementById('logout-btn');
-    const playAgainBtn = document.getElementById('play-again-btn');
-    const saveProfileBtn = document.getElementById('save-profile-btn');
+/* ---------- state ---------- */
+let words = [], wordSet = new Set();
+let mode = ['daily', 'practice', 'timed', 'hard'].includes(store.get(MODE_KEY)) ? store.get(MODE_KEY) : 'daily';
+let target = '', rows = [], results = [], current = '', over = false, busy = false;
+let clock = null, deadline = 0, timeLeft = TIMED, timeUp = false;
+let stats = blankStats();
+let user = null, fb = null, fbLoading = null, greet = false;
 
-    // Modals
-    const helpModal = document.getElementById('modal');
-    const statsModal = document.getElementById('stats-modal');
-    const leaderboardModal = document.getElementById('leaderboard-modal');
-    const profileModal = document.getElementById('profile-modal');
-    const achievementsModal = document.getElementById('achievements-modal');
-    const resetConfirmModal = document.getElementById('reset-confirm-modal');
-    const closeBtns = document.querySelectorAll('.close-btn');
+function blankStats() {
+  return { gamesPlayed: 0, gamesWon: 0, currentStreak: 0, maxStreak: 0, guesses: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, fail: 0 }, hardModeWins: 0, timedModeWins: 0, achievements: [], gameHistory: [] };
+}
+function normalize(s) {
+  const b = blankStats();
+  if (!s || typeof s !== 'object') return b;
+  return { ...b, ...s, guesses: { ...b.guesses, ...(s.guesses || {}) }, achievements: Array.isArray(s.achievements) ? s.achievements : [], gameHistory: Array.isArray(s.gameHistory) ? s.gameHistory : [] };
+}
+function readJSON(key) { try { return JSON.parse(store.get(key)); } catch { return null; } }
+const statsKey = () => (user ? `${GUEST_KEY}-${user.uid}` : GUEST_KEY);
+function saveStats() {
+  store.set(statsKey(), JSON.stringify(stats));
+  if (user && fb) fb.saveStats(user, stats).catch(() => {});
+}
+stats = normalize(readJSON(GUEST_KEY));
 
-    // Profile Modal Elements
-    const pModalAvatar = document.getElementById('profile-modal-avatar');
-    const pModalEmail = document.getElementById('profile-modal-email');
-    const pEditName = document.getElementById('edit-display-name');
-    const pEditPhoto = document.getElementById('edit-photo-url');
+/* ---------- sound ---------- */
+const sfx = {
+  key: () => tone(620 + Math.random() * 60, 0.03, 'triangle', 0.02),
+  flip: (s, i) => (s === 'correct' ? tone(NOTES[4 + i] || 1318, 0.12, 'triangle', 0.05) : s === 'present' ? tone(NOTES[2 + i], 0.1, 'triangle', 0.04) : tone(200, 0.07, 'sine', 0.03)),
+  bad: () => tone(150, 0.16, 'square', 0.03, 110),
+  win: () => [0, 2, 4, 7, 8].forEach((j, i) => tone(NOTES[j], 0.22, 'triangle', 0.06, 0, i * 0.08)),
+  lose: () => [392, 330, 262].forEach((f, i) => tone(f, 0.3, 'triangle', 0.06, 0, i * 0.16)),
+  unlock: () => { tone(1046, 0.12, 'sine', 0.05); tone(1568, 0.2, 'sine', 0.05, 0, 0.1); },
+};
 
-    const pTotalGames = document.getElementById('profile-total-games');
-    const pTotalWins = document.getElementById('profile-total-wins');
+/* ---------- daily word ---------- */
+function dayNo() { // days since 1 Jan 2026, by the player's calendar
+  const d = new Date();
+  return Math.round((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(2026, 0, 1)) / 864e5) + 1;
+}
+const dailyWord = (n) => words[(n * 7919 + 4111) % words.length]; // 7919 is prime: no repeats for 8000+ days
+function untilMidnight() {
+  const now = new Date(), end = new Date(now); end.setHours(24, 0, 0, 0);
+  const s = Math.max(0, Math.floor((end - now) / 1000));
+  return [s / 3600, (s / 60) % 60, s % 60].map((v) => String(Math.floor(v)).padStart(2, '0')).join(':');
+}
+function saveDaily() { store.set(DAILY_KEY, JSON.stringify({ day: dayNo(), rows, over })); }
 
-    // Game State
-    let gameMode = 'practice'; // 'practice', 'timed', or 'hard'
-    let dailyPlayed = false;
+/* ---------- scoring ---------- */
+function score(guess, word) {
+  const res = Array(LEN).fill('absent'), left = {};
+  for (let i = 0; i < LEN; i++) {
+    if (guess[i] === word[i]) res[i] = 'correct';
+    else left[word[i]] = (left[word[i]] || 0) + 1;
+  }
+  for (let i = 0; i < LEN; i++) {
+    if (res[i] !== 'correct' && left[guess[i]]) { res[i] = 'present'; left[guess[i]]--; }
+  }
+  return res;
+}
+function hardCheck(g) { // every clue found so far must be reused
+  for (let r = 0; r < rows.length; r++) {
+    for (let i = 0; i < LEN; i++) if (results[r][i] === 'correct' && g[i] !== rows[r][i]) return TXT.hardPos(rows[r][i].toUpperCase(), i + 1);
+    for (let i = 0; i < LEN; i++) if (results[r][i] === 'present' && !g.includes(rows[r][i])) return TXT.hardUse(rows[r][i].toUpperCase());
+  }
+  return '';
+}
 
-    // Timer State (for timed mode)
-    let timerActive = false;
-    let timeRemaining = 30;
-    let timerInterval = null;
-    let guessStartTime = null;
-
-    // Hard Mode State
-    let hardModeConstraints = {
-        correctLetters: {}, // {position: letter}
-        presentLetters: new Set() // letters that must be included
-    };
-
-    // Achievements State
-    let unlockedAchievements = [];
-
-    // Game Constants & State
-    let WORD_LENGTH = 5;
-    const MAX_GUESSES = 6;
-    let dictionary = [];
-    let targetWord = "";
-
-    let currentGuess = "";
-    let guesses = []; // Array of strings
-    let isGameOver = false;
-    let isAnimating = false;
-    let currentUser = null;
-
-    // Statistics State
-    let stats = {
-        gamesPlayed: 0,
-        gamesWon: 0,
-        currentStreak: 0,
-        maxStreak: 0,
-        guesses: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, fail: 0 },
-        hardModeWins: 0,
-        timedModeWins: 0,
-        achievements: [],
-        gameHistory: [] // Array of {date, won, attempts, mode, timeUsed, timeRemaining}
-    };
-
-    // Initialize
-    loadStats();
-    loadAchievements();
-    setupAuthListeners();
-    setupModeSelector();
-    setupStatsTabs();
-    setupLeaderboardFilters();
-    loadDictionary();
-
-    function setupAuthListeners() {
-        onAuthChange(async (user) => {
-            currentUser = user;
-            if (user) {
-                // User Logged In
-                loginBtn.classList.add('hidden');
-                userProfileEl.classList.remove('hidden');
-                if (user.photoURL) userAvatarEl.src = user.photoURL;
-                else userAvatarEl.src = 'user.png';
-                showMessage(`Benvenuto, ${user.displayName ? user.displayName.split(' ')[0] : 'Utente'}!`);
-
-                // LOAD CLOUD STATS
-                // Reset stats locally first to avoid leaking previous user data
-                resetStats();
-
-                const cloudStats = await getUserStats(user);
-                if (cloudStats) {
-                    stats = cloudStats;
-                    saveStats(); // Update local storage with user's cloud stats
-                    console.log("Stats synced from cloud");
-                } else {
-                    console.log("New user or no cloud stats. Starting fresh.");
-                }
-
-            } else {
-                // User Logged Out
-                loginBtn.classList.remove('hidden');
-                userProfileEl.classList.add('hidden');
-                userAvatarEl.src = "user.png";
-                profileModal.classList.add('hidden'); // Close if open
-
-                // Reset to anonymous/empty stats on logout
-                resetStats();
-                localStorage.removeItem('wordle-it-stats'); // Clear local storage to prevent persistence
-                showMessage("Logout effettuato");
-            }
-        });
-
-        loginBtn.addEventListener('click', async () => {
-            try {
-                await loginWithGoogle();
-            } catch (error) {
-                console.error("Login failed", error);
-                showMessage("Login fallito");
-            }
-        });
-
-        userProfileEl.addEventListener('click', () => {
-            updateProfileModal();
-            profileModal.classList.remove('hidden');
-        });
-
-        logoutBtn.addEventListener('click', async () => {
-            try {
-                await logoutUser();
-                // UI updates handled by onAuthChange
-            } catch (error) {
-                console.error("Logout failed", error);
-            }
-        });
-
-        if (saveProfileBtn) {
-            saveProfileBtn.addEventListener('click', async () => {
-                if (!currentUser) return;
-                const newName = pEditName.value.trim();
-                const newPhoto = pEditPhoto.value.trim();
-
-                if (!newName) {
-                    showMessage("Nome richiesto");
-                    return;
-                }
-
-                try {
-                    await updateUserProfile(currentUser, {
-                        displayName: newName,
-                        photoURL: newPhoto
-                    });
-                    showMessage("Profilo aggiornato!");
-
-                    // Force UI update
-                    if (newPhoto) userAvatarEl.src = newPhoto;
-                    else userAvatarEl.src = 'user.png';
-
-                    pModalAvatar.src = newPhoto || 'user.png';
-
-                    profileModal.classList.add('hidden');
-                } catch (err) {
-                    console.error("Update failed", err);
-                    showMessage("Errore aggiornamento");
-                }
-            });
-        }
+/* ---------- board ---------- */
+const tile = (r, i) => boardEl.children[r].children[i];
+function buildBoard() {
+  boardEl.innerHTML = '';
+  for (let r = 0; r < TRIES; r++) {
+    const row = document.createElement('div');
+    row.className = 'row'; row.setAttribute('role', 'row');
+    for (let i = 0; i < LEN; i++) {
+      const t = document.createElement('div');
+      t.className = 'tile'; t.setAttribute('role', 'gridcell');
+      row.appendChild(t);
     }
-
-    function updateProfileModal() {
-        if (!currentUser) return;
-        pModalAvatar.src = currentUser.photoURL || 'user.png';
-        pModalEmail.textContent = currentUser.email;
-        pEditName.value = currentUser.displayName || "";
-        pEditPhoto.value = currentUser.photoURL || "";
-
-        pTotalGames.textContent = stats.gamesPlayed;
-        pTotalWins.textContent = stats.gamesWon;
+    boardEl.appendChild(row);
+  }
+  for (const b of Object.values(keyEls)) b.classList.remove('correct', 'present', 'absent');
+}
+function drawCurrent() {
+  const r = rows.length;
+  if (r >= TRIES) return;
+  for (let i = 0; i < LEN; i++) {
+    const t = tile(r, i), ch = current[i] || '';
+    if (t.textContent === ch) continue;
+    t.textContent = ch;
+    if (ch) replay(t, 'filled'); else t.classList.remove('filled');
+  }
+}
+function paintKey(ch, s) {
+  const k = keyEls[ch];
+  if (!k || k.classList.contains('correct') || (s === 'absent' && k.classList.contains('present'))) return;
+  k.classList.remove('present', 'absent');
+  k.classList.add(s);
+}
+function setTile(t, ch, s) {
+  t.textContent = ch;
+  t.classList.remove('filled');
+  t.classList.add(s);
+  t.setAttribute('aria-label', `${ch.toUpperCase()}, ${TXT.state[s]}`);
+}
+function reveal(r, guess, res, animate) {
+  if (!animate || calm) {
+    for (let i = 0; i < LEN; i++) { setTile(tile(r, i), guess[i], res[i]); paintKey(guess[i], res[i]); }
+    return Promise.resolve();
+  }
+  return new Promise((done) => {
+    for (let i = 0; i < LEN; i++) {
+      setTimeout(() => {
+        const t = tile(r, i);
+        t.classList.add('flip');
+        setTimeout(() => { setTile(t, guess[i], res[i]); paintKey(guess[i], res[i]); sfx.flip(res[i], i); }, 250); // turn it at the edge
+      }, i * 260);
     }
+    setTimeout(done, LEN * 260 + 300);
+  });
+}
+function nope(msg) {
+  toast(msg); sfx.bad();
+  replay(boardEl.children[rows.length], 'shake');
+}
 
-    function loadDictionary() {
-        fetch('parole.txt')
-            .then(response => response.text())
-            .then(text => {
-                dictionary = text.split('\n')
-                    .map(w => w.trim().toLowerCase())
-                    .filter(w => w.length === WORD_LENGTH);
+/* ---------- toasts ---------- */
+function toast(msg, ms = 1400) {
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  $('toasts').appendChild(t);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 300); }, ms);
+}
+let unlockQueue = Promise.resolve();
+function announce(a) { // achievements unlocked, one after the other
+  unlockQueue = unlockQueue.then(() => new Promise((next) => {
+    const el = document.createElement('div');
+    el.innerHTML = `<span class="ic">${svgIcon(a.icon)}</span><span><small>${TXT.unlocked}</small><b></b></span>`;
+    el.querySelector('b').textContent = (IT ? a.it : a.en)[0];
+    $('unlock').appendChild(el); sfx.unlock();
+    setTimeout(() => { el.classList.add('out'); setTimeout(() => { el.remove(); next(); }, 400); }, 2600);
+  }));
+}
 
-                if (dictionary.length === 0) {
-                    dictionary = ["palla", "gatto", "fiore", "piano", "treno"];
-                }
-                initGame();
-            })
-            .catch(err => {
-                console.error("Error loading words:", err);
-                dictionary = ["palla", "gatto", "fiore", "piano", "treno"];
-                initGame();
-            });
+/* ---------- confetti, on the kit's canvas ---------- */
+const cvs = $('game'), ctx = cvs.getContext('2d');
+let W = 0, H = 0, bits = [], confettiOn = false;
+new ResizeObserver(() => ({ w: W, h: H } = fitCanvas(cvs, ctx))).observe(stage);
+function confetti() {
+  const r = boardEl.getBoundingClientRect(), s = stage.getBoundingClientRect();
+  const x = r.left - s.left + r.width / 2, y = r.top - s.top + r.height * 0.4;
+  const colors = [COLOR.accent, COLOR.lime, COLOR.ink, '#12a150'];
+  for (let i = 0; i < (calm ? 40 : 160); i++) {
+    const a = -Math.PI / 2 + (Math.random() - 0.5) * 2.2, v = 300 + Math.random() * 650;
+    bits.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, r: Math.random() * 6, vr: (Math.random() - 0.5) * 14, w: 5 + Math.random() * 6, h: 8 + Math.random() * 8, c: colors[i % 4], life: 2.4 + Math.random() });
+  }
+  if (!confettiOn) { confettiOn = true; let last = performance.now(); requestAnimationFrame(function step(t) {
+    const dt = Math.min(0.05, (t - last) / 1000); last = t;
+    ctx.clearRect(0, 0, W, H);
+    bits = bits.filter((b) => (b.life -= dt) > 0 && b.y < H + 40);
+    for (const b of bits) {
+      b.vy += 900 * dt; b.vx *= 1 - 1.2 * dt; b.vy *= 1 - 0.8 * dt; b.x += b.vx * dt; b.y += b.vy * dt; b.r += b.vr * dt;
+      ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.r); ctx.scale(1, Math.cos(b.r * 2)); // flutter
+      ctx.globalAlpha = Math.min(1, b.life); ctx.fillStyle = b.c; ctx.fillRect(-b.w / 2, -b.h / 2, b.w, b.h);
+      ctx.restore();
     }
-
-    function resetStats() {
-        stats = {
-            gamesPlayed: 0,
-            gamesWon: 0,
-            currentStreak: 0,
-            maxStreak: 0,
-            guesses: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, fail: 0 }
-        };
-    }
-
-    function initGame() {
-        targetWord = dictionary[Math.floor(Math.random() * dictionary.length)];
-        console.log("Target:", targetWord); // For debugging
-        resetHardModeConstraints();
-        createBoard();
-        setupKeyboard();
-        setupInput();
-    }
-
-    function resetGame() {
-        currentGuess = "";
-        guesses = [];
-        isGameOver = false;
-        isAnimating = false;
-
-        // Stop timer if running
-        stopTimer();
-
-        // Reset hard mode constraints
-        resetHardModeConstraints();
-
-        // Clear Board
-        board.innerHTML = '';
-        createBoard();
-
-        // Reset Keyboard Colors
-        const keys = document.querySelectorAll('.keyboard-row button');
-        keys.forEach(key => {
-            key.removeAttribute('data-state');
-        });
-
-        // Hide Stats Modal
-        statsModal.classList.add('hidden');
-
-        // New Word
-        targetWord = dictionary[Math.floor(Math.random() * dictionary.length)];
-        console.log("New Target:", targetWord);
-    }
-
-    // --- Mode System ---
-
-    function setupModeSelector() {
-        const modeButtons = document.querySelectorAll('.mode-btn');
-        modeButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const selectedMode = btn.getAttribute('data-mode');
-                switchMode(selectedMode);
-            });
-        });
-    }
-
-    function switchMode(newMode) {
-        if (isGameOver || isAnimating) {
-            showMessage("Finisci la partita corrente prima");
-            return;
-        }
-
-        gameMode = newMode;
-
-        // Update UI
-        document.querySelectorAll('.mode-btn').forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.getAttribute('data-mode') === newMode) {
-                btn.classList.add('active');
-            }
-        });
-
-        // Show/hide mode-specific UI
-        const timerContainer = document.getElementById('timer-container');
-        const hardModeIndicator = document.getElementById('hard-mode-indicator');
-
-        if (newMode === 'timed') {
-            timerContainer.classList.remove('hidden');
-            hardModeIndicator.classList.add('hidden');
-        } else if (newMode === 'hard') {
-            timerContainer.classList.add('hidden');
-            hardModeIndicator.classList.remove('hidden');
-        } else {
-            timerContainer.classList.add('hidden');
-            hardModeIndicator.classList.add('hidden');
-        }
-
-        // Reset game for new mode
-        resetGame();
-    }
-
-    // --- Timer Functions ---
-
-    function startTimer() {
-        timeRemaining = 30;
-        guessStartTime = Date.now();
-        timerActive = true;
-        updateTimerUI();
-
-        if (timerInterval) clearInterval(timerInterval);
-
-        timerInterval = setInterval(() => {
-            timeRemaining--;
-            updateTimerUI();
-
-            if (timeRemaining <= 0) {
-                stopTimer();
-                handleTimerExpired();
-            }
-        }, 1000);
-    }
-
-    function stopTimer() {
-        timerActive = false;
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
-    }
-
-    function updateTimerUI() {
-        const timerDisplay = document.getElementById('timer-display');
-        const timerProgress = document.getElementById('timer-progress');
-        const timerContainer = document.getElementById('timer-container');
-
-        if (!timerDisplay || !timerProgress) return;
-
-        timerDisplay.textContent = timeRemaining;
-        const percentage = (timeRemaining / 30) * 100;
-        timerProgress.style.width = `${percentage}%`;
-
-        // Add warning class if < 10s
-        if (timeRemaining < 10) {
-            timerContainer.classList.add('warning');
-        } else {
-            timerContainer.classList.remove('warning');
-        }
-    }
-
-    function handleTimerExpired() {
-        showMessage("Tempo scaduto!", 2000);
-        // Auto-submit current guess if valid, otherwise lose the guess
-        if (currentGuess.length === WORD_LENGTH && dictionary.includes(currentGuess)) {
-            submitGuess();
-        } else {
-            // Move to next row
-            if (guesses.length < MAX_GUESSES) {
-                guesses.push(""); // Empty guess
-                updateStats(false, 0);
-                isGameOver = true;
-                showMessage(`La parola era: ${targetWord.toUpperCase()}`, -1);
-                setTimeout(() => showStatsModal(false), 1500);
-            }
-        }
-    }
-
-    // --- Hard Mode Functions ---
-
-    function resetHardModeConstraints() {
-        hardModeConstraints = {
-            correctLetters: {},
-            presentLetters: new Set()
-        };
-    }
-
-    function updateHardModeConstraints(guess, result) {
-        for (let i = 0; i < guess.length; i++) {
-            if (result[i] === 'correct') {
-                hardModeConstraints.correctLetters[i] = guess[i];
-            } else if (result[i] === 'present') {
-                hardModeConstraints.presentLetters.add(guess[i]);
-            }
-        }
-    }
-
-    function validateHardModeGuess(guess) {
-        // Check if all correct letters are used in correct positions
-        for (const [pos, letter] of Object.entries(hardModeConstraints.correctLetters)) {
-            if (guess[pos] !== letter) {
-                return {
-                    valid: false,
-                    message: `La lettera ${letter.toUpperCase()} deve essere in posizione ${parseInt(pos) + 1}`
-                };
-            }
-        }
-
-        // Check if all present letters are included
-        for (const letter of hardModeConstraints.presentLetters) {
-            if (!guess.includes(letter)) {
-                return {
-                    valid: false,
-                    message: `Devi usare la lettera ${letter.toUpperCase()}`
-                };
-            }
-        }
-
-        return { valid: true };
-    }
-
-    // --- Achievements Functions ---
-
-    function loadAchievements() {
-        unlockedAchievements = stats.achievements || [];
-        renderAchievementsGrid();
-    }
-
-    function checkAndUnlockAchievements(gameData = null) {
-        const newlyUnlocked = checkAchievements(stats, gameData, unlockedAchievements);
-
-        for (const achievement of newlyUnlocked) {
-            unlockAchievement(achievement);
-        }
-    }
-
-    function unlockAchievement(achievement) {
-        if (unlockedAchievements.includes(achievement.id)) return;
-
-        unlockedAchievements.push(achievement.id);
-        stats.achievements = unlockedAchievements;
-        saveStats();
-
-        showAchievementNotification(achievement);
-        renderAchievementsGrid();
-    }
-
-    function showAchievementNotification(achievement) {
-        const notification = document.getElementById('achievement-notification');
-        const icon = document.getElementById('achievement-notif-icon');
-        const name = document.getElementById('achievement-notif-name');
-        const desc = document.getElementById('achievement-notif-desc');
-
-        // Check if all elements exist
-        if (!notification || !icon || !name || !desc) {
-            console.warn('Achievement notification elements not found');
-            return;
-        }
-
-        icon.textContent = achievement.icon;
-        name.textContent = achievement.name;
-        desc.textContent = achievement.description;
-
-        notification.classList.remove('hidden');
-
-        setTimeout(() => {
-            notification.classList.add('hidden');
-        }, 4000);
-    }
-
-    function renderAchievementsGrid() {
-        const grid = document.getElementById('achievements-grid');
-        const unlockedCount = document.getElementById('unlocked-count');
-        const totalCount = document.getElementById('total-count');
-
-        if (!grid) return;
-
-        grid.innerHTML = '';
-        const allAchievements = getAllAchievements();
-
-        for (const achievement of allAchievements) {
-            const isUnlocked = unlockedAchievements.includes(achievement.id);
-            const badge = document.createElement('div');
-            badge.className = `achievement-badge ${isUnlocked ? 'unlocked' : 'locked'}`;
-
-            const rarityColor = getRarityColor(achievement.rarity);
-
-            badge.innerHTML = `
-                <div class="icon">${achievement.icon}</div>
-                <div class="name">${achievement.name}</div>
-                <div class="desc">${achievement.description}</div>
-                <div class="rarity" style="color: ${rarityColor}">${achievement.rarity}</div>
-            `;
-
-            grid.appendChild(badge);
-        }
-
-        if (unlockedCount && totalCount) {
-            unlockedCount.textContent = unlockedAchievements.length;
-            totalCount.textContent = allAchievements.length;
-        }
-    }
-
-    // --- Chart & Heatmap Functions ---
-
-    let progressChart = null;
-    let winrateChart = null;
-
-    function initCharts() {
-        if (typeof Chart === 'undefined') {
-            console.warn('Chart.js not loaded');
-            return;
-        }
-
-        renderProgressChart();
-        renderWinRateChart();
-        renderHeatmap();
-    }
-
-    function renderProgressChart() {
-        const canvas = document.getElementById('progress-chart');
-        if (!canvas) return;
-
-        const ctx = canvas.getContext('2d');
-
-        // Prepare data from game history
-        const history = (stats.gameHistory || []).slice(-30); // Last 30 games
-        const labels = history.map((g, i) => `#${i + 1}`);
-        const attempts = history.map(g => g.won ? g.attempts : 7); // 7 for failed
-
-        if (progressChart) progressChart.destroy();
-
-        progressChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Tentativi',
-                    data: attempts,
-                    borderColor: 'rgb(16, 185, 129)',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    tension: 0.3,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: (context) => context.parsed.y === 7 ? 'Fallito' : `${context.parsed.y} tentativi`
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 7,
-                        ticks: { color: 'rgba(255, 255, 255, 0.7)' },
-                        grid: { color: 'rgba(255,255, 255, 0.1)' }
-                    },
-                    x: {
-                        ticks: { color: 'rgba(255, 255, 255, 0.7)' },
-                        grid: { display: false }
-                    }
-                }
-            }
-        });
-    }
-
-    function renderWinRateChart() {
-        const canvas = document.getElementById('winrate-chart');
-        if (!canvas) return;
-
-        const ctx = canvas.getContext('2d');
-
-        // Calculate win rate per attempt number
-        const guessData = stats.guesses;
-        const data = [
-            guessData[1] || 0,
-            guessData[2] || 0,
-            guessData[3] || 0,
-            guessData[4] || 0,
-            guessData[5] || 0,
-            guessData[6] || 0
-        ];
-
-        if (winrateChart) winrateChart.destroy();
-
-        winrateChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['1', '2', '3', '4', '5', '6'],
-                datasets: [{
-                    label: 'Vittorie',
-                    data: data,
-                    backgroundColor: 'rgba(16, 185, 129, 0.7)',
-                    borderColor: 'rgb(16, 185, 129)',
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            color: 'rgba(255, 255, 255, 0.7)',
-                            stepSize: 1
-                        },
-                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                    },
-                    x: {
-                        ticks: { color: 'rgba(255, 255, 255, 0.7)' },
-                        grid: { display: false }
-                    }
-                }
-            }
-        });
-    }
-
-    function renderHeatmap() {
-        const container = document.getElementById('heatmap-container');
-        if (!container) return;
-
-        container.innerHTML = '';
-
-        const history = stats.gameHistory || [];
-
-        // Create a map of dates to game counts
-        const activityMap = {};
-        for (const game of history) {
-            const dateKey = new Date(game.date).toISOString().split('T')[0];
-            activityMap[dateKey] = (activityMap[dateKey] || 0) + 1;
-        }
-
-        // Generate last 12 weeks (84 days)
-        const today = new Date();
-        const weeks = [];
-
-        for (let w = 11; w >= 0; w--) {
-            const week = [];
-            for (let d = 0; d < 7; d++) {
-                const date = new Date(today);
-                date.setDate(date.getDate() - (w * 7 + (6 - d)));
-                const dateKey = date.toISOString().split('T')[0];
-                const count = activityMap[dateKey] || 0;
-
-                // Determine level (0-4)
-                let level = 0;
-                if (count === 1) level = 1;
-                else if (count === 2) level = 2;
-                else if (count === 3) level = 3;
-                else if (count >= 4) level = 4;
-
-                week.push({ date: dateKey, level, count });
-            }
-            weeks.push(week);
-        }
-
-        // Render weeks
-        for (const week of weeks) {
-            const weekRow = document.createElement('div');
-            weekRow.className = 'heatmap-row';
-
-            for (const day of week) {
-                const cell = document.createElement('div');
-                cell.className = 'heatmap-cell';
-                cell.setAttribute('data-level', day.level);
-                cell.title = `${day.date}: ${day.count} partite`;
-                weekRow.appendChild(cell);
-            }
-
-            container.appendChild(weekRow);
-        }
-    }
-
-    // --- Stats Tab Switching ---
-
-    function setupStatsTabs() {
-        const tabs = document.querySelectorAll('#stats-tabs .nav-link');
-        tabs.forEach(tab => {
-            tab.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetTab = tab.getAttribute('data-tab');
-                switchStatsTab(targetTab);
-            });
-        });
-    }
-
-    function switchStatsTab(tabName) {
-        // Update tab buttons
-        document.querySelectorAll('#stats-tabs .nav-link').forEach(tab => {
-            tab.classList.remove('active');
-            if (tab.getAttribute('data-tab') === tabName) {
-                tab.classList.add('active');
-            }
-        });
-
-        // Show/hide tab content
-        document.querySelectorAll('.tab-content-stats').forEach(content => {
-            content.classList.add('hidden');
-        });
-
-        const targetContent = document.getElementById(`tab-${tabName}`);
-        if (targetContent) {
-            targetContent.classList.remove('hidden');
-
-            // Render charts if switching to graphs or heatmap
-            if (tabName === 'graphs') {
-                setTimeout(() => initCharts(), 100);
-            } else if (tabName === 'heatmap') {
-                setTimeout(() => renderHeatmap(), 100);
-            }
-        }
-    }
-
-    // --- Leaderboard Filters ---
-
-    let currentLeaderboardPeriod = 'daily';
-
-    function setupLeaderboardFilters() {
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const period = btn.getAttribute('data-period');
-                switchLeaderboardFilter(period);
-            });
-        });
-    }
-
-    async function switchLeaderboardFilter(period) {
-        currentLeaderboardPeriod = period;
-
-        // Update button states
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.getAttribute('data-period') === period) {
-                btn.classList.add('active');
-            }
-        });
-
-        // Reload leaderboard with filter
-        await loadLeaderboardWithFilter(period);
-    }
-
-    async function loadLeaderboardWithFilter(period) {
-        const listEl = document.getElementById('leaderboard-list');
-        listEl.innerHTML = `
-            <div class="d-flex justify-content-center p-3">
-                <div class="spinner-border text-success" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>`;
-
-        try {
-            // This would need enhanced Firebase query - for now use existing
-            const scores = await getLeaderboard();
-
-            // Filter by period (client-side for now)
-            const now = new Date();
-            let filteredScores = scores;
-
-            if (period === 'daily') {
-                const today = now.toISOString().split('T')[0];
-                filteredScores = scores.filter(s => {
-                    const scoreDate = new Date(s.timestamp.seconds * 1000).toISOString().split('T')[0];
-                    return scoreDate === today;
-                });
-            } else if (period === 'weekly') {
-                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-                filteredScores = scores.filter(s => {
-                    const scoreDate = new Date(s.timestamp.seconds * 1000);
-                    return scoreDate >= weekAgo;
-                });
-            } else if (period === 'monthly') {
-                const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-                filteredScores = scores.filter(s => {
-                    const scoreDate = new Date(s.timestamp.seconds * 1000);
-                    return scoreDate >= monthAgo;
-                });
-            }
-
-            listEl.innerHTML = '';
-
-            if (filteredScores.length === 0) {
-                listEl.innerHTML = '<p class="text-center p-3 opacity-75">Nessuna partita in questo periodo.</p>';
-                return;
-            }
-
-            filteredScores.forEach((s, index) => {
-                const item = document.createElement('div');
-                item.className = 'd-flex align-items-center p-2 border-bottom border-secondary bg-black bg-opacity-10 mb-1 rounded';
-                item.innerHTML = `
-                    <div class="fw-bold text-gradient me-3" style="width: 25px;">#${index + 1}</div>
-                    <img src="${s.photoURL || 'user.png'}" class="rounded-circle me-3" width="32" height="32">
-                    <div class="flex-grow-1">
-                        <div class="fw-bold">${s.displayName || 'Anonimo'}</div>
-                        <div class="small opacity-50">${new Date(s.timestamp.seconds * 1000).toLocaleDateString()}</div>
-                    </div>
-                    <div class="fw-bold text-success">${s.attempts} tentativi</div>
-                `;
-                listEl.appendChild(item);
-            });
-
-        } catch (error) {
-            console.error("Failed to load leaderboard", error);
-            listEl.innerHTML = '<p class="text-center text-danger p-3">Errore nel caricamento.</p>';
-        }
-    }
-
-    // --- UI Creation ---
-
-    function createBoard() {
-        board.innerHTML = '';
-        for (let i = 0; i < MAX_GUESSES; i++) {
-            const row = document.createElement('div');
-            row.classList.add('game-row');
-            for (let j = 0; j < WORD_LENGTH; j++) {
-                const tile = document.createElement('div');
-                tile.classList.add('tile');
-                tile.id = `tile-${i}-${j}`;
-                row.appendChild(tile);
-            }
-            board.appendChild(row);
-        }
-    }
-
-    function setupKeyboard() {
-        // Keyboard clicks handled via delegation in setupInput
-        const keys = document.querySelectorAll('.keyboard-row button');
-        keys.forEach(key => {
-            key.replaceWith(key.cloneNode(true));
-        });
-
-        const newKeys = document.querySelectorAll('.keyboard-row button');
-        newKeys.forEach(key => {
-            key.addEventListener('click', (e) => {
-                let letter = e.currentTarget.getAttribute('data-key');
-
-                // Convert data-key values to match handleInput expectations
-                if (letter === 'ENTER') letter = 'Enter';
-                else if (letter === 'BACKSPACE') letter = 'Backspace';
-
-                handleInput(letter);
-            });
-        });
-    }
-
-    function setupInput() {
-        // Clean up old listener if exists (not easily done without ref ref, but standard addEventListener on doc is ok since we don't re-run setupInput on resetGame except once)
-        // To be safe against multiple inits, we could rely on a flag, but initGame is called once. resetGame doesn't call setupInput.
-
-        document.addEventListener('keydown', (e) => {
-            if (isGameOver || isAnimating) return;
-            // If any modal is open, ignore input
-            if (!helpModal.classList.contains('hidden') ||
-                !statsModal.classList.contains('hidden') ||
-                !leaderboardModal.classList.contains('hidden') ||
-                !profileModal.classList.contains('hidden')) return;
-
-            const key = e.key;
-
-            if (key === 'Enter') {
-                handleInput('Enter');
-            } else if (key === 'Backspace') {
-                handleInput('Backspace');
-            } else if (/^[a-zA-Z]$/.test(key)) {
-                handleInput(key.toLowerCase());
-            }
-        });
-    }
-
-    // --- Game Logic ---
-
-    function handleInput(key) {
-        if (isGameOver || isAnimating) return;
-
-        if (key === 'Enter') {
-            submitGuess();
-        } else if (key === 'Backspace') {
-            currentGuess = currentGuess.slice(0, -1);
-            updateBoard();
-        } else if (currentGuess.length < WORD_LENGTH && /^[a-zA-Z]$/.test(key)) {
-            currentGuess += key.toLowerCase();
-            updateBoard();
-
-            // Trigger Pop Animation on the last filled tile
-            const row = board.children[guesses.length];
-            const tile = row.children[currentGuess.length - 1];
-            if (tile) {
-                tile.classList.remove('pop-anim');
-                void tile.offsetWidth; // Trigger reflow
-                tile.setAttribute('data-state', 'active'); // Ensure state is active for CSS border
-            }
-        }
-    }
-
-    function shareScore() {
-        const title = "Wordle IT";
-        const dayScore = `${guesses.length}/${MAX_GUESSES}`;
-
-        let grid = "";
-        const rows = board.children;
-        // Reconstruct grid from board state
-        for (let i = 0; i < guesses.length; i++) {
-            const row = rows[i];
-            for (let j = 0; j < WORD_LENGTH; j++) {
-                const tile = row.children[j];
-                const state = tile.getAttribute('data-state');
-                if (state === 'correct') grid += '🟩';
-                else if (state === 'present') grid += '🟨';
-                else grid += '⬜';
-            }
-            grid += "\n";
-        }
-
-        const shareText = `${title} ${dayScore}\n\n${grid}`;
-
-        if (navigator.share) {
-            navigator.share({
-                title: title,
-                text: shareText
-            }).catch(console.error);
-        } else {
-            navigator.clipboard.writeText(shareText).then(() => {
-                showMessage("Copiato negli appunti!");
-            });
-        }
-    }
-
-    function triggerConfetti() {
-        if (typeof confetti === 'function') {
-            const count = 200;
-            const defaults = {
-                origin: { y: 0.7 }
-            };
-
-            function fire(particleRatio, opts) {
-                confetti(Object.assign({}, defaults, opts, {
-                    particleCount: Math.floor(count * particleRatio)
-                }));
-            }
-
-            fire(0.25, {
-                spread: 26,
-                startVelocity: 55,
-            });
-            fire(0.2, {
-                spread: 60,
-            });
-            fire(0.35, {
-                spread: 100,
-                decay: 0.91,
-                scalar: 0.8
-            });
-            fire(0.1, {
-                spread: 120,
-                startVelocity: 25,
-                decay: 0.92,
-                scalar: 1.2
-            });
-            fire(0.1, {
-                spread: 120,
-                startVelocity: 45,
-            });
-        }
-    }
-
-    function updateBoard() {
-        const rowIdx = guesses.length;
-        const row = document.getElementsByClassName('game-row')[rowIdx];
-
-        for (let i = 0; i < WORD_LENGTH; i++) {
-            const tile = row.children[i];
-            const letter = currentGuess[i] || "";
-            tile.textContent = letter;
-
-            if (letter && !tile.hasAttribute('data-state')) {
-                tile.setAttribute('data-state', 'active');
-            } else if (!letter) {
-                tile.removeAttribute('data-state');
-            }
-        }
-    }
-
-    async function submitGuess() {
-        if (currentGuess.length !== WORD_LENGTH) {
-            showMessage("Non abbastanza lettere");
-            shakeRow();
-            return;
-        }
-
-        if (!dictionary.includes(currentGuess)) {
-            showMessage("Parola non trovata");
-            shakeRow();
-            return;
-        }
-
-        // Hard Mode Validation
-        if (gameMode === 'hard') {
-            const validation = validateHardModeGuess(currentGuess);
-            if (!validation.valid) {
-                showMessage(validation.message, 2000);
-                shakeRow();
-                return;
-            }
-        }
-
-        // Start timer on first guess in timed mode
-        if (gameMode === 'timed' && guesses.length === 0 && !timerActive) {
-            startTimer();
-        }
-
-        isAnimating = true;
-
-        const result = checkGuess(currentGuess, targetWord);
-        const rowIdx = guesses.length;
-        const row = document.getElementsByClassName('game-row')[rowIdx];
-
-        for (let i = 0; i < WORD_LENGTH; i++) {
-            const tile = row.children[i];
-            setTimeout(() => {
-                tile.classList.add('flip');
-                tile.setAttribute('data-state', result[i]);
-                updateKeyboard(currentGuess[i], result[i]);
-            }, i * 250);
-        }
-
-        // Update hard mode constraints
-        if (gameMode === 'hard') {
-            updateHardModeConstraints(currentGuess, result);
-        }
-
-        setTimeout(async () => {
-            guesses.push(currentGuess);
-
-            if (currentGuess === targetWord) {
-                // Stop timer if running
-                const finalTimeRemaining = timeRemaining;
-                stopTimer();
-
-                showMessage("Grande!", 2000);
-                updateStats(true, guesses.length);
-
-                // Create game data for achievements
-                const gameData = {
-                    won: true,
-                    attempts: guesses.length,
-                    mode: gameMode,
-                    timeRemaining: gameMode === 'timed' ? finalTimeRemaining : null,
-                    date: Date.now()
-                };
-
-                // Check achievements
-                checkAndUnlockAchievements(gameData);
-
-                if (gameMode === 'daily') {
-                    const todayStr = new Date().toISOString().split('T')[0];
-                    localStorage.setItem('wordle-daily-last-played', todayStr);
-                }
-
-                // SAVE SCORE TO FIREBASE
-                if (currentUser) {
-                    await saveGameScore(currentUser, guesses.length, true);
-                    showMessage("Punteggio salvato online!");
-                }
-
-                isGameOver = true;
-                setTimeout(() => showStatsModal(true), 1500);
-                isAnimating = false;
-            } else if (guesses.length >= MAX_GUESSES) {
-                stopTimer();
-
-                showMessage(`La parola era: ${targetWord.toUpperCase()}`, -1);
-                updateStats(false, 0);
-
-                // Check achievements even on loss
-                const gameData = {
-                    won: false,
-                    attempts: 0,
-                    mode: gameMode,
-                    date: Date.now()
-                };
-                checkAndUnlockAchievements(gameData);
-
-                if (gameMode === 'daily') {
-                    const todayStr = new Date().toISOString().split('T')[0];
-                    localStorage.setItem('wordle-daily-last-played', todayStr);
-                }
-
-                isGameOver = true;
-                setTimeout(() => showStatsModal(false), 1500);
-                isAnimating = false;
-            } else {
-                currentGuess = "";
-                isAnimating = false;
-            }
-        }, WORD_LENGTH * 250 + 500);
-    }
-
-    function checkGuess(guess, target) {
-        const result = Array(WORD_LENGTH).fill('absent');
-        const targetArr = target.split('');
-        const guessArr = guess.split('');
-
-        for (let i = 0; i < WORD_LENGTH; i++) {
-            if (guessArr[i] === targetArr[i]) {
-                result[i] = 'correct';
-                targetArr[i] = null;
-                guessArr[i] = null;
-            }
-        }
-
-        for (let i = 0; i < WORD_LENGTH; i++) {
-            if (guessArr[i] && targetArr.includes(guessArr[i])) {
-                result[i] = 'present';
-                const idx = targetArr.indexOf(guessArr[i]);
-                targetArr[idx] = null;
-            }
-        }
-
-        return result;
-    }
-
-    function updateKeyboard(letter, state) {
-        const keyBtn = document.querySelector(`button[data-key="${letter}"]`);
-        if (!keyBtn) return;
-
-        const currentState = keyBtn.getAttribute('data-state');
-
-        if (state === 'correct') {
-            keyBtn.setAttribute('data-state', 'correct');
-        } else if (state === 'present' && currentState !== 'correct') {
-            keyBtn.setAttribute('data-state', 'present');
-        } else if (state === 'absent' && currentState !== 'correct' && currentState !== 'present') {
-            keyBtn.setAttribute('data-state', 'absent');
-        }
-    }
-
-    function shakeRow() {
-        const rowIdx = guesses.length;
-        const row = document.getElementsByClassName('game-row')[rowIdx];
-        row.classList.add('shake');
-        setTimeout(() => row.classList.remove('shake'), 600);
-    }
-
-    // --- Statistics Logic ---
-
-    function loadStats() {
-        const storedStats = localStorage.getItem('wordle-it-stats');
-        if (storedStats) {
-            stats = JSON.parse(storedStats);
-        }
-    }
-
-    function saveStats() {
-        localStorage.setItem('wordle-it-stats', JSON.stringify(stats));
-        // Also save to cloud if logged in
-        if (currentUser) {
-            saveUserStats(currentUser, stats);
-        }
-    }
-
-    function updateStats(won, attemptCount) {
-        stats.gamesPlayed++;
-        if (won) {
-            stats.gamesWon++;
-            stats.currentStreak++;
-            if (stats.currentStreak > stats.maxStreak) {
-                stats.maxStreak = stats.currentStreak;
-            }
-            stats.guesses[attemptCount]++;
-
-            // Track mode-specific wins
-            if (gameMode === 'hard') {
-                stats.hardModeWins = (stats.hardModeWins || 0) + 1;
-            } else if (gameMode === 'timed') {
-                stats.timedModeWins = (stats.timedModeWins || 0) + 1;
-            }
-        } else {
-            stats.currentStreak = 0;
-            stats.guesses.fail++;
-        }
-
-        // Add to game history
-        if (!stats.gameHistory) stats.gameHistory = [];
-        stats.gameHistory.push({
-            date: Date.now(),
-            won: won,
-            attempts: won ? attemptCount : 0,
-            mode: gameMode,
-            timeRemaining: gameMode === 'timed' ? timeRemaining : null
-        });
-
-        // Keep only last 100 games to avoid excessive storage
-        if (stats.gameHistory.length > 100) {
-            stats.gameHistory = stats.gameHistory.slice(-100);
-        }
-
-        saveStats();
-        updateStatsUI();
-    }
-
-    function updateStatsUI() {
-        document.getElementById('total-played').textContent = stats.gamesPlayed;
-        const winPct = stats.gamesPlayed > 0 ? Math.round((stats.gamesWon / stats.gamesPlayed) * 100) : 0;
-        document.getElementById('win-pct').textContent = winPct;
-        document.getElementById('current-streak').textContent = stats.currentStreak;
-        document.getElementById('max-streak').textContent = stats.maxStreak;
-
-        const distContainer = document.getElementById('guess-distribution');
-        distContainer.innerHTML = '';
-        const maxFreq = Math.max(...Object.values(stats.guesses), 1);
-
-        for (let i = 1; i <= MAX_GUESSES; i++) {
-            const freq = stats.guesses[i];
-            const percent = Math.floor((freq / maxFreq) * 100);
-
-            const row = document.createElement('div');
-            row.className = 'graph-container';
-
-            const label = document.createElement('div');
-            label.className = 'guess-count';
-            label.textContent = i;
-
-            const barContainer = document.createElement('div');
-            barContainer.className = 'graph-bar-container';
-
-            const bar = document.createElement('div');
-            bar.className = 'graph-bar';
-            if (freq > 0) {
-                bar.style.width = `${percent}%`;
-            } else {
-                bar.style.width = 'fit-content';
-                bar.style.minWidth = '20px';
-            }
-            bar.textContent = freq;
-            if (isGameOver && guesses.length === i && guesses[guesses.length - 1] === targetWord) {
-                bar.classList.add('highlight');
-            }
-
-            barContainer.appendChild(bar);
-            row.appendChild(label);
-            row.appendChild(barContainer);
-            distContainer.appendChild(row);
-        }
-    }
-
-    function showStatsModal(won) {
-        updateStatsUI();
-        statsModal.classList.remove('hidden');
-
-        // Show word result message
-        const wordResultMessage = document.getElementById('word-result-message');
-        const wordResultText = document.getElementById('word-result-text');
-        const wordResultLink = document.getElementById('word-result-link');
-
-        if (wordResultMessage && wordResultText && wordResultLink && targetWord) {
-            const wordLowerCase = targetWord.toLowerCase();
-            const wordUpperCase = targetWord.toUpperCase();
-
-            if (won !== undefined) {
-                // Show message based on win/loss
-                if (won) {
-                    wordResultText.innerHTML = `🎉 Complimenti! La parola indovinata è <strong>${wordUpperCase}</strong>`;
-                } else {
-                    wordResultText.innerHTML = `😔 La parola era <strong>${wordUpperCase}</strong>`;
-                }
-
-                // Set link to 1parola.it
-                wordResultLink.href = `https://1parola.it/${wordLowerCase}`;
-                wordResultMessage.style.display = 'block';
-            } else {
-                // Hide message if no win/loss state
-                wordResultMessage.style.display = 'none';
-            }
-        }
-
-        if (won) {
-            triggerConfetti();
-        }
-    }
-
-    // --- Leaderboard Logic ---
-    async function showLeaderboardModal() {
-        leaderboardModal.classList.remove('hidden');
-        const listEl = document.getElementById('leaderboard-list');
-        // Show Spinner is already there? Yes initial state
-        listEl.innerHTML = `
-            <div class="d-flex justify-content-center p-3">
-                <div class="spinner-border text-success" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>`;
-
-        try {
-            const scores = await getLeaderboard();
-            listEl.innerHTML = '';
-
-            if (scores.length === 0) {
-                listEl.innerHTML = '<p class="text-center p-3 opacity-75">Nessuna partita vinta registrata ancora.</p>';
-                return;
-            }
-
-            scores.forEach((s, index) => {
-                const item = document.createElement('div');
-                item.className = 'd-flex align-items-center p-2 border-bottom border-secondary bg-black bg-opacity-10 mb-1 rounded';
-                item.innerHTML = `
-                    <div class="fw-bold text-gradient me-3" style="width: 25px;">#${index + 1}</div>
-                    <img src="${s.photoURL || 'https://via.placeholder.com/32'}" class="rounded-circle me-3" width="32" height="32">
-                    <div class="flex-grow-1">
-                        <div class="fw-bold">${s.displayName || 'Anonimo'}</div>
-                        <div class="small opacity-50">${new Date(s.timestamp.seconds * 1000).toLocaleDateString()}</div>
-                    </div>
-                    <div class="fw-bold text-success">${s.attempts} tentativi</div>
-                `;
-                listEl.appendChild(item);
-            });
-
-        } catch (error) {
-            console.error("Failed to load leaderboard", error);
-            listEl.innerHTML = '<p class="text-center text-danger p-3">Errore nel caricamento.</p>';
-        }
-    }
-
-    // --- Helpers ---
-
-    function showMessage(msg, duration = 1000) {
-        const msgEl = document.createElement('div');
-        msgEl.textContent = msg;
-        msgEl.classList.add('message');
-        messageContainer.appendChild(msgEl);
-
-        if (duration > 0) {
-            setTimeout(() => {
-                msgEl.classList.add('fade-out');
-                setTimeout(() => {
-                    messageContainer.removeChild(msgEl);
-                }, 500);
-            }, duration);
-        }
-    }
-
-    // --- Modal Logic ---
-    helpBtn.addEventListener('click', () => {
-        helpModal.classList.remove('hidden');
-    });
-
-    statsBtn.addEventListener('click', () => {
-        showStatsModal();
-    });
-
-    leaderboardBtn.addEventListener('click', () => {
-        showLeaderboardModal();
-    });
-
-    if (achievementsBtn) {
-        achievementsBtn.addEventListener('click', () => {
-            achievementsModal.classList.remove('hidden');
-            renderAchievementsGrid();
-        });
-    }
-
-    // Share button handler
-    const shareBtn = document.getElementById('share-btn');
-    if (shareBtn) {
-        shareBtn.addEventListener('click', () => {
-            shareScore();
-        });
-    }
-
-    closeBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const targetId = btn.getAttribute('data-target');
-            document.getElementById(targetId).classList.add('hidden');
-        });
-    });
-
-    playAgainBtn.addEventListener('click', () => {
-        resetGame();
-    });
-
-    window.addEventListener('click', (e) => {
-        if (e.target === helpModal) helpModal.classList.add('hidden');
-        if (e.target === statsModal) statsModal.classList.add('hidden');
-        if (e.target === leaderboardModal) leaderboardModal.classList.add('hidden');
-        if (e.target === profileModal) profileModal.classList.add('hidden');
-        if (e.target === achievementsModal) achievementsModal.classList.add('hidden');
-        if (e.target === resetConfirmModal) resetConfirmModal.classList.add('hidden');
-    });
-
-    // --- Reset Stats Functionality ---
-
-    const resetStatsBtn = document.getElementById('reset-stats-btn');
-    const confirmResetCheckbox = document.getElementById('confirm-reset-checkbox');
-    const confirmResetBtn = document.getElementById('confirm-reset-btn');
-    const cancelResetBtn = document.getElementById('cancel-reset-btn');
-
-    // Enable confirm button only when checkbox is checked
-    if (confirmResetCheckbox) {
-        confirmResetCheckbox.addEventListener('change', () => {
-            if (confirmResetBtn) {
-                confirmResetBtn.disabled = !confirmResetCheckbox.checked;
-            }
-        });
-    }
-
-    // Show confirmation modal
-    if (resetStatsBtn) {
-        resetStatsBtn.addEventListener('click', () => {
-            resetConfirmModal.classList.remove('hidden');
-            // Reset checkbox state
-            if (confirmResetCheckbox) confirmResetCheckbox.checked = false;
-            if (confirmResetBtn) confirmResetBtn.disabled = true;
-        });
-    }
-
-    // Cancel reset
-    if (cancelResetBtn) {
-        cancelResetBtn.addEventListener('click', () => {
-            resetConfirmModal.classList.add('hidden');
-        });
-    }
-
-    // Confirm reset - actually delete everything
-    if (confirmResetBtn) {
-        confirmResetBtn.addEventListener('click', async () => {
-            // Reset stats object
-            stats = {
-                gamesPlayed: 0,
-                gamesWon: 0,
-                currentStreak: 0,
-                maxStreak: 0,
-                guesses: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, fail: 0 },
-                hardModeWins: 0,
-                timedModeWins: 0,
-                achievements: [],
-                gameHistory: []
-            };
-
-            // Reset achievements
-            unlockedAchievements = [];
-
-            // Save to localStorage
-            saveStats();
-
-            // Save to cloud if user is logged in
-            if (currentUser) {
-                try {
-                    await saveUserStats(currentUser, stats);
-
-                    // Also delete leaderboard entries for this user
-                    // Note: This would require a Cloud Function or Admin SDK to properly delete
-                    // For now, just saving empty stats which will effectively reset their scores
-                    showMessage("Statistiche e classifica azzerate anche sul cloud", 2000);
-                } catch (error) {
-                    console.error("Error resetting cloud stats:", error);
-                    showMessage("Errore nell'azzeramento dati cloud", 2000);
-                }
-            }
-
-            // Update UI
-            updateStatsUI();
-            renderAchievementsGrid();
-
-            // Close modals
-            resetConfirmModal.classList.add('hidden');
-            statsModal.classList.add('hidden');
-
-            // Show success message
-            showMessage("✅ Tutte le statistiche sono state azzerate", 3000);
-        });
-    }
+    if (bits.length) requestAnimationFrame(step); else { confettiOn = false; ctx.clearRect(0, 0, W, H); }
+  }); }
+}
+
+/* ---------- timed mode ---------- */
+function startClock() {
+  deadline = performance.now() + TIMED * 1000; timeUp = false;
+  clock = setInterval(() => {
+    timeLeft = Math.max(0, (deadline - performance.now()) / 1000);
+    drawClock();
+    if (timeLeft <= 0) expire();
+  }, 100);
+}
+function stopClock() { clearInterval(clock); clock = null; }
+function drawClock() {
+  $('clock').style.setProperty('--t', timeLeft / TIMED);
+  $('clock-left').textContent = Math.ceil(timeLeft);
+  $('clock').classList.toggle('low', timeLeft < 10);
+}
+function expire() {
+  stopClock(); timeUp = true;
+  if (busy || over) return; // the reveal in progress ends the game
+  if (current.length === LEN && wordSet.has(current) && !hardCheck(current)) return submit(); // a full word still counts
+  toast(TXT.timeUp);
+  finish(false);
+}
+
+/* ---------- game ---------- */
+function newGame() {
+  stopClock();
+  rows = []; results = []; current = ''; over = false; busy = false; timeLeft = TIMED; timeUp = false;
+  buildBoard();
+  document.querySelectorAll('.modes button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.mode === mode)));
+  $('note').textContent = mode === 'daily' ? TXT.note.daily(dayNo()) : TXT.note[mode];
+  $('clock').hidden = mode !== 'timed';
+  drawClock();
+  if (!words.length) return;
+  if (mode !== 'daily') { target = words[(Math.random() * words.length) | 0]; return; }
+  target = dailyWord(dayNo());
+  const saved = readJSON(DAILY_KEY);
+  if (!saved || saved.day !== dayNo()) return;
+  for (const g of saved.rows || []) { rows.push(g); results.push(score(g, target)); reveal(rows.length - 1, g, results[rows.length - 1], false); }
+  if (saved.over) { over = true; setTimeout(() => showResult(rows[rows.length - 1] === target), 300); }
+}
+
+function type(ch) {
+  if (over || busy || current.length >= LEN) return;
+  current += ch; sfx.key(); drawCurrent();
+}
+function erase() {
+  if (over || busy || !current) return;
+  current = current.slice(0, -1); drawCurrent();
+}
+async function submit() {
+  if (over || busy) return;
+  if (current.length < LEN) return nope(TXT.short);
+  if (!wordSet.has(current)) return nope(TXT.unknown);
+  const hard = mode === 'hard' ? hardCheck(current) : '';
+  if (hard) return nope(hard);
+  if (mode === 'timed' && !clock && !timeUp) startClock();
+  busy = true;
+  const guess = current, res = score(guess, target);
+  rows.push(guess); results.push(res); current = '';
+  if (mode === 'daily') saveDaily();
+  await reveal(rows.length - 1, guess, res, true);
+  busy = false;
+  const won = guess === target;
+  if (won || rows.length === TRIES || timeUp) finish(won);
+}
+
+function finish(won) {
+  over = true; stopClock();
+  const attempts = rows.length;
+  record(won, attempts);
+  if (mode === 'daily') {
+    saveDaily();
+    if (won && user && fb) fb.saveScore(user, attempts, true).then(() => toast(TXT.ranked)).catch(() => {});
+  }
+  if (won) {
+    const r = boardEl.children[attempts - 1];
+    [...r.children].forEach((t, i) => { t.style.animationDelay = `${i * 90}ms`; t.classList.remove('flip'); replay(t, 'win'); });
+    toast(TXT.praise[attempts - 1], 1600); sfx.win(); setTimeout(confetti, 350);
+  } else {
+    toast(target.toUpperCase(), 2400); sfx.lose();
+  }
+  setTimeout(() => showResult(won), won ? 1700 : 1500);
+}
+
+function record(won, attempts) {
+  const s = stats, timeRemaining = mode === 'timed' ? Math.round(timeLeft * 10) / 10 : null;
+  s.gamesPlayed++;
+  if (won) {
+    s.gamesWon++; s.currentStreak++; s.maxStreak = Math.max(s.maxStreak, s.currentStreak); s.guesses[attempts]++;
+    if (mode === 'hard') s.hardModeWins++;
+    if (mode === 'timed') s.timedModeWins++;
+  } else { s.currentStreak = 0; s.guesses.fail++; }
+  const game = { date: Date.now(), won, attempts: won ? attempts : 0, mode, timeRemaining };
+  s.gameHistory = [...s.gameHistory, game].slice(-100);
+  for (let k = 0; k < 3; k++) { // twice more: "unlock 10" counts the ones just unlocked
+    const fresh = earned(s, game, s.achievements);
+    if (!fresh.length) break;
+    for (const a of fresh) { s.achievements.push(a.id); announce(a); }
+  }
+  saveStats();
+}
+
+/* ---------- panels ---------- */
+function fillStats(dl) {
+  const s = stats, pct = s.gamesPlayed ? Math.round((s.gamesWon / s.gamesPlayed) * 100) : 0;
+  dl.innerHTML = '';
+  [s.gamesPlayed, pct, s.currentStreak, s.maxStreak].forEach((v, i) => {
+    const d = document.createElement('div');
+    d.innerHTML = `<dt>${TXT.stats[i]}</dt><dd>${v}</dd>`;
+    dl.appendChild(d);
+  });
+}
+function fillDist(el, now) {
+  const g = stats.guesses, max = Math.max(1, ...[1, 2, 3, 4, 5, 6].map((i) => g[i]));
+  el.innerHTML = '';
+  for (let i = 1; i <= TRIES; i++) {
+    const d = document.createElement('div');
+    if (i === now) d.className = 'now';
+    d.innerHTML = `<span>${i}</span><i style="--w:${(g[i] / max) * 100}%">${g[i]}</i>`;
+    el.appendChild(d);
+  }
+}
+
+let nextTimer = null;
+function showResult(won) {
+  const daily = mode === 'daily';
+  $('r-kicker').textContent = daily ? TXT.kicker.daily(dayNo()) : TXT.kicker[mode];
+  const w = $('r-word');
+  w.className = 'reveal' + (won ? '' : ' lost');
+  w.innerHTML = '';
+  [...target].forEach((ch, i) => {
+    const t = document.createElement('span');
+    t.className = 't' + (won ? ' correct' : ''); t.textContent = ch.toUpperCase(); t.style.animationDelay = `${i * 90}ms`;
+    w.appendChild(t);
+  });
+  $('r-text').textContent = won ? TXT.won(rows.length) : TXT.lost;
+  $('r-link').href = `https://1parola.it/${target}`;
+  fillStats($('r-stats'));
+  fillDist($('r-dist'), won ? rows.length : 0);
+  $('again-label').textContent = daily ? TXT.playFree : TXT.newWord;
+  $('r-next').hidden = !daily;
+  clearInterval(nextTimer);
+  if (daily) {
+    const tick = () => ($('r-next').innerHTML = TXT.next(untilMidnight()));
+    tick(); nextTimer = setInterval(tick, 1000);
+  }
+  show('result');
+}
+
+function share() {
+  const won = rows[rows.length - 1] === target;
+  const head = `Wordle IT${mode === 'daily' ? ' ' + dayNo() : ''} ${won ? rows.length : 'X'}/${TRIES}${mode === 'hard' ? '*' : ''}`;
+  const grid = results.map((r) => r.map((s) => (s === 'correct' ? '🟩' : s === 'present' ? '🟨' : '⬛')).join('')).join('\n');
+  const text = `${head}\n\n${grid}\n${location.origin}/games/wordle/`;
+  if (navigator.share) navigator.share({ text }).catch(() => {});
+  else navigator.clipboard.writeText(text).then(() => toast(TXT.copied), () => {});
+}
+
+function openStats(tab = 'numbers') {
+  fillStats($('s-stats'));
+  fillDist($('s-dist'), 0);
+  // last 30 games: higher is better, fails are red dots on the floor
+  const h = stats.gameHistory.slice(-30), sp = $('s-spark');
+  if (h.length < 2) sp.innerHTML = `<text x="150" y="35" text-anchor="middle">${TXT.noSpark}</text>`;
+  else {
+    const x = (i) => (i / (h.length - 1)) * 300, y = (g) => (g.won ? 4 + (g.attempts - 1) * 9.5 : 56);
+    sp.innerHTML = `<polyline points="${h.map((g, i) => `${x(i).toFixed(1)},${y(g)}`).join(' ')}"/>` +
+      h.map((g, i) => (g.won ? '' : `<circle cx="${x(i).toFixed(1)}" cy="56" r="3"/>`)).join('');
+  }
+  // the last 12 weeks, one cell a day
+  const perDay = {};
+  for (const g of stats.gameHistory) { const k = new Date(g.date).toDateString(); perDay[k] = (perDay[k] || 0) + 1; }
+  const heat = $('s-heat');
+  heat.innerHTML = '';
+  for (let i = 83; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const n = perDay[d.toDateString()] || 0, c = document.createElement('i');
+    c.dataset.l = Math.min(4, n); c.title = `${d.toLocaleDateString()}: ${n}`;
+    heat.appendChild(c);
+  }
+  // achievements
+  const box = $('awards');
+  box.innerHTML = '';
+  for (const a of ACHIEVEMENTS) {
+    const on = stats.achievements.includes(a.id), [name, desc] = IT ? a.it : a.en, d = document.createElement('div');
+    d.className = 'award' + (on ? ' on' : '');
+    d.style.setProperty('--r', RARITY[a.rarity]);
+    d.innerHTML = `<span class="ic">${svgIcon(on ? a.icon : 'lock')}</span><b></b><span></span><em>${TXT.rarity[a.rarity]}</em>`;
+    d.querySelector('b').textContent = name; d.querySelector('span:not(.ic)').textContent = desc;
+    box.appendChild(d);
+  }
+  $('a-count').textContent = TXT.awards(stats.achievements.length, ACHIEVEMENTS.length);
+  disarmReset();
+  pickTab(tab);
+  show('board-stats');
+}
+function pickTab(tab) {
+  document.querySelectorAll('.tabs button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === tab)));
+  document.querySelectorAll('section.tab').forEach((s) => (s.hidden = s.dataset.tab !== tab));
+  if (tab === 'ranks') loadRanks(document.querySelector('#periods [aria-selected="true"]')?.dataset.period || 'today');
+}
+
+async function loadRanks(period) {
+  document.querySelectorAll('#periods button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.period === period)));
+  const list = $('ranks');
+  const line = (text) => { list.innerHTML = '<li class="empty"></li>'; list.firstChild.textContent = text; };
+  line(TXT.loading);
+  let scores;
+  try { scores = await (await firebase()).leaderboard(period); } catch { return line(TXT.offline); }
+  if (!scores.length) return line(TXT.empty);
+  list.innerHTML = '';
+  scores.forEach((s, i) => { // everything here was typed by players: text only, never HTML
+    const li = document.createElement('li'), name = s.displayName || TXT.anon;
+    if (user && s.uid === user.uid) li.className = 'me';
+    const face = /^https:\/\//.test(s.photoURL || '') ? Object.assign(document.createElement('img'), { src: s.photoURL, alt: '', referrerPolicy: 'no-referrer', loading: 'lazy' }) : document.createElement('span');
+    face.className = 'face';
+    if (face.tagName === 'SPAN') face.textContent = name[0].toUpperCase();
+    const pos = Object.assign(document.createElement('span'), { className: 'pos', textContent: i + 1 });
+    const who = Object.assign(document.createElement('span'), { className: 'who' });
+    who.append(Object.assign(document.createElement('b'), { textContent: name }), Object.assign(document.createElement('span'), { textContent: new Date(s.timestamp.seconds * 1000).toLocaleDateString() }));
+    const tries = Object.assign(document.createElement('span'), { className: 'tries', textContent: `${s.attempts}/${TRIES}` });
+    li.append(pos, face, who, tries);
+    list.appendChild(li);
+  });
+}
+
+function disarmReset() { $('reset').classList.remove('armed'); $('reset-label').textContent = TXT.resetLabel; }
+$('reset').onclick = () => { // two taps, no modal
+  if (!$('reset').classList.contains('armed')) { $('reset').classList.add('armed'); $('reset-label').textContent = TXT.resetAsk; return; }
+  stats = blankStats(); saveStats(); toast(TXT.resetDone); openStats('numbers');
+};
+
+/* ---------- account ---------- */
+function firebase() {
+  fbLoading = fbLoading || import('./firebase.js').then((m) => { fb = m; m.onAuth(signedIn); return m; }).catch((e) => { fbLoading = null; throw e; });
+  return fbLoading;
+}
+async function signedIn(u) {
+  user = u || null;
+  if (user) {
+    let cloud = null, reached = true;
+    try { cloud = await fb.loadStats(user); } catch { reached = false; } // offline: use the copy on this device
+    const guest = normalize(readJSON(GUEST_KEY));
+    // the first sign-in brings the guest's games along; after that the cloud copy wins
+    stats = normalize(cloud || readJSON(statsKey()) || (guest.gamesPlayed ? guest : null));
+    store.set(statsKey(), JSON.stringify(stats));
+    if (reached && !cloud) fb.saveStats(user, stats).catch(() => {}); // never push a stale copy over the cloud one
+    if (greet) toast(TXT.hi((user.displayName || '').split(' ')[0] || TXT.anon));
+  } else {
+    stats = normalize(readJSON(GUEST_KEY));
+    if (greet) toast(TXT.bye);
+  }
+  greet = false;
+  paintAccount();
+}
+function paintAccount() {
+  const btn = $('account-btn');
+  btn.innerHTML = user && /^https:\/\//.test(user.photoURL || '') ? `<img alt="" referrerpolicy="no-referrer">` : svgIcon('user');
+  if (btn.firstChild.tagName === 'IMG') btn.firstChild.src = user.photoURL;
+  $('signed-out').hidden = !!user; $('signed-in').hidden = !user;
+  if (!user) return;
+  $('me-photo').src = /^https:\/\//.test(user.photoURL || '') ? user.photoURL : '/favicon.svg';
+  $('me-email').textContent = user.email || '';
+  $('me-name').value = user.displayName || '';
+}
+async function openAccount() {
+  paintAccount();
+  $('offline-note').hidden = true;
+  show('account');
+  try { await firebase(); } catch { $('offline-note').hidden = false; }
+}
+$('login').onclick = async () => {
+  try { const m = await firebase(); greet = true; await m.login(); } catch { greet = false; toast(TXT.loginFail); }
+};
+$('logout').onclick = async () => { greet = true; await fb?.logout(); show(null); };
+$('save-name').onclick = async () => {
+  const name = $('me-name').value.trim().slice(0, 24);
+  if (!name || !user) return;
+  try { await fb.rename(user, name); toast(TXT.saved); paintAccount(); } catch { toast(TXT.loginFail); }
+};
+
+/* ---------- input ---------- */
+document.querySelectorAll('.modes button').forEach((b) => (b.onclick = () => {
+  if (b.dataset.mode === mode) return;
+  mode = b.dataset.mode; store.set(MODE_KEY, mode);
+  newGame();
+  if (mode === 'daily' && over) toast(TXT.done);
+}));
+document.querySelectorAll('.tabs button').forEach((b) => (b.onclick = () => pickTab(b.dataset.tab)));
+document.querySelectorAll('#periods button').forEach((b) => (b.onclick = () => loadRanks(b.dataset.period)));
+for (const [k, b] of Object.entries(keyEls)) {
+  b.onclick = () => { b.blur(); k === 'enter' ? submit() : k === 'backspace' ? erase() : type(k); };
+}
+addEventListener('keydown', (e) => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const open = document.querySelector('.overlay:not([hidden])');
+  if (open) { if (e.key === 'Escape') show(null); return; }
+  if (e.target.tagName === 'INPUT') return;
+  const k = e.key.toLowerCase();
+  if (k === 'enter') { e.preventDefault(); submit(); }
+  else if (k === 'backspace') { e.preventDefault(); erase(); }
+  else if (/^[a-z]$/.test(k)) type(k);
 });
+document.querySelectorAll('.overlay').forEach((o) => o.addEventListener('click', (e) => { if (e.target === o) show(null); }));
+document.querySelectorAll('.close, [data-close]').forEach((b) => (b.onclick = () => show(null)));
+$('help-btn').onclick = () => show('help');
+$('stats-btn').onclick = () => openStats();
+$('account-btn').onclick = openAccount;
+$('share').onclick = share;
+$('again').onclick = () => {
+  show(null);
+  if (mode === 'daily') { mode = 'practice'; store.set(MODE_KEY, mode); }
+  newGame();
+};
 
+/* ---------- start ---------- */
+newGame();
+fetch('parole.txt')
+  .then((r) => (r.ok ? r.text() : Promise.reject()))
+  .then((t) => t.split('\n').map((w) => w.trim().toLowerCase()).filter((w) => /^[a-z]{5}$/.test(w)))
+  .catch(() => [])
+  .then((list) => {
+    words = list.length ? list : ['palla', 'gatto', 'fiore', 'piano', 'treno'];
+    wordSet = new Set(words);
+    newGame();
+    if (!store.get(HELP_KEY)) { store.set(HELP_KEY, '1'); show('help'); }
+  });
+firebase().catch(() => {}); // signed-in players get their stats back; offline is fine
