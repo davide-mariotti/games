@@ -1,61 +1,100 @@
----
----
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-    <title>Fruit Catcher | Davide Mariotti</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- CSS -->
-    <link href="/games/shared/legacy.css" rel="stylesheet" crossorigin="anonymous" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="main.css">
-
-    <!-- Phaser -->
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
-
-    <!-- Icons -->
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Fruit Catcher · Davide Mariotti</title>
+  <meta name="description" content="Catch the fruit, dodge the bombs. A small arcade game in the browser with combos and power-ups. Mouse, touch or keyboard.">
+  <link rel="canonical" href="https://davide-mariotti.github.io/games/fruitcatcher/">
+  <meta property="og:title" content="Fruit Catcher · Davide Mariotti">
+  <meta property="og:description" content="Catch the fruit, dodge the bombs.">
+  <meta property="og:image" content="https://davide-mariotti.github.io/og.png">
+  <meta name="theme-color" content="#050706">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="main.css">
 </head>
-
 <body>
-    <nav class="dm-bar"><a class="dm-logo" href="/" aria-label="Davide Mariotti, home">dm<span>.</span></a><a href="/games/">&larr; All games</a></nav>
+  <header><div class="bar">
+    <a class="logo" href="/" aria-label="Davide Mariotti, home"><svg viewBox="7.5 12.5 108.8 68" role="img" aria-label="dm."><path d="M45,20V73M45,58A15,15 0 1 1 45,57.99M45,54A11,11 0 0 1 67,54V73M67,54A11,11 0 0 1 89,54V73" fill="none" stroke="#ecf3ee" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/><circle cx="107.7" cy="71.9" r="6.6" fill="#2fe37f"/></svg></a>
+    <a class="back" href="/games/" data-it="&larr; Tutti i giochi">&larr; All games</a>
+  </div></header>
 
-    <div class="container py-5 mt-5">
-        <div class="game-page-container">
-            <div class="text-center mb-5">
-                <h1 class="section-title display-4"><span class="text-gradient">Fruit</span> Catcher</h1>
-                <p class="lead text-white opacity-75">Catch the falling fruits and avoid the obstacles in this forest
-                    challenge!</p>
-            </div>
+  <main>
+    <section class="stage" id="stage">
+      <canvas id="game" role="img" aria-label="Game area"></canvas>
 
-            <div class="glass-panel p-2">
-                <div id="game-wrapper">
-                    <div id="game-container"></div>
-                </div>
-            </div>
-
-            <div class="game-controls-info text-center mt-4">
-                <p class="mb-0">
-                    Use <span class="control-key">←</span> and <span class="control-key">→</span> to move the basket.
-                    Catch <span class="text-primary fw-bold">Apples</span>, avoid rocks!
-                </p>
-            </div>
+      <div class="hud">
+        <div>
+          <div class="score" id="score">0</div>
+          <div class="best"><span data-it="Record">Best</span> <span id="best">0</span> · <span data-it="Liv.">Lv</span> <span id="level">1</span></div>
+          <div class="combo" id="combo">x1</div>
         </div>
-    </div>
+        <div class="hud-r">
+          <div class="lives" id="lives"><i data-icon="heart"></i><i data-icon="heart"></i><i data-icon="heart"></i></div>
+          <button class="icon-btn" id="mute" type="button" aria-label="Sound"></button>
+          <button class="icon-btn" id="pause" type="button" aria-label="Pause"><i data-icon="pause"></i></button>
+        </div>
+      </div>
 
-    <footer class="dm-foot">Made by <a href="/">Davide Mariotti</a> &middot; <a href="https://ko-fi.com/Z0X32ATNHL">buy me a coffee</a></footer>
+      <div class="powers">
+        <div class="chip" data-p="magnet"><i data-icon="magnet"></i><b></b></div>
+        <div class="chip" data-p="snowflake"><i data-icon="snowflake"></i><b></b></div>
+        <div class="chip" data-p="shield"><i data-icon="shield"></i></div>
+      </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-    <script src="/games/shared/legacy.js" crossorigin="anonymous"></script>
-    <script src="main.js"></script>
+      <div class="banner" id="banner" aria-hidden="true"></div>
+
+      <div class="overlay" id="menu">
+        <div class="panel">
+          <p class="kicker" data-it="Giochi · Arcade">Games · Arcade</p>
+          <h1>Fruit <span class="serif grad">Catcher</span></h1>
+          <p class="lead" data-it="Prendi la frutta, evita le bombe. Più ne prendi di fila, più vale.">Catch the fruit, dodge the bombs. The longer the streak, the more it's worth.</p>
+          <ul class="legend">
+            <li><i data-icon="apple" class="c-fruit"></i><span data-it="Frutta, +10 per la combo">Fruit, +10 times the combo</span></li>
+            <li><i data-icon="star" class="c-gold"></i><span data-it="Stella, +50">Star, +50</span></li>
+            <li><i data-icon="bomb" class="c-bomb"></i><span data-it="Bomba, perdi un cuore">Bomb, costs a heart</span></li>
+            <li><i data-icon="magnet" class="c-power"></i><span data-it="Calamita, la frutta viene da te">Magnet, fruit comes to you</span></li>
+            <li><i data-icon="snowflake" class="c-power"></i><span data-it="Gelo, tutto rallenta">Freeze, the world slows down</span></li>
+            <li><i data-icon="shield" class="c-power"></i><span data-it="Scudo, para una bomba">Shield, blocks one bomb</span></li>
+          </ul>
+          <button class="btn btn-primary" id="play" type="button"><i data-icon="play"></i><span data-it="Gioca">Play</span></button>
+          <p class="hint" data-it="Mouse, dito o frecce &larr; &rarr; · P per la pausa">Mouse, finger or &larr; &rarr; keys · P to pause</p>
+        </div>
+      </div>
+
+      <div class="overlay" id="paused" hidden>
+        <div class="panel">
+          <p class="kicker" data-it="In pausa">Paused</p>
+          <h2 class="serif grad" data-it="Respira.">Breathe.</h2>
+          <button class="btn btn-primary" id="resume" type="button"><i data-icon="play"></i><span data-it="Riprendi">Resume</span></button>
+        </div>
+      </div>
+
+      <div class="overlay" id="over" hidden>
+        <div class="panel">
+          <p class="kicker" data-it="Partita finita">Game over</p>
+          <div class="final" id="final">0</div>
+          <p class="record" id="record" data-it="Nuovo record">New best</p>
+          <dl class="stats">
+            <div><dt data-it="Frutti">Fruit</dt><dd id="s-fruit">0</dd></div>
+            <div><dt data-it="Combo max">Best combo</dt><dd id="s-combo">0</dd></div>
+            <div><dt data-it="Livello">Level</dt><dd id="s-level">1</dd></div>
+          </dl>
+          <button class="btn btn-primary" id="again" type="button"><i data-icon="rotate-ccw"></i><span data-it="Ancora">Play again</span></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="bar">
+    <span data-it="Fatto da <a href=&quot;/&quot;>Davide Mariotti</a>">Made by <a href="/">Davide Mariotti</a></span>
+    <a href="https://ko-fi.com/Z0X32ATNHL" data-it="Offrimi un caffè">Buy me a coffee</a>
+  </div></footer>
+
+  <script src="main.js"></script>
 </body>
-
 </html>
