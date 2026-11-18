@@ -1,43 +1,94 @@
-<!DOCTYPE html>
-<html lang="it">
-
+<!doctype html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>War Run - Army Runner</title>
-    <link rel="stylesheet" href="main.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>War Run · Davide Mariotti</title>
+  <meta name="description" content="An army runner in neon: pick the right gates, outgun the red squads, dodge the boss. Drag or arrow keys, in the browser.">
+  <link rel="canonical" href="https://davide-mariotti.github.io/games/war-run/">
+  <meta property="og:title" content="War Run · Davide Mariotti">
+  <meta property="og:description" content="Army runner: pick your path, grow the squad, survive the wave.">
+  <meta property="og:image" content="https://davide-mariotti.github.io/og.png">
+  <meta name="theme-color" content="#050706">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/games/shared/arcade.css">
+  <link rel="stylesheet" href="main.css">
 </head>
-
 <body>
-    <div id="game-container">
-        <canvas id="gameCanvas"></canvas>
+  <header><div class="bar">
+    <a class="logo" href="/" aria-label="Davide Mariotti, home"><svg viewBox="7.5 12.5 108.8 68" role="img" aria-label="dm."><path d="M45,20V73M45,58A15,15 0 1 1 45,57.99M45,54A11,11 0 0 1 67,54V73M67,54A11,11 0 0 1 89,54V73" fill="none" stroke="#ecf3ee" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/><circle cx="107.7" cy="71.9" r="6.6" fill="#2fe37f"/></svg></a>
+    <a class="back" href="/games/" data-it="&larr; Tutti i giochi">&larr; All games</a>
+  </div></header>
 
-        <div id="ui-layer">
-            <div id="hud">
-                <div class="stat">SOLDIERS: <span id="soldier-count">1</span></div>
-                <div class="stat">SCORE: <span id="score">0</span></div>
-                <div class="stat small">BEST: <span id="best-score">0</span></div>
-            </div>
+  <main>
+    <section class="stage" id="stage">
+      <canvas id="game" role="img" aria-label="Game area"></canvas>
 
-            <div id="start-screen" class="overlay">
-                <h1>WAR RUN</h1>
-                <p>MOLTIPLICA IL TUO ESERCITO</p>
-                <p class="best-score-display">RECORD: <span id="start-best-score">0</span></p>
-                <button id="start-btn">GIOCA ORA</button>
-            </div>
-
-            <div id="game-over-screen" class="overlay hidden">
-                <h1>MISSIONE FALLITA</h1>
-                <p>Punteggio Finale: <span id="final-score">0</span></p>
-                <p class="best-score-display">RECORD: <span id="go-best-score">0</span></p>
-                <button id="retry-btn">RIPROVA</button>
-            </div>
+      <div class="hud">
+        <div>
+          <div class="score" id="score">0</div>
+          <div class="best"><span data-it="Record">Best</span> <span id="best">0</span> · <span data-it="Liv.">Lv</span> <span id="level">1</span></div>
         </div>
-    </div>
-    <script src="main.js"></script>
-</body>
+        <div class="hud-r">
+          <button class="icon-btn" id="mute" type="button" aria-label="Sound"></button>
+          <button class="icon-btn" id="pause" type="button" aria-label="Pause"><i data-icon="pause"></i></button>
+        </div>
+      </div>
 
+      <div class="banner" id="banner" aria-hidden="true"></div>
+
+      <div class="overlay" id="menu">
+        <div class="panel">
+          <p class="kicker" data-it="Giochi · Arcade">Games · Arcade</p>
+          <h1>War <span class="serif grad">Run</span></h1>
+          <p class="lead" data-it="Guida l'esercito verde lungo la strada. Scegli le porte giuste, sfoltisci le squadre rosse, abbatti il boss.">Lead the green army down the road. Pick the right gates, thin out the red squads, bring down the boss.</p>
+          <ul class="legend">
+            <li><i data-icon="circle-plus" class="c-accent"></i><span data-it="Porte verdi: più soldati">Green gates: more soldiers</span></li>
+            <li><i data-icon="circle-minus" class="c-danger"></i><span data-it="Porte rosse: meno. Sparagli e salgono">Red gates: fewer. Shoot them and they go up</span></li>
+            <li><i data-icon="users" class="c-accent"></i><span data-it="Più soldati, più colpi">More soldiers, more firepower</span></li>
+            <li><i data-icon="swords" class="c-danger"></i><span data-it="Squadre rosse: uno contro uno">Red squads: one for one</span></li>
+            <li><i data-icon="construction" class="c-danger"></i><span data-it="Barriere: chi ci sbatte è fuori">Barriers: whoever hits them is out</span></li>
+            <li><i data-icon="skull" class="c-danger"></i><span data-it="Boss: esci dal cerchio rosso">Boss: step out of the red circle</span></li>
+          </ul>
+          <button class="btn btn-primary" id="play" type="button"><i data-icon="play"></i><span data-it="Gioca">Play</span></button>
+          <p class="hint" data-it="Trascina col dito o col mouse, o frecce &larr; &rarr; · P per la pausa">Drag with finger or mouse, or &larr; &rarr; keys · P to pause</p>
+        </div>
+      </div>
+
+      <div class="overlay" id="paused" hidden>
+        <div class="panel">
+          <p class="kicker" data-it="In pausa">Paused</p>
+          <h2 class="serif grad" data-it="Respira.">Breathe.</h2>
+          <button class="btn btn-primary" id="resume" type="button"><i data-icon="play"></i><span data-it="Riprendi">Resume</span></button>
+        </div>
+      </div>
+
+      <div class="overlay" id="over" hidden>
+        <div class="panel">
+          <p class="kicker" data-it="Esercito perduto">Army lost</p>
+          <div class="final" id="final">0</div>
+          <p class="record" id="record" data-it="Nuovo record">New best</p>
+          <dl class="stats">
+            <div><dt data-it="Strada">Road</dt><dd><span id="s-road">0</span> m</dd></div>
+            <div><dt data-it="Esercito max">Top army</dt><dd id="s-army">0</dd></div>
+            <div><dt data-it="Livello">Level</dt><dd id="s-level">1</dd></div>
+          </dl>
+          <button class="btn btn-primary" id="again" type="button"><i data-icon="rotate-ccw"></i><span data-it="Ancora">Play again</span></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="bar">
+    <span data-it="Fatto da <a href=&quot;/&quot;>Davide Mariotti</a>">Made by <a href="/">Davide Mariotti</a></span>
+    <a href="https://ko-fi.com/Z0X32ATNHL" data-it="Offrimi un caffè">Buy me a coffee</a>
+  </div></footer>
+
+  <script src="/games/shared/arcade.js"></script>
+  <script src="main.js"></script>
+</body>
 </html>
