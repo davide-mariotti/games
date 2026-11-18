@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Truth or Dare · Davide Mariotti</title>
+  <meta name="description" content="Truth or Dare in the browser, in English and Italian: with friends, just the two of you or in a parked car. Player turns and timers for the dares.">
+  <link rel="canonical" href="https://davide-mariotti.github.io/games/obbligo-verit%C3%A0/">
+  <meta property="og:title" content="Truth or Dare · Davide Mariotti">
+  <meta property="og:description" content="Questions to get people talking, dares to get them laughing.">
+  <meta property="og:image" content="https://davide-mariotti.github.io/og.png">
+  <meta name="theme-color" content="#050706">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/games/shared/arcade.css">
+  <link rel="stylesheet" href="main.css">
+</head>
+<body>
+  <header><div class="bar">
+    <a class="logo" href="/" aria-label="Davide Mariotti, home"><svg viewBox="7.5 12.5 108.8 68" role="img" aria-label="dm."><path d="M45,20V73M45,58A15,15 0 1 1 45,57.99M45,54A11,11 0 0 1 67,54V73M67,54A11,11 0 0 1 89,54V73" fill="none" stroke="#ecf3ee" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/><circle cx="107.7" cy="71.9" r="6.6" fill="#2fe37f"/></svg></a>
+    <a class="back" href="/games/" data-it="&larr; Tutti i giochi">&larr; All games</a>
+  </div></header>
+
+  <main>
+    <section class="stage" id="stage">
+      <div class="hud">
+        <div>
+          <p class="kicker" id="mode-name"></p>
+          <p class="best"><span id="n-t">0</span> <span data-it="verità">truths</span> · <span id="n-d">0</span> <span data-it="obblighi">dares</span></p>
+        </div>
+        <div class="hud-r">
+          <button class="icon-btn" id="mute" type="button" aria-label="Sound"></button>
+          <button class="icon-btn" id="open-menu" type="button" aria-label="Menu"><i data-icon="menu"></i></button>
+        </div>
+      </div>
+
+      <div class="table" id="game" role="region">
+        <article class="card idle" id="card">
+          <p class="tag" id="tag"></p>
+          <p class="text" id="text" aria-live="polite"></p>
+          <button class="timer" id="timer" type="button" hidden><i data-icon="timer"></i><span id="timer-t"></span></button>
+        </article>
+        <p class="turn" id="turn"></p>
+        <div class="picks">
+          <button class="pick truth" id="truth" type="button"><i data-icon="message-circle-question-mark"></i><span data-it="Verità">Truth</span></button>
+          <button class="icon-btn dice" id="random" type="button" aria-label="Random"><i data-icon="dices"></i></button>
+          <button class="pick dare" id="dare" type="button"><i data-icon="flame"></i><span data-it="Obbligo">Dare</span></button>
+        </div>
+        <button class="btn btn-primary" id="again" type="button" hidden><i data-icon="rotate-ccw"></i><span data-it="Rimescola">Shuffle again</span></button>
+      </div>
+
+      <div class="banner" id="banner" aria-hidden="true"></div>
+
+      <div class="overlay" id="menu">
+        <div class="panel">
+          <p class="kicker" data-it="Giochi · Da serata">Games · Party</p>
+          <h1 data-it="Obbligo o <span class=&quot;serif grad&quot;>Verità</span>">Truth or <span class="serif grad">Dare</span></h1>
+          <p class="lead" data-it="Domande per far parlare, sfide per far ridere. Nessuno se ne va senza essersi esposto un po'.">Questions to get people talking, dares to get them laughing. Nobody leaves without giving a little away.</p>
+          <div class="modes">
+            <button class="mode" type="button" data-mode="friends"><i data-icon="users"></i><span><b data-it="Tra amici">With friends</b><small data-it="Per un gruppo, ovunque.">For a group, anywhere.</small></span></button>
+            <button class="mode" type="button" data-mode="two"><i data-icon="heart"></i><span><b data-it="In due">Just the two of you</b><small data-it="Per conoscersi meglio. Appuntamenti compresi.">To get to know each other. Dates included.</small></span></button>
+            <button class="mode" type="button" data-mode="car"><i data-icon="car"></i><span><b data-it="In macchina">In the car</b><small data-it="In due, in un parcheggio. Il gioco è nato lì.">Two of you, parked somewhere. That's where it all started.</small></span></button>
+          </div>
+          <div class="who">
+            <p class="label" data-it="Giocatori, se volete sapere a chi tocca">Players, if you want the game to call turns</p>
+            <div class="names" id="names"></div>
+            <form class="add" id="add"><input id="name" maxlength="16" autocomplete="off" enterkeyhint="done"><button class="icon-btn" id="add-btn" type="submit"><i data-icon="user-plus"></i></button></form>
+          </div>
+          <p class="hint" data-it="V verità, O obbligo, C a caso · Esc apre il menu">T truth, D dare, R random · Esc opens the menu</p>
+          <button class="link" id="reset" type="button" data-it="Rimetti nel mazzo le carte già uscite">Shuffle the used cards back in</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="bar">
+    <span data-it="Fatto da <a href=&quot;/&quot;>Davide Mariotti</a>">Made by <a href="/">Davide Mariotti</a></span>
+    <a href="https://ko-fi.com/Z0X32ATNHL" data-it="Offrimi un caffè">Buy me a coffee</a>
+  </div></footer>
+
+  <script src="/games/shared/arcade.js"></script>
+  <script src="cards.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
