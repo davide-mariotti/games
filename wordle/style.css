@@ -194,7 +194,7 @@
     transform: translateY(-2px);
 }
 
-.keyboard-row button.wide-button {
+.keyboard-row button.key-large {
     flex: 1.5;
     font-size: 0.8rem;
 }

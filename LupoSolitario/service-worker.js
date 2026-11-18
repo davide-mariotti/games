@@ -47,7 +47,7 @@ self.addEventListener('activate', (event) => {
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames.map((cacheName) => {
-                    if (cacheWhitelist.indexOf(cacheName) === -1) {
+                    if (cacheName.startsWith('lupo-solitario-') && cacheWhitelist.indexOf(cacheName) === -1) {
                         console.log('🧹 Deleting old cache:', cacheName);
                         return caches.delete(cacheName);
                     }

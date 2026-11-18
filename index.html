@@ -433,6 +433,7 @@
     if ((navigator.language || "").toLowerCase().startsWith("it")) {
       document.documentElement.lang = "it";
       document.querySelectorAll("[data-it]").forEach((el) => (el.innerHTML = el.dataset.it));
+      document.querySelectorAll('a[href="/"]').forEach((a) => (a.href = "/it/"));
     }
     document.querySelectorAll(".card").forEach((c) => c.addEventListener("pointermove", (e) => {
       const r = c.getBoundingClientRect();
