@@ -146,7 +146,67 @@ with needle-thin fangs, eyes burning with an eerie green fire.
 Madelon (Libro 4): a young Sommlending noblewoman with pale ivory skin and
 long dark hair unbound, wearing a flowing pale ceremonial gown, usually
 shown in an entranced, sleep-like trance.
+
+Banedon (Libro 1, ricorre nel Libro 5): a young Sommlending wizard of the
+Magicians' Guild of Toran in his mid-twenties, slender, with fair blond
+hair and a clean-shaven, earnest face, wearing the dark-blue robes of a
+Journeymaster of the Guild over travel-worn boots, carrying a slender
+wooden staff.
+
+Darklord Haakon of Helgedad (Libro 5): a towering, unnaturally tall figure
+clad in heavy black spiked plate armour, his face hidden behind a
+death-black closed helm, a spiked iron gauntlet on his right fist and a
+glowing stone crackling with blue fire in his left hand, a tattered black
+cloak, a faint grey-green mist of decay clinging to him.
+
+Itikar (Libro 5): a giant, savage black bird of prey of Vassagonia, large
+enough to carry a rider, with glossy black plumage, a long hooked
+razor-sharp beak, fierce burning eyes and powerful taloned feet; trained
+Itikar wear a Vassagonian riding saddle and reins.
+
+Zakhan Kimah, Emperor of Vassagonia (Libro 5): a commanding middle-aged
+desert ruler with dark tanned skin, a short black beard and cold, cruel
+eyes, dressed in plain unornamented robes of gold cloth, holding a black
+metal orb.
+
+Sharnazim (Libro 5): the Zakhan's elite guards, tall Vassagonian warriors
+with dark tanned skin, black robes and turbans over mail, armed with
+curved razor-sharp scimitars; a large blue eagle-talon tattoo covers their
+muscular chests.
+
+Drakkarim (Libro 5, come li descrive il libro): brutal human warriors in
+the Darklords' service, clad in jet-black armour and scarlet robes, their
+faces hidden behind hideous black death-mask helms, wielding cruel black
+swords, twisted black scimitars and bronze crossbows.
+
+Kwaraz (Libro 5): a giant sewer-dwelling reptile of Barrakeesh, as big as
+a horse, with a bloated mottled scaly body, long curved climbing claws
+that let it hang from ceilings, huge oval eyes and a spitting, fanged
+mouth.
+
+Yas (Libro 5): a huge constrictor serpent with thick, crushing coils and
+sleepy, hypnotic eyes whose slit pupils are rimmed with red.
+
+The Skyrider's dwarf crew (Libro 5): stocky, barrel-chested dwarves with
+ruddy cheeks and braided beards, leather jerkins over rough wool clothes,
+armed with two-handed battle-axes and smoking steel-barrelled dwarf guns;
+Nolrim, their young captain, swings a great two-handed battle-axe.
+
+The Skyrider (Libro 5): Banedon's flying ship, a sleek dark-wood hull
+without sails that floats through the air with a low hum, long outrigger
+booms on either side, a raised stern platform with a glowing crystal
+steering wheel, crewed by dwarves.
+
+Crypt Spawn (Libro 5): shadowy horrors born from the black mist a Darklord
+breathes out, swirling shapes of living shadow that sprout bat-like wings
+and writhing tentacles.
+
+Dhorgaan (Libro 5): a glowing serpent-like monster condensed from a vortex
+of greenish vapour, filled with grey death-mist, with two crimson points
+of light for eyes.
 ```
+
+**Nota sui Drakkarim.** Nei Libri 1-4 il ritratto `ritratto-drakkar.txt` li mostra come uomini-rettile. Il Libro 5 li descrive invece come uomini in armatura nera e vesti scarlatte, con maschere di morte: dal Libro 5 in poi si usa la voce "Drakkarim (Libro 5)" qui sopra, senza il vecchio ritratto. Le immagini già fatte dei libri precedenti restano come sono.
 
 ## Dimensione scelta
 
@@ -164,7 +224,7 @@ Nessuno strumento (ChatGPT, Nano Banana) garantisce da solo la stessa
 identica "faccia" di un personaggio/creatura da un prompt all'altro con il
 solo testo. Per questo, PRIMA di generare le scene, genera un ritratto di
 riferimento per ogni soggetto ricorrente — sono già pronti in
-`riferimenti/` (22 in totale): `ritratto-lupo-solitario.txt`, uno per
+`riferimenti/` (25 in totale): `ritratto-lupo-solitario.txt`, uno per
 ciascuna creatura del bestiario "storico" (Kraan, Giak, Vordak, Drakkar,
 Gurgaz, Tigerwolf, dal Libro 1), uno per ciascuna new-entry del Libro 2
 (Helghast, Zlanbeast, Vonotar, Rhygar, Lord Axim), e uno per ciascuna
@@ -174,7 +234,7 @@ Sono inquadrature "a figura intera", pose neutre e ben illuminate, pensate
 per essere riutilizzate come immagine-guida, non come illustrazione
 finale.
 
-Ogni prompt di scena in `book01/`/`book02/`/`book03/`/`book04/` inizia con una riga
+Ogni prompt di scena in `book01/`/`book02/`/`book03/`/`book04/`/`book05/` inizia con una riga
 **"Base da riutilizzare: ..."** che elenca quali ritratti servono per quella
 scena specifica. Se il tuo strumento supporta l'input "testo + immagine"
 (Nano Banana/Gemini lo supporta), allega i ritratti indicati insieme al
@@ -236,6 +296,5 @@ border or frame, no UI elements.
   immagine esiste al percorso giusto, appare automaticamente in-app.
 - Dopo aver generato un'immagine di sezione, salvala come
   `public/img/book0N/secNNN.png` (sostituendo l'eventuale file esistente), lancia
-  `python scripts/to-webp.py` (lo converte in WebP e aggiorna i riferimenti) e
-  verifica che il campo `"image"` della sezione corrispondente in
-  `data/books/0N-*.json` punti a quel percorso.
+  `python scripts/to-webp.py` (lo converte in WebP e aggiorna i riferimenti), poi `node scripts/link-images.mjs`, che collega ogni `secNNN.webp` alla sua
+  sezione in `data/books/0N-*.json` (campo `"image"`).

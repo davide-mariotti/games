@@ -5,7 +5,7 @@
  "originalTitle": "The Caverns of Kalte",
  "sections": {
   "1": {
-   "image": "public/img/book03/sec1.webp",
+   "image": "public/img/book03/sec001.webp",
    "text": "<p>Ancor prima che tu accettassi l'incarico di consegnare Vonotar alla giustizia, i preparativi per il tuo viaggio verso Kalte erano già in corso. Il capitano della nave da guerra sommlending Cardonal, di ritorno da una lunga pattuglia nel Kaltersee, aveva ricevuto l'ordine di attendere il tuo arrivo ad Anskaven. Durante la notte vennero caricati a bordo cibo, equipaggiamento per il ghiaccio e squadre di cani Kanu. La missione era altamente segreta: solo i membri più anziani dell'equipaggio conoscevano la vera natura del viaggio che li attendeva.</p><p>Il piano prevede che tu venga sbarcato a Halle Bluff, dove la nave getterà l'ancora e attenderà il tuo ritorno. Una squadra scelta di guide fidate ti condurrà dalla scogliera fino a Ikaya. Una volta dentro la fortezza di ghiaccio, dovrai stanare e catturare Vonotar, per poi tornare alla nave insieme alle tue guide. La missione dovrà essere compiuta entro un massimo di trenta giorni, poiché l'inverno sta arrivando e nessuna nave può resistere alla morsa della banchisa di Kalte. Se non farai ritorno in tempo, il capitano sarà costretto a salpare senza di te.</p><p>Per sei giorni la Cardonal solca le acque tempestose del Kaltersee senza incontrare tempeste, ma di giorno in giorno la temperatura scende costantemente, finché uno strato di ghiaccio non ricopre i ponti. La mattina del settimo giorno, l'isola innevata di Tola viene avvistata all'orizzonte. Poco dopo, un vento leggero comincia a soffiare da est.</p><p>All'inizio sembra un pericolo da poco, ma in mezz'ora si scatena una furiosa bufera di neve, e ogni traccia di terra scompare rapidamente nella neve turbinante. La tempesta infuria per tutto il giorno. Venti tremendi tagliano le creste delle enormi onde grigie, e l'acqua si abbatte sui ponti, sugli alberi e sul sartiame della nave, gelando quasi all'istante in ghiaccio solido. Le fiancate della nave si ricoprono di uno strato di acqua marina spesso diversi piedi. Solo verso sera il tempo si rasserena, e sebbene il vento continui a soffiare forte, la furia della tempesta si è ormai esaurita.</p><p>Scopri presto che la tempesta ha spinto la nave quasi trenta miglia fuori rotta, lungo il margine della banchisa di Ljuk. Sai che tornare a Halle Bluff farebbe perdere un giorno prezioso, così decidi di sbarcare sulla banchisa e iniziare da lì la tua missione.</p><p>Mentre l'ultimo dei cani Kanu viene portato a terra, le tue guide ti illustrano i due possibili percorsi verso Ikaya. Il primo prevede una marcia di centotrenta miglia fino a Cloudmaker Mountain e poi, seguendo il terreno impervio del Viad Glacier, altre cento miglia prima di raggiungere la fortezza di ghiaccio. Il percorso alternativo comporta un viaggio più lungo, di quasi centottanta miglia, fino all'Hrod Basin, seguito da una marcia di cento miglia attraverso lo Storm Giant Pass fino a Ikaya. Anche con il tempo e la fortuna dalla vostra parte, entrambi i percorsi richiederanno dieci giorni di marcia estenuante prima di raggiungere la meta. Dovresti consultare la mappa di Kalte prima di decidere.</p>",
    "choices": [
     {
@@ -63,7 +63,7 @@
    ]
   },
   "5": {
-   "image": "public/img/book03/sec5.webp",
+   "image": "public/img/book03/sec005.webp",
    "text": "<p>Vedi due uomini con abiti a brandelli, raggomitolati vicino a un fuoco che sembra ardere dentro una piccola ciotola di metallo. Sopra le fiamme, la carcassa scuoiata di un piccolo animale gira su uno spiedo. Gli uomini sono vecchi e sdentati, e nei loro occhi obliqui brilla uno strano bagliore di follia.</p>",
    "choices": [
     {
@@ -188,7 +188,7 @@
    ]
   },
   "13": {
-   "image": "public/img/book03/sec13.webp",
+   "image": "public/img/book03/sec013.webp",
    "text": "<p>C'è una leva nel muro e uno spioncino al centro della porta. Guardando attraverso lo spioncino, assisti a una scena strana. Un uomo con una tunica scura è inginocchiato al centro di un pentacolo tracciato col gesso sul pavimento della stanza. Ha il capo chino e sembra essere in trance.</p>",
    "choices": [
     {
@@ -288,7 +288,7 @@
    ]
   },
   "19": {
-   "image": "public/img/book03/sec19.webp",
+   "image": "public/img/book03/sec019.webp",
    "text": "<p>Corri a perdifiato lungo il ponte di ghiaccio e ti getti per afferrare la mano di Dyce, ma è troppo tardi. Un istante prima che tu lo raggiunga, la sua presa cede, e precipita all'indietro nel vuoto spalancato. Un brivido ti percorre la schiena mentre il suo urlo si spegne nell'oscurità sottostante. Stai fissando impotente la gola quando Irian comincia a gridare: «Là, laggiù... sono sicuro di aver visto qualcosa.»</p><p>Sforzi gli occhi, sperando di vedere qualcosa, qualunque cosa, ma la gola è nera come mezzanotte. Ti volti e vedi Irian che indica, non la gola, ma l'orizzonte a ovest. «Guarda laggiù» dice, mostrando una cresta in lontananza. Due guerrieri vestiti di pelliccia sono in piedi su una grande piattaforma di ghiaccio. Stanno guardando nella tua direzione, allertati, senza dubbio, dall'urlo agonizzante di Dyce.</p><p>«Barbari dei Ghiacci» dice Fenor, con la voce tremante di paura. «Se raggiungono Ikaya prima di noi, siamo bell'e morti!»</p><p>Ora siete a quindici miglia dalla fortezza di ghiaccio, e restano meno di tre ore di luce.</p>",
    "choices": [
     {
@@ -367,7 +367,6 @@
    ]
   },
   "26": {
-   "image": "public/img/book03/sec26.webp",
    "text": "<p>Oltre alle Spade d'Osso, trovi anche un Pugnale e una Mazza, entrambi ricavati da osso massiccio. Se desideri conservare uno di questi oggetti, ricorda di segnarlo sul tuo Registro di Guerra come Arma. I Barbari dei Ghiacci portano anche strani bracciali al polso sinistro: sono lisci, privi di iscrizioni o marchi, e sembrano fatti d'oro massiccio.</p>",
    "effects": {
     "canAddItems": [
@@ -470,7 +469,7 @@
    ]
   },
   "31": {
-   "image": "public/img/book03/sec31.webp",
+   "image": "public/img/book03/sec031.webp",
    "text": "<p>La statua si solleva lentamente dall'altare e avanza verso di te. Man mano che si avvicina, senti un freddo intenso emanare dalla sua pelle liscia e pietrosa. I suoi movimenti sono però rigidi e incerti: potresti facilmente schivare le sue braccia tese.</p>",
    "choices": [
     {
@@ -2236,7 +2235,8 @@
       "tookDamage": false
      }
     }
-   ]
+   ],
+   "image": "public/img/book03/sec147.webp"
   },
   "148": {
    "text": "<p>Sei a metà della scalinata quando ti imbatti direttamente in una pattuglia di Barbari dei Ghiacci. Tenti di aprirti un varco combattendo, ma sono pesantemente corazzati ed equipaggiati con spade e lance. Ne uccidi molti prima di essere circondato e ricevere il colpo mortale.</p><p>La tua vita e la tua missione finiscono qui.</p>",
@@ -2302,7 +2302,8 @@
    "effects": {
     "loseEndurance": 2,
     "waivedByItem": "Olio di Baknar"
-   }
+   },
+   "image": "public/img/book03/sec150.webp"
   },
   "151": {
    "text": "<p>Mentre la bestia orrenda muore ai tuoi piedi, senti Dyce gridare: «Presto, dobbiamo allontanarci da qui. I Kalkoth non cacciano mai da soli.»</p><p>Afferrato lo Zaino, segui Dyce e Irian lungo un ripido sentiero di montagna, su e via dalla cengia di ghiaccio. Ma non avete percorso che una cinquantina di iarde quando la sciagura colpisce. Accecato dall'oscurità e dal vento gelido, Dyce non si accorge che il sentiero finisce bruscamente sull'orlo di un precipizio a strapiombo. Ti geli d'orrore sentendo le urla della tua guida svanire nel buio davanti a te. Con la morte che ti minaccia da ogni lato, ti aggrappi disperatamente alla roccia gelata.</p>",
@@ -2388,7 +2389,8 @@
      "text": "Prosegui",
      "section": 301
     }
-   ]
+   ],
+   "image": "public/img/book03/sec157.webp"
   },
   "158": {
    "text": "<p>Poiché il Barbaro dei Ghiacci esploratore procede sugli sci, potrai combattere solo un round di combattimento prima che lo slancio del suo attacco lo trascini oltre di te.</p>",
@@ -2441,7 +2443,8 @@
      "text": "Altrimenti, esci dalla tenda e attacca il Baknar",
      "section": 78
     }
-   ]
+   ],
+   "image": "public/img/book03/sec160.webp"
   },
   "161": {
    "text": "<p>Il Barbaro dei Ghiacci avanza lentamente, i suoi occhi bianchi e senza pupille ti fanno correre un brivido lungo la schiena. Nella mano destra stringe una scimitarra d'osso. Sebbene sia alzata per colpire, i suoi movimenti sono rigidi e incerti, come se stesse attaccando contro la propria volontà. È immune al Psicolaser.</p>",
@@ -2469,7 +2472,8 @@
      "text": "Se ritieni che non ci sia modo di salvarlo",
      "section": 257
     }
-   ]
+   ],
+   "image": "public/img/book03/sec162.webp"
   },
   "163": {
    "text": "<p>Mentre abbassi la leva, una porta di pietra scorre e sigilla la camera cosparsa di rifiuti. Quando sollevi la leva, la porta di pietra scorre di nuovo aprendosi.</p>",
@@ -2507,7 +2511,8 @@
       "minRounds": 6
      }
     }
-   ]
+   ],
+   "image": "public/img/book03/sec164.webp"
   },
   "165": {
    "text": "<p>Lo shock del suo attacco ti ha steso a terra. Quando riesci a rialzarti barcollando, vedi che si è fermato e si è tolto gli sci.</p>",
@@ -2542,7 +2547,8 @@
      "text": "Se il numero scelto è da 7 a 9",
      "section": 300
     }
-   ]
+   ],
+   "image": "public/img/book03/sec167.webp"
   },
   "168": {
    "text": "<p>Mentre metti piede sul quarzo, avverti una vibrazione che ti risale lungo la gamba fino al ginocchio. Vedi che, all'interno della lastra, pulsa una luce fioca, e un ronzio si leva dall'altare.</p><p>Con il cuore che batte all'impazzata, ti prepari a un attacco e avanzi lentamente.</p>",
@@ -2586,7 +2592,8 @@
      "text": "Se non la possiedi",
      "section": 175
     }
-   ]
+   ],
+   "image": "public/img/book03/sec170.webp"
   },
   "171": {
    "text": "<p>Il tappo di questa Fiala è incastrato e devi fare molta attenzione a non spezzare il sottile collo di vetro. Si allenta gradualmente e annusi il liquido arancione.</p>",
@@ -2631,7 +2638,8 @@
      "text": "Se non possiedi nessuno dei due",
      "section": 200
     }
-   ]
+   ],
+   "image": "public/img/book03/sec173.webp"
   },
   "174": {
    "text": "<p>Il Kalkoth è morto, ma i suoi ringhi sembrano ancora echeggiare per la caverna. Ti accorgi all'improvviso che un'altra delle bestie sta piombando lungo il tunnel verso di te. È la compagna del Kalkoth, ed è decisa a vendicarsi. Ora hai solo una possibile via di fuga: devi attraversare il lago.</p>",
@@ -2903,7 +2911,8 @@
      "text": "Continua",
      "section": 40
     }
-   ]
+   ],
+   "image": "public/img/book03/sec191.webp"
   },
   "192": {
    "text": "<p>Rifletti un istante sul da farsi.</p>",
@@ -3259,7 +3268,8 @@
      "text": "Se vuoi tentare di fuggire",
      "section": 149
     }
-   ]
+   ],
+   "image": "public/img/book03/sec216.webp"
   },
   "217": {
    "text": "<p>Il monolite esplode improvvisamente, scagliando centinaia di schegge affilate come rasoi che sibilano nell'aria. Vieni trafitto dalle schegge di pietra e scaraventato contro la parete opposta dalla violenza dell'esplosione. Perdi 10 punti Resistenza.</p>",
@@ -3285,7 +3295,8 @@
      "text": "Puoi ora esaminare la porta della fortezza",
      "section": 52
     }
-   ]
+   ],
+   "image": "public/img/book03/sec218.webp"
   },
   "219": {
    "text": "<p>Percepisci che il basso brontolio che riecheggia in questa parte di Ikaya è molto più forte lungo il corridoio ovest che lungo quello est. C'è qualcosa di innaturale nel suo tono che ti mette a disagio. Decidi di evitare il corridoio ovest e ti dirigi verso est.</p>",
@@ -3504,7 +3515,8 @@
      "text": "Se decidi di fermarti a cercare tra le ossa sparse sul pavimento",
      "section": 115
     }
-   ]
+   ],
+   "image": "public/img/book03/sec235.webp"
   },
   "236": {
    "text": "<p>Non appena il Braccialetto d'Oro si chiude di scatto intorno al tuo polso, un dolore atroce ti trafigge la testa. Sei sotto l'attacco di una potente forza mentale che cerca di prosciugare la tua volontà.</p>",
@@ -3706,7 +3718,8 @@
      "text": "Prosegui",
      "section": 350
     }
-   ]
+   ],
+   "image": "public/img/book03/sec252.webp"
   },
   "253": {
    "text": "<p>Il Kalkoth ti colpisce con una forza tale da farti cadere all'indietro sul ghiaccio sottile del lago. Sei stordito e non ti accorgi dei denti aguzzi che ormai si serrano sul tuo corpo mentre affondi.</p>",
@@ -3815,7 +3828,8 @@
       "tookDamage": false
      }
     }
-   ]
+   ],
+   "image": "public/img/book03/sec259.webp"
   },
   "260": {
    "text": "<p>A causa della sorpresa del tuo attacco, colpisci due volte prima che il Barbaro dei Ghiacci possa reagire. Non perdi punti Resistenza durante i primi due round di combattimento. Se il Barbaro dei Ghiacci è ancora vivo al terzo round, estrae una scimitarra d'osso e ti attacca. È immune al Psicolaser.</p>",
@@ -3928,7 +3942,8 @@
      "text": "Se vuoi attraversare il tempio calpestando solo le lastre di granito",
      "section": 244
     }
-   ]
+   ],
+   "image": "public/img/book03/sec264.webp"
   },
   "265": {
    "text": "<p>Questa strana creatura è una Serpe Glaciale di Cristallo, una bestia necrofaga che ormai si nutre dei resti delle sventurate creature entrate nella caverna. La sua pelle dura è quasi trasparente, e i suoi organi interni si vedono pulsare al suo interno. Un'ampia bocca si apre nella testa cristallina, rivelando file su file di denti di cristallo aguzzi. Hai la schiena premuta contro la porta di pietra e non c'è modo di evitare il mostro. Devi combatterlo fino alla morte. È immune al Psicolaser.</p>",
@@ -3944,7 +3959,8 @@
      "text": "Se vinci il combattimento",
      "section": 3
     }
-   ]
+   ],
+   "image": "public/img/book03/sec265.webp"
   },
   "266": {
    "text": "<p>Cerchi disperatamente di liberare il piede, ma la slitta sta già precipitando nel vuoto. Con un ultimo sforzo, strappi via il piede, ma è troppo tardi per evitare la caduta. Mentre precipiti nel crepaccio, senti le urla terrorizzate delle tue guide svanire sopra di te.</p>",
@@ -4246,7 +4262,8 @@
      "text": "Se vuoi restare a combattere",
      "section": 343
     }
-   ]
+   ],
+   "image": "public/img/book03/sec285.webp"
   },
   "286": {
    "text": "<p>La lancia ti ha graffiato la scapola e ti ha gettato a terra. Mentre ti rialzi in fretta, vedi che l'esploratore Barbaro dei Ghiacci si è fermato e ha tolto gli sci. Avanza verso di te con in pugno una sinistra spada d'osso. Ti prepari al combattimento.</p>",
@@ -4353,7 +4370,8 @@
      "text": "Se il numero pescato è da 5 a 9",
      "section": 220
     }
-   ]
+   ],
+   "image": "public/img/book03/sec291.webp"
   },
   "292": {
    "text": "<p>L'enorme porta scorre e si apre, rivelando una lunga passerella di pietra che attraversa una vasta camera immersa nel bagliore arancione di fornaci ardenti. Una folata d'aria calda e putrida ti investe, e un rumore assordante ti assale le orecchie. Quindici metri sotto la passerella, grandi vasche di pietra pendono sospese sopra fiamme ruggenti. Ogni vasca è colma di melma ribollente che si contorce e si dimena come se fosse viva.</p><p>Paura e ripugnanza ti stringono lo stomaco mentre cominci a intuire il sinistro segreto di questa sala. File su file di piedistalli di pietra recano i cadaveri mutilati di Barbari dei Ghiacci, la pelle strappata via e fissata aperta con spilli. Ogni cadavere è assistito da creature raccapriccianti, una legione spettrale di mutanti che striscia e si contorce sul pavimento intriso di sangue. Questa sala è un luogo di grande malvagità, un laboratorio da incubo, un tempio dell'Arte Nera della Negromanzia costruito da Vonotar il Traditore.</p><p>Dall'altra parte della passerella, un'altra porta scorre improvvisamente indietro rivelando quattro Barbari dei Ghiacci mutanti. Mentre avanzano verso di te strascicando i piedi, un misto di orrore e pietà ti sopraffà i sensi.</p>",
@@ -4366,7 +4384,8 @@
      "text": "Se vuoi fuggire da questo luogo terribile",
      "section": 130
     }
-   ]
+   ],
+   "image": "public/img/book03/sec292.webp"
   },
   "293": {
    "text": "<p>Le creature in questa caverna sono Kalkoth, predatori selvaggi e crudeli di Kalte. La loro preda preferita è il Baknar, ed è proprio la carcassa di uno di questi animali quella sparsa sul pavimento della caverna. C'è un altro passaggio che conduce a nord, ma si trova dall'altra parte della caverna.</p>",
@@ -4564,7 +4583,8 @@
      "text": "Se decidi di lasciare l'Elmo dove si trova, puoi esplorare le scale",
      "section": 323
     }
-   ]
+   ],
+   "image": "public/img/book03/sec303.webp"
   },
   "304": {
    "text": "<p>La possente spada illumina il corridoio con il suo bagliore dorato. L'Helghast lancia un grido raccapricciante e indietreggia, gli occhi che ardono di un rosso infuocato, pieni di odio e paura. Riconosce il potere che impugni, una forza capace di significare morte e distruzione eterna per la sua specie. Nel panico più cieco, ti attacca con un potente Psicolaser. A meno che tu non possieda l'Arte Ramas dello Psicoschermo, devi perdere 2 punti Resistenza per ogni scontro che combatti contro questa creatura. È immune al Psicolaser. Tuttavia, poiché la creatura è uno dei non-morti, ricorda di raddoppiare tutti i punti Resistenza che perde a causa del potere della Spada del Sole.</p>",
@@ -4584,7 +4604,8 @@
      "text": "Se vinci il combattimento",
      "section": 20
     }
-   ]
+   ],
+   "image": "public/img/book03/sec304.webp"
   },
   "305": {
    "text": "<p>La pesante bestia rotola giù dalla slitta e giace immobile sul ghiaccio. Fenor è riuscito ad accendere una torcia e la agita contro gli altri due Baknar. Terrorizzati dal fuoco, si voltano rapidamente e fuggono. Esulti nel vederli scomparire e ti volti per congratularti con le tue coraggiose guide, ma resti sbalordito nello scoprire che hanno già iniziato a scuoiare il Baknar morto. Guardi con disgusto mentre Dyce apre la bestia dalla gola al ventre con il suo coltello da caccia affilato. Tira indietro rapidamente la pelliccia bianca e raccoglie manciate di olio denso da sotto la pelle. L'odore di quest'olio è orribile, così orribile che perfino i cani Kanu affondano il muso nella neve per evitarlo. Non credi ai tuoi occhi quando i due guide iniziano a spalmarsi quest'olio ripugnante su tutto il viso e dentro i vestiti.</p><p>«Olio di Baknar», esclama Fenor con entusiasmo. «Niente di meglio per restare caldi e asciutti.» Ritira la mano dalla bestia morta e ti offre una manciata della gelatina fetida.</p>",
@@ -4597,7 +4618,8 @@
      "text": "Se il pensiero di puzzare come un tino di formaggio rancido non ti attira",
      "section": 281
     }
-   ]
+   ],
+   "image": "public/img/book03/sec305.webp"
   },
   "306": {
    "text": "<p>Mentre attraversi l'arco, noti una leva incassata nella parete di pietra scura. La tiri e una porta scorre di lato, sigillando il tempio alle tue spalle. La temperatura è più calda e senti un basso rombo da qualche parte in lontananza. Davanti a te scorgi una luce in fondo a un passaggio buio. Scopri che proviene da un portale oblungo, vicino al pavimento, attraverso il quale vedi un corridoio tre metri più in basso.</p>",
@@ -4922,7 +4944,8 @@
      "text": "Se preferisci, puoi ispezionare la porta all'estremità del balcone",
      "section": 61
     }
-   ]
+   ],
+   "image": "public/img/book03/sec330.webp"
   },
   "331": {
    "text": "<p>Il giorno seguente, il clima diventa gelido e pungente. Un vento del nord porta una grandine di ghiaccio che ti sferza il volto. Le tue labbra presto si spaccano e sanguinano. A mezzogiorno, sei avvolto da una tormenta che rende il cammino lento e sfiancante. Il vento ululante ti costringe a scendere dalla slitta e spingerla. Ti senti completamente esausto. Le tue mani e le dita dei piedi sono intorpidite dal freddo; il sudore dello sforzo gela sulla tua pelle, ricoprendo di uno strato di ghiaccio stivali e guanti.</p><p>Quando raggiungi il bordo del ghiacciaio, è quasi notte. Siete tutti così esausti da avere a malapena la forza di piantare la tenda e consumare un pasto. Il disastro vi ha quasi sopraffatti: hai i geloni alle dita dei piedi, delle mani e al naso, e a meno che tu non abbia l'Arte Ramas della Guarigione, perdi 4 punti Resistenza.</p><p>Scegli un numero dalla Tabella del Destino.</p>",
@@ -4993,7 +5016,8 @@
      "text": "Se vuoi lasciare il tempio",
      "section": 306
     }
-   ]
+   ],
+   "image": "public/img/book03/sec334.webp"
   },
   "335": {
    "text": "<p>Scopri che la parete di roccia ghiacciata offre molti appigli, ma non riesci a trovare una presa sicura con i tuoi guanti di pelliccia; se però ti togli i guanti per arrampicarti, sai che i geloni sono inevitabili.</p>",
@@ -5057,7 +5081,8 @@
      "text": "Continua",
      "section": 301
     }
-   ]
+   ],
+   "image": "public/img/book03/sec340.webp"
   },
   "341": {
    "text": "<p>Percepisci la presenza di una potente forza vitale oltre l'arco nebbioso. Mentre ti concentri, ricordi improvvisamente una leggenda che ti fu raccontata quando eri bambino: «La Leggenda del Portale di Vagadyn». Era la storia dei Demoni del Ghiaccio e di come un tempo combatterono una guerra per poter lasciare il loro mondo e giungere a Kalte. Erano creature senza forma né sostanza, ed esistevano come pura energia in un'altra dimensione, al di là dei confini dello spazio e del tempo. I Demoni del Ghiaccio scoprirono il portale di Vagadyn, una sorta di porta tra il loro mondo e Magnamund; si combatterono a vicenda per entrarvi, ignari del destino che li attendeva. Anche gli Antichi avevano scoperto il portale. Quando i Demoni del Ghiaccio attraversarono il Vagadyn, i loro spiriti furono imprigionati in cristalli dagli astuti Antichi, che sfruttarono il potere dei Demoni del Ghiaccio per costruire Ikaya. Le ciotole M'lare che illuminano la fortezza racchiudono ciascuna lo spirito di un Demone del Ghiaccio minore, intrappolato al suo interno. Ricordi anche che la leggenda mette in guardia dal distruggere queste prigioni di cristallo: se un Demone del Ghiaccio viene liberato, cercherà di impossessarsi del corpo del suo salvatore.</p><p>Messo in allerta dalla tua Arte Ramas, entri nell'arco nebbioso.</p>",
@@ -5127,7 +5152,8 @@
      "text": "Se non lo possiedi",
      "section": 147
     }
-   ]
+   ],
+   "image": "public/img/book03/sec344.webp"
   },
   "345": {
    "text": "<p>Chiudi gli occhi e ti concentri per bloccare la Forza Mentale che ti attacca. Riesci gradualmente a controllare il dolore, quel tanto che basta per strapparti il Bracciale dal polso e scagliarlo a terra. Maledicendo la tua sfortuna, barcolli incerto verso l'incrocio in fondo al corridoio.</p>",

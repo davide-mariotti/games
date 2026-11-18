@@ -12,12 +12,13 @@ e per le icone di Arti Ramas/Armi/Oggetti nella creazione del personaggio.
   Oggetti, e il motivo della scelta del formato quadrato 1:1. Leggilo prima
   di generare qualsiasi immagine, e aggiornalo se decidi di cambiare stile
   in futuro (poi rigenera i prompt).
-- `riferimenti/` — 22 ritratti di riferimento: Lupo Solitario, le 6 creature
+- `riferimenti/` — 25 ritratti di riferimento: Lupo Solitario, le 6 creature
   del bestiario "storico" dal Libro 1 (Kraan, Giak, Vordak, Drakkar, Gurgaz,
   Tigerwolf), le 5 new-entry del Libro 2 (Helghast, Zlanbeast, Vonotar,
   Rhygar, Lord Axim), le 6 new-entry del Libro 3 (Barbaro dei Ghiacci,
   Kalkoth, Baknar, Demone di Ghiaccio, Akraa'Neonor, Loi-Kymar) e le 4
-  new-entry del Libro 4 (Barraka, Capitano D'Val, Elix, Madelon).
+  new-entry del Libro 4 (Barraka, Capitano D'Val, Elix, Madelon) e le 3
+  del Libro 5 (Banedon, Signore delle Tenebre Haakon, Itikar).
   **Generali PRIMA di tutto il resto**: sono pensati per essere riusati come
   immagine-guida quando generi le scene che contengono quel soggetto, così
   il suo aspetto resta coerente da un'immagine all'altra E tra un libro e il
@@ -27,6 +28,7 @@ e per le icone di Arti Ramas/Armi/Oggetti nella creazione del personaggio.
 - `book02/` — 50 prompt pronti per il Libro 2 (Fuoco sulle Acque).
 - `book03/` — 50 prompt pronti per il Libro 3 (Le Caverne di Kalte).
 - `book04/` — 50 prompt pronti per il Libro 4 (Il Baratro della Perdizione).
+- `book05/` — 47 prompt pronti per il Libro 5 (Ombra sulla Sabbia).
   Tutte e quattro le cartelle: un file per sezione, già completo (riga "Base
   da riutilizzare" + stile + personaggio/bestiario pertinenti + scena), più
   un `_indice.md` con lo stato (sostituzione di un'immagine esistente o

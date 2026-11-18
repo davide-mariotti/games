@@ -1,0 +1,15 @@
+Base da riutilizzare: ritratto di riferimento di Lupo Solitario (riferimenti/ritratto-lupo-solitario.txt), ritratto di riferimento di Kraan (riferimenti/ritratto-kraan.txt)
+
+Dark-fantasy digital painting, painterly brushwork with visible textured strokes, semi-realistic illustrative style (not photographic, not flat vector, not anime, not comic-book line art). Moody, cinematic lighting with strong chiaroscuro contrast: one dominant light source (firelight, torchlight, cold overcast daylight, or a magical glow) cutting through heavy shadow. Desaturated, cold base palette (charcoal grey, iron blue, bone white, deep mossy green) accented by pockets of warm color (ember orange, blood red, torch gold) concentrated at the focal point. Atmospheric depth via fog, smoke, dust, or mist layers separating foreground and background. Epic, grim, foreboding mood — melancholic heroism, dark fantasy, not gratuitously gory, suitable for a teen-and-up audience. Dynamic cinematic composition, rule-of-thirds framing, slightly low or dramatic camera angle, single clear focal action. Square 1:1 aspect ratio, high detail, no text, no logos, no watermarks, no captions, no speech bubbles, no comic panel borders, no UI elements, no modern objects anywhere in the image.
+
+The hero, Lone Wolf: a lean, battle-hardened young warrior in his early twenties, short dark brown hair, weathered but resolute face, wears a hooded grey-green traveling cloak over dark leather-and-mail armor, a longsword at his hip. Northern-European fantasy warrior archetype, grounded and non-modern, no armor insignia or logos, no anachronistic gear.
+
+Kraan: a massive black-scaled, bat-winged flying beast with a reptilian head, glowing red eyes and taloned claws — a flying beast ridden by Darklord officers.
+
+Drakkarim: brutal human warriors in the Darklords' service, clad in jet-black armour and scarlet robes, their faces hidden behind hideous black death-mask helms, wielding cruel black swords, twisted black scimitars and bronze crossbows.
+
+The Skyrider's dwarf crew: stocky, barrel-chested dwarves with ruddy cheeks and braided beards, leather jerkins over rough wool clothes, armed with two-handed battle-axes and smoking steel-barrelled dwarf guns; Nolrim, their young captain, swings a great two-handed battle-axe.
+
+The Skyrider: Banedon's flying ship, a sleek dark-wood hull without sails that floats through the air with a low hum, long outrigger booms on either side, a raised stern platform with a glowing crystal steering wheel, crewed by dwarves.
+
+Scene: Mid-air battle: Drakkarim leap from their shrieking Kraan onto the decks and outriggers of the Skyrider, black swords drawn; the dwarves, caught unarmed, fight back with skill and fury, young Nolrim roaring with his battle-axe, as Lone Wolf staggers to his feet on the lower deck.
