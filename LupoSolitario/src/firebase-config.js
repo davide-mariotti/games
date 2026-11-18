@@ -1,29 +1,32 @@
-// Firebase Configuration
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
-
+// Firebase, loaded only when someone signs in (or signed in last time): signed out, the game never contacts Google.
+// The web API key is public by design; access is limited by the Firestore rules (each user reads and writes only their own saves).
+const SDK = 'https://www.gstatic.com/firebasejs/10.8.0/';
 const firebaseConfig = {
-    apiKey: "AIzaSyDmZrAr_n9Ml1qDyE0Yfd9FTJVfPE6_o-Q",
-    authDomain: "luposolitario-dm.firebaseapp.com",
-    projectId: "luposolitario-dm",
-    storageBucket: "luposolitario-dm.firebasestorage.app",
-    messagingSenderId: "281621563108",
-    appId: "1:281621563108:web:24a9271c8463e9854ecef1",
-    measurementId: "G-YNR6K0RSC1"
+  apiKey: 'AIzaSyDmZrAr_n9Ml1qDyE0Yfd9FTJVfPE6_o-Q',
+  authDomain: 'luposolitario-dm.firebaseapp.com',
+  projectId: 'luposolitario-dm',
+  storageBucket: 'luposolitario-dm.firebasestorage.app',
+  messagingSenderId: '281621563108',
+  appId: '1:281621563108:web:24a9271c8463e9854ecef1',
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const analytics = getAnalytics(app);
+let app = null;
+async function firebaseApp() {
+  if (!app) {
+    const { initializeApp } = await import(`${SDK}firebase-app.js`);
+    app = initializeApp(firebaseConfig);
+  }
+  return app;
+}
 
-// Configure Google Auth Provider
-const googleProvider = new GoogleAuthProvider();
-googleProvider.setCustomParameters({
-    prompt: 'select_account'
-});
+// { auth, ...firebase-auth exports }
+export async function authApi() {
+  const [a, mod] = await Promise.all([firebaseApp(), import(`${SDK}firebase-auth.js`)]);
+  return { ...mod, auth: mod.getAuth(a) };
+}
 
-export { auth, db, analytics, googleProvider };
+// { db, ...firebase-firestore exports }
+export async function firestoreApi() {
+  const [a, mod] = await Promise.all([firebaseApp(), import(`${SDK}firebase-firestore.js`)]);
+  return { ...mod, db: mod.getFirestore(a) };
+}

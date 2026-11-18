@@ -5,101 +5,28 @@ import { gameState } from '../game-state.js';
 // Sword-type weapons that grant Sommerswerd proficiency via Scherma (Weaponskill)
 const SOMMERSWERD_SWORD_TYPES = ['Spada Corta', 'Spada', 'Spadone'];
 
-// Combat results table (from original fight.js)
-const COMBAT_TABLE = {
-    '-11': [
-        [6, 0], [0, 999], [0, 999], [0, 8], [0, 8],
-        [1, 7], [2, 6], [3, 5], [4, 4], [5, 3]
-    ],
-    '-10': [
-        [7, 0], [0, 999], [0, 8], [0, 7], [1, 7],
-        [2, 6], [3, 6], [4, 5], [5, 4], [6, 3]
-    ],
-    '-9': [
-        [7, 0], [0, 999], [0, 8], [0, 7], [1, 7],
-        [2, 6], [3, 6], [4, 5], [5, 4], [6, 3]
-    ],
-    '-8': [
-        [8, 0], [0, 8], [0, 7], [1, 7], [2, 6],
-        [3, 6], [4, 5], [5, 5], [6, 4], [7, 3]
-    ],
-    '-7': [
-        [9, 0], [0, 8], [0, 7], [1, 6], [2, 6],
-        [3, 5], [4, 5], [5, 4], [6, 4], [7, 3]
-    ],
-    '-6': [
-        [10, 0], [0, 7], [1, 6], [2, 6], [3, 5],
-        [4, 5], [5, 4], [6, 4], [7, 3], [8, 3]
-    ],
-    '-5': [
-        [11, 0], [1, 6], [2, 6], [3, 5], [4, 5],
-        [5, 4], [6, 4], [7, 3], [8, 3], [9, 2]
-    ],
-    '-4': [
-        [12, 0], [2, 6], [3, 5], [4, 5], [5, 4],
-        [6, 4], [7, 3], [8, 3], [9, 2], [10, 2]
-    ],
-    '-3': [
-        [13, 0], [3, 5], [4, 5], [5, 4], [6, 4],
-        [7, 3], [8, 3], [9, 2], [10, 2], [11, 2]
-    ],
-    '-2': [
-        [14, 0], [4, 5], [5, 4], [6, 4], [7, 3],
-        [8, 3], [9, 2], [10, 2], [11, 2], [12, 0]
-    ],
-    '-1': [
-        [15, 0], [5, 4], [6, 4], [7, 3], [8, 3],
-        [9, 2], [10, 2], [11, 2], [12, 0], [14, 0]
-    ],
-    '0': [
-        [12, 0], [3, 5], [4, 4], [5, 4], [6, 3],
-        [7, 2], [8, 2], [9, 1], [10, 0], [11, 0]
-    ],
-    '1': [
-        [14, 0], [4, 5], [5, 4], [6, 3], [7, 3],
-        [8, 2], [9, 2], [10, 1], [11, 0], [12, 0]
-    ],
-    '2': [
-        [14, 0], [4, 5], [5, 4], [6, 3], [7, 3],
-        [8, 2], [9, 2], [10, 1], [11, 0], [12, 0]
-    ],
-    '3': [
-        [16, 0], [5, 4], [6, 3], [7, 3], [8, 2],
-        [9, 2], [10, 2], [11, 1], [12, 0], [14, 0]
-    ],
-    '4': [
-        [16, 0], [5, 4], [6, 3], [7, 3], [8, 2],
-        [9, 2], [10, 2], [11, 1], [12, 0], [14, 0]
-    ],
-    '5': [
-        [18, 0], [6, 4], [7, 3], [8, 3], [9, 2],
-        [10, 2], [11, 1], [12, 0], [14, 0], [16, 0]
-    ],
-    '6': [
-        [18, 0], [6, 4], [7, 3], [8, 3], [9, 2],
-        [10, 2], [11, 1], [12, 0], [14, 0], [16, 0]
-    ],
-    '7': [
-        [999, 0], [8, 3], [9, 3], [10, 2], [11, 2],
-        [12, 2], [14, 1], [16, 0], [18, 0], [999, 0]
-    ],
-    '8': [
-        [999, 0], [8, 3], [9, 3], [10, 2], [11, 2],
-        [12, 2], [14, 1], [16, 0], [18, 0], [999, 0]
-    ],
-    '9': [
-        [999, 0], [8, 3], [9, 3], [10, 2], [11, 2],
-        [12, 2], [14, 1], [16, 0], [18, 0], [999, 0]
-    ],
-    '10': [
-        [999, 0], [8, 3], [9, 3], [10, 2], [11, 2],
-        [12, 2], [14, 1], [16, 0], [18, 0], [999, 0]
-    ],
-    '11': [
-        [999, 0], [9, 3], [10, 2], [11, 2], [12, 2],
-        [14, 1], [16, 1], [18, 0], [999, 0], [999, 0]
-    ]
-};
+// Combat Results Table as printed in the books (Project Aon, Flight from the Dark: crtneg/crtpos).
+// One row per random number 0-9; 13 columns of combat ratio: <=-11, -10/-9, -8/-7, -6/-5, -4/-3, -2/-1, 0,
+// +1/+2, +3/+4, +5/+6, +7/+8, +9/+10, >=+11. Each cell is [enemy ENDURANCE loss, Lone Wolf loss]; K (999) = killed outright.
+const K = 999;
+export const COMBAT_TABLE = [
+  /* 0 */ [[6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0], [12, 0], [14, 0], [16, 0], [18, 0], [K, 0], [K, 0], [K, 0]],
+  /* 1 */ [[0, K], [0, K], [0, 8], [0, 6], [1, 6], [2, 5], [3, 5], [4, 5], [5, 4], [6, 4], [7, 4], [8, 3], [9, 3]],
+  /* 2 */ [[0, K], [0, 8], [0, 7], [1, 6], [2, 5], [3, 5], [4, 4], [5, 4], [6, 3], [7, 3], [8, 3], [9, 3], [10, 2]],
+  /* 3 */ [[0, 8], [0, 7], [1, 6], [2, 5], [3, 5], [4, 4], [5, 4], [6, 3], [7, 3], [8, 3], [9, 2], [10, 2], [11, 2]],
+  /* 4 */ [[0, 8], [1, 7], [2, 6], [3, 5], [4, 4], [5, 4], [6, 3], [7, 3], [8, 2], [9, 2], [10, 2], [11, 2], [12, 2]],
+  /* 5 */ [[1, 7], [2, 6], [3, 5], [4, 4], [5, 4], [6, 3], [7, 2], [8, 2], [9, 2], [10, 2], [11, 2], [12, 2], [14, 1]],
+  /* 6 */ [[2, 6], [3, 6], [4, 5], [5, 4], [6, 3], [7, 2], [8, 2], [9, 2], [10, 2], [11, 1], [12, 1], [14, 1], [16, 1]],
+  /* 7 */ [[3, 5], [4, 5], [5, 4], [6, 3], [7, 2], [8, 2], [9, 1], [10, 1], [11, 1], [12, 0], [14, 0], [16, 0], [18, 0]],
+  /* 8 */ [[4, 4], [5, 4], [6, 3], [7, 2], [8, 1], [9, 1], [10, 0], [11, 0], [12, 0], [14, 0], [16, 0], [18, 0], [K, 0]],
+  /* 9 */ [[5, 3], [6, 3], [7, 2], [8, 0], [9, 0], [10, 0], [11, 0], [12, 0], [14, 0], [16, 0], [18, 0], [K, 0], [K, 0]],
+];
+
+// [enemy loss, hero loss] for a combat ratio and a random number 0-9
+export function combatResult(ratio, n) {
+  const col = ratio <= -11 ? 0 : ratio >= 11 ? 12 : 6 + Math.sign(ratio) * Math.ceil(Math.abs(ratio) / 2);
+  return COMBAT_TABLE[n][col];
+}
 
 export class CombatManager {
     constructor() {
@@ -157,7 +84,7 @@ export class CombatManager {
             oxygenSafeRounds
         });
 
-        this.log(`⚔️ Combattimento contro ${enemyData.name}!`);
+        this.log(`Combattimento contro ${enemyData.name}.`);
     }
 
     // Calculate force ratio
@@ -284,18 +211,10 @@ export class CombatManager {
         const state = gameState.getState();
         const combat = state.combatState;
 
-        this.log(`🎲 Numero del Destino: ${destinyNumber} | Rapporto di Forza: ${forceRatio}`);
+        this.log(`Round ${combat.rounds.length + 1} · numero ${destinyNumber} · rapporto ${forceRatio > 0 ? '+' : ''}${forceRatio}`);
 
-        // Clamp force ratio to table bounds
         const clampedRatio = Math.max(-11, Math.min(11, forceRatio));
-        const ratioKey = clampedRatio.toString();
-
-        if (!COMBAT_TABLE[ratioKey]) {
-            this.log('❌ Errore: Rapporto di Forza non valido');
-            return null;
-        }
-
-        let [enemyDamage, heroDamage] = COMBAT_TABLE[ratioKey][destinyNumber];
+        let [enemyDamage, heroDamage] = combatResult(forceRatio, destinyNumber);
 
         // Sommerswerd doubles ENDURANCE lost by undead enemies (e.g. Helghast), but never
         // the 999 "instant kill" sentinel value, which isn't an ENDURANCE point count.
@@ -366,17 +285,17 @@ export class CombatManager {
 
         // Log the results
         if (enemyDamage === 999) {
-            this.log(`💀 Nemico: MORTO ISTANTANEAMENTE`);
+            this.log(`${combat.enemy} muore sul colpo.`, 'good');
         } else {
-            this.log(`🗡️ Nemico: -${enemyDamage} Resistenza (${Math.max(0, newEnemyResistenza)} rimasti)`);
+            this.log(`${combat.enemy}: -${enemyDamage} (${Math.max(0, newEnemyResistenza)})`, enemyDamage ? 'good' : '');
         }
 
         if (heroDamage === 999) {
-            this.log(`💀 Lupo Solitario: MORTO`);
+            this.log('Lupo Solitario cade.', 'bad');
         } else if (heroDamage > 0) {
-            this.log(`❤️ Lupo Solitario: -${heroDamage} Resistenza (${newHeroResistenza} rimasti)`);
+            this.log(`Lupo Solitario: -${heroDamage} (${newHeroResistenza})`, 'bad');
         } else {
-            this.log(`🛡️ Lupo Solitario: Nessun danno!`);
+            this.log('Lupo Solitario: nessun danno.', 'good');
         }
 
         // Check for combat end (defeat takes priority over a simultaneous kill)
@@ -386,7 +305,7 @@ export class CombatManager {
         if (newEnemyResistenza <= 0 || enemyDamage === 999) {
             const defeatedName = combat.enemy;
             if (this.enemyQueue.length > 0) {
-                this.log(`🎉 ${defeatedName} sconfitto! Il prossimo nemico avanza...`);
+                this.log(`${defeatedName} è a terra. Avanza il prossimo.`, 'good');
                 this.engageNextEnemy();
                 return 'next-enemy';
             }
@@ -406,20 +325,17 @@ export class CombatManager {
     // Flee combat (if allowed)
     flee() {
         if (!this.canFlee) {
-            this.log('⛔ Non puoi fuggire da questo combattimento!');
+            this.log('Da questo combattimento non si fugge.', 'bad');
             return false;
         }
 
         // Execute one round, but only count hero damage
         const destinyNumber = getRandomDestinyNumber();
         const forceRatio = this.calculateForceRatio();
-        const clampedRatio = Math.max(-11, Math.min(11, forceRatio));
-        const ratioKey = clampedRatio.toString();
-
-        const [, heroDamage] = COMBAT_TABLE[ratioKey][destinyNumber];
+        const [, heroDamage] = combatResult(forceRatio, destinyNumber);
         gameState.takeDamage(heroDamage);
 
-        this.log(`🏃 Fuga! Hai subito ${heroDamage} danni mentre scappavi.`);
+        this.log(`Fuga: -${heroDamage} mentre scappi.`, 'bad');
         this.enemyQueue = [];
         gameState.endCombat();
         return true;
@@ -428,9 +344,9 @@ export class CombatManager {
     // End combat
     endCombat(result) {
         if (result === 'victory') {
-            this.log('🎉 VITTORIA!');
+            this.log('Vittoria.', 'good');
         } else if (result === 'defeat') {
-            this.log('💀 SCONFITTA...');
+            this.log('Sconfitta.', 'bad');
         }
 
         this.enemyQueue = [];
@@ -438,11 +354,19 @@ export class CombatManager {
     }
 
     // Add log entry
-    log(message) {
-        this.combatLog.push({
-            timestamp: Date.now(),
-            message
-        });
+    log(message, kind = '') {
+        this.combatLog.push({ timestamp: Date.now(), message, kind });
+    }
+
+    // After a reload mid-fight: the round-by-round state is in the save, but this manager's own
+    // bookkeeping (which enemy, who's next, flee options) lives only in memory. Rebuild it from the section.
+    resume(combatData, combatState) {
+        const list = Array.isArray(combatData) ? combatData : [combatData];
+        const at = Math.max(0, list.findIndex((e) => e.name === combatState.enemy));
+        this.combatData = list[at];
+        this.enemyQueue = list.slice(at + 1);
+        this.canFlee = this.combatData.canFlee || false;
+        this.combatLog = [{ timestamp: Date.now(), message: `Il combattimento contro ${combatState.enemy} riprende.`, kind: '' }];
     }
 
     // Get combat log

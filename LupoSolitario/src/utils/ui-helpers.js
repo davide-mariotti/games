@@ -1,151 +1,140 @@
-// UI Utilities - Toast notifications and modal helpers
+// UI helpers: toasts and dialogs. Every dialog settles its promise however it is closed
+// (button, X, backdrop or Esc), so whatever is awaiting it never hangs.
+import { icon, noEmoji } from '../ui/kit.js';
+
+const TOAST_ICON = { success: 'check', error: 'triangle-alert', warning: 'triangle-alert', info: 'info' };
 
 export class UIHelpers {
-    static showToast(message, type = 'info') {
-        const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;
-        toast.textContent = message;
+  static showToast(message, type = 'info') {
+    let box = document.querySelector('.toast-container');
+    if (!box) {
+      box = document.createElement('div');
+      box.className = 'toast-container';
+      box.setAttribute('role', 'status');
+      document.body.appendChild(box);
+    }
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = icon(TOAST_ICON[type] || 'info');
+    toast.append(noEmoji(message));
+    box.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
 
-        let toastContainer = document.querySelector('.toast-container');
-        if (!toastContainer) {
-            toastContainer = document.createElement('div');
-            toastContainer.className = 'toast-container';
-            document.body.appendChild(toastContainer);
-        }
+  // options: title, wide, buttons {selector: (event, modal) => ...}, dismissible (default true), onDismiss.
+  // modal.close() removes it without calling onDismiss.
+  static showModal(content, options = {}) {
+    const dismissible = options.dismissible !== false;
+    const before = document.activeElement;
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML = `
+      <div class="modal ${options.wide ? 'wide' : ''}" role="dialog" aria-modal="true" ${options.title ? 'aria-labelledby="modal-title"' : ''}>
+        ${options.title || dismissible ? `<div class="modal-header">
+          <h2 id="modal-title">${options.title || ''}</h2>
+          ${dismissible ? `<button class="modal-close" type="button" data-action="close" aria-label="Chiudi">${icon('x')}</button>` : ''}
+        </div>` : ''}
+        <div class="modal-content">${content}</div>
+      </div>`;
 
-        toastContainer.appendChild(toast);
+    let open = true;
+    const close = () => {
+      if (!open) return;
+      open = false;
+      overlay.remove();
+      document.removeEventListener('keydown', onKey);
+      if (before && before.isConnected) before.focus({ preventScroll: true });
+    };
+    const dismiss = () => { if (!open) return; close(); if (options.onDismiss) options.onDismiss(); };
+    const onKey = (e) => { // Esc closes only the topmost dialog
+      if (e.key === 'Escape' && dismissible && overlay === [...document.querySelectorAll('.modal-overlay')].pop()) dismiss();
+    };
 
-        setTimeout(() => {
-            toast.remove();
-        }, 3000);
+    overlay.close = close;
+    if (dismissible) {
+      overlay.querySelector('[data-action="close"]').addEventListener('click', dismiss);
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) dismiss(); });
+    }
+    document.addEventListener('keydown', onKey);
+
+    for (const [selector, handler] of Object.entries(options.buttons || {})) {
+      overlay.querySelectorAll(selector).forEach((btn) => btn.addEventListener('click', (e) => handler(e, overlay)));
     }
 
-    static showModal(content, options = {}) {
-        const modal = document.createElement('div');
-        modal.className = 'modal-overlay';
+    document.body.appendChild(overlay);
+    const first = overlay.querySelector('.modal-content button, .modal-content input') || overlay.querySelector('button');
+    if (first) first.focus({ preventScroll: true });
+    return overlay;
+  }
 
-        modal.innerHTML = `
-      <div class="modal">
-        <div class="modal-header">
-          <h2>${options.title || ''}</h2>
-          <button class="modal-close" data-action="close">×</button>
-        </div>
-        <div class="modal-content">
-          ${content}
-        </div>
-      </div>
-    `;
-
-        document.body.appendChild(modal);
-
-        // Close handlers
-        const closeBtn = modal.querySelector('[data-action="close"]');
-        closeBtn.addEventListener('click', () => modal.remove());
-
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.remove();
-        });
-
-        // Custom button handlers
-        if (options.buttons) {
-            Object.entries(options.buttons).forEach(([selector, handler]) => {
-                const btn = modal.querySelector(selector);
-                if (btn) {
-                    btn.addEventListener('click', (e) => {
-                        handler(e, modal);
-                    });
-                }
-            });
-        }
-
-        return modal;
-    }
-
-    static showConfirm(message, onConfirm, onCancel) {
-        const content = `
+  static showConfirm(message, onConfirm, onCancel, { yes = 'Conferma', no = 'Annulla', danger = false } = {}) {
+    return this.showModal(`
       <p class="modal-text">${message}</p>
-      <div class="modal-actions">
-        <button class="btn btn-success btn-large" data-action="confirm">Conferma</button>
-        <button class="btn btn-outline btn-large" data-action="cancel">Annulla</button>
-      </div>
-    `;
+      <div class="modal-actions two">
+        <button class="btn btn-ghost" type="button" data-action="cancel">${no}</button>
+        <button class="btn ${danger ? 'btn-danger' : 'btn-primary'}" type="button" data-action="confirm">${yes}</button>
+      </div>`, {
+      onDismiss: () => onCancel && onCancel(),
+      buttons: {
+        '[data-action="confirm"]': (e, modal) => { modal.close(); if (onConfirm) onConfirm(); },
+        '[data-action="cancel"]': (e, modal) => { modal.close(); if (onCancel) onCancel(); },
+      },
+    });
+  }
 
-        return this.showModal(content, {
-            buttons: {
-                '[data-action="confirm"]': (e, modal) => {
-                    if (onConfirm) onConfirm();
-                    modal.remove();
-                },
-                '[data-action="cancel"]': (e, modal) => {
-                    if (onCancel) onCancel();
-                    modal.remove();
-                }
-            }
-        });
-    }
+  static confirmAsync(message, labels) {
+    return new Promise((resolve) => this.showConfirm(message, () => resolve(true), () => resolve(false), labels));
+  }
 
-    // Prompts with one button per option, resolving to the chosen option's
-    // value - e.g. "which way do you flee?" with more than 2 outcomes.
-    static chooseAsync(message, options) {
-        return new Promise((resolve) => {
-            const buttons = {};
-            const buttonsHtml = options.map((opt, i) => {
-                buttons[`[data-action="choice-${i}"]`] = (e, modal) => {
-                    modal.remove();
-                    resolve(opt.value);
-                };
-                return `<button class="btn btn-primary btn-large" data-action="choice-${i}">${opt.label}</button>`;
-            }).join('');
+  // One button per option, resolving to the chosen option's value. Can't be dismissed: the story needs an answer.
+  static chooseAsync(message, options, title = '') {
+    return new Promise((resolve) => {
+      const buttons = {};
+      const html = options.map((opt, i) => {
+        buttons[`[data-action="choice-${i}"]`] = (e, modal) => { modal.close(); resolve(opt.value); };
+        return `<button class="btn btn-ghost btn-block" type="button" data-action="choice-${i}">${opt.label}</button>`;
+      }).join('');
+      this.showModal(`<p class="modal-text">${message}</p><div class="modal-actions">${html}</div>`, { title, buttons, dismissible: false });
+    });
+  }
 
-            this.showModal(`<p class="modal-text">${message}</p><div class="modal-actions">${buttonsHtml}</div>`, { buttons });
-        });
-    }
+  static showAlert(message, title = 'Attenzione') {
+    return new Promise((resolve) => {
+      this.showModal(`
+        <p class="modal-text">${message}</p>
+        <div class="modal-actions"><button class="btn btn-primary btn-block" type="button" data-action="ok">OK</button></div>`, {
+        title,
+        onDismiss: resolve,
+        buttons: { '[data-action="ok"]': (e, modal) => { modal.close(); resolve(); } },
+      });
+    });
+  }
 
-    static confirmAsync(message) {
-        return new Promise((resolve) => {
-            this.showConfirm(
-                message,
-                () => resolve(true),
-                () => resolve(false)
-            );
-        });
-    }
-
-    static showAlert(message, title = 'Attenzione') {
-        return new Promise((resolve) => {
-            const content = `
-                <p class="modal-text">${message}</p>
-                <div class="modal-actions" style="justify-content: center;">
-                    <button class="btn btn-primary btn-large" data-action="ok">OK</button>
-                </div>
-            `;
-
-            this.showModal(content, {
-                title: title,
-                buttons: {
-                    '[data-action="ok"]': (e, modal) => {
-                        modal.remove();
-                        resolve();
-                    }
-                }
-            });
-        });
-    }
-
-    static showLoading(message = 'Caricamento...') {
-        const loading = document.createElement('div');
-        loading.className = 'loading-screen';
-        loading.id = 'global-loading';
-        loading.innerHTML = `
-      <div class="spinner"></div>
-      <p>${message}</p>
-    `;
-        document.body.appendChild(loading);
-        return loading;
-    }
-
-    static hideLoading() {
-        const loading = document.getElementById('global-loading');
-        if (loading) loading.remove();
-    }
+  // A one-line text prompt (e.g. a save's name): resolves to the trimmed text, or null if cancelled.
+  static promptAsync(message, { title = '', placeholder = '', yes = 'Salva', maxLength = 40 } = {}) {
+    return new Promise((resolve) => {
+      const modal = this.showModal(`
+        <form class="prompt-form">
+          <p class="modal-text">${message}</p>
+          <input class="puzzle-input" style="font-size:1.1rem;font-family:inherit;text-align:left" maxlength="${maxLength}" placeholder="${placeholder}" autocomplete="off">
+          <div class="modal-actions two">
+            <button class="btn btn-ghost" type="button" data-action="cancel">Annulla</button>
+            <button class="btn btn-primary" type="submit">${yes}</button>
+          </div>
+        </form>`, {
+        title,
+        onDismiss: () => resolve(null),
+        buttons: { '[data-action="cancel"]': (e, m) => { m.close(); resolve(null); } },
+      });
+      const input = modal.querySelector('input');
+      input.focus();
+      modal.querySelector('form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const value = input.value.trim();
+        if (!value) { input.focus(); return; }
+        modal.close();
+        resolve(value);
+      });
+    });
+  }
 }

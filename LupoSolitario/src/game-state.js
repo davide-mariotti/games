@@ -59,9 +59,17 @@ class GameState {
         this.setState({ easyMode: !!enabled });
     }
 
-    // Load state from save
+    // Load state from a save: missing fields (older saves) get their defaults, easy mode stays this browser's choice
     loadState(savedState) {
-        this.state = savedState;
+        const base = this.getInitialState();
+        this.state = {
+            ...base,
+            ...savedState,
+            easyMode: base.easyMode,
+            character: { ...base.character, ...(savedState.character || {}) },
+            flags: { ...(savedState.flags || {}) },
+            history: savedState.history && savedState.history.length ? savedState.history : [savedState.currentSection ?? 1]
+        };
         this.notifyListeners();
     }
 
@@ -107,8 +115,12 @@ class GameState {
         return true;
     }
 
+    // One item, not every copy: drinking one of two Laumspur potions leaves the other
     removeFromZaino(item) {
-        const zaino = this.state.character.zaino.filter(i => i !== item);
+        const zaino = [...this.state.character.zaino];
+        const at = zaino.indexOf(item);
+        if (at === -1) return;
+        zaino.splice(at, 1);
         this.updateStats({ zaino });
     }
 
@@ -119,7 +131,8 @@ class GameState {
         if (this.state.character.zaino.includes(item)) {
             this.removeFromZaino(item);
         } else if (this.state.character.oggettiSpeciali.includes(item)) {
-            const oggettiSpeciali = this.state.character.oggettiSpeciali.filter(i => i !== item);
+            const oggettiSpeciali = [...this.state.character.oggettiSpeciali];
+            oggettiSpeciali.splice(oggettiSpeciali.indexOf(item), 1);
             this.updateStats({ oggettiSpeciali });
         } else if (this.state.character.armi.includes(item)) {
             this.removeWeapon(item);
@@ -136,7 +149,10 @@ class GameState {
     }
 
     removeWeapon(weapon) {
-        const armi = this.state.character.armi.filter(w => w !== weapon);
+        const armi = [...this.state.character.armi];
+        const at = armi.indexOf(weapon);
+        if (at === -1) return;
+        armi.splice(at, 1);
         this.updateStats({ armi });
     }
 
@@ -213,10 +229,6 @@ class GameState {
                 // Only heal if not full health
                 if (this.state.character.resistenza < this.state.character.resistenzaMax) {
                     this.heal(1);
-                    // Optional: notify UI, but might be spammy. 
-                    // UIHelpers.showToast('💚 Guarigione: +1 Resistenza', 'success'); 
-                    // We can't access UIHelpers here easily without circular dependency usually, 
-                    // but GameState is low level. We'll skip toast or rely on listener.
                 }
             }
         }

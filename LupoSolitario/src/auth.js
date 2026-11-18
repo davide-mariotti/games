@@ -1,60 +1,62 @@
-// Authentication Module
-import { auth, googleProvider } from './firebase-config.js';
-import {
-    signInWithPopup,
-    signOut,
-    onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+// Optional Google sign-in, only to keep saves in the cloud. Firebase is loaded on demand.
+import { authApi } from './firebase-config.js';
+
+const REMEMBER = 'lupo_cloud'; // set while signed in, so the next visit restores the session
+
+const remember = (on) => { try { localStorage.setItem(REMEMBER, on ? '1' : '0'); } catch { /* not remembered */ } };
+const remembered = () => { try { return localStorage.getItem(REMEMBER) === '1'; } catch { return false; } };
 
 class AuthManager {
-    constructor() {
-        this.currentUser = null;
-        this.authCallbacks = [];
-    }
+  constructor() {
+    this.currentUser = null;
+    this.callbacks = [];
+    this.api = null;
+  }
 
-    // Initialize auth state listener
-    init() {
-        onAuthStateChanged(auth, (user) => {
-            this.currentUser = user;
-            this.authCallbacks.forEach(callback => callback(user));
-        });
+  async connect() {
+    if (!this.api) {
+      this.api = await authApi();
+      this.api.onAuthStateChanged(this.api.auth, (user) => {
+        this.currentUser = user;
+        remember(!!user);
+        this.callbacks.forEach((cb) => cb(user));
+      });
+      await this.api.auth.authStateReady();
     }
+    return this.api;
+  }
 
-    // Register callback for auth state changes
-    onAuthStateChange(callback) {
-        this.authCallbacks.push(callback);
-    }
+  // Restores a previous session if there was one; resolves quickly (and offline) otherwise.
+  async init() {
+    if (!remembered()) return null;
+    try { await this.connect(); } catch (error) { console.warn('Cloud saves unavailable:', error); }
+    return this.currentUser;
+  }
 
-    // Sign in with Google
-    async signInWithGoogle() {
-        try {
-            const result = await signInWithPopup(auth, googleProvider);
-            return result.user;
-        } catch (error) {
-            console.error('Error signing in:', error);
-            throw error;
-        }
-    }
+  onAuthStateChange(callback) {
+    this.callbacks.push(callback);
+  }
 
-    // Sign out
-    async signOut() {
-        try {
-            await signOut(auth);
-        } catch (error) {
-            console.error('Error signing out:', error);
-            throw error;
-        }
-    }
+  async signInWithGoogle() {
+    const api = await this.connect();
+    const provider = new api.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    const result = await api.signInWithPopup(api.auth, provider);
+    return result.user;
+  }
 
-    // Get current user
-    getCurrentUser() {
-        return this.currentUser;
-    }
+  async signOut() {
+    if (this.api) await this.api.signOut(this.api.auth);
+    remember(false);
+  }
 
-    // Check if user is authenticated
-    isAuthenticated() {
-        return this.currentUser !== null;
-    }
+  getCurrentUser() {
+    return this.currentUser;
+  }
+
+  isAuthenticated() {
+    return this.currentUser !== null;
+  }
 }
 
 export const authManager = new AuthManager();

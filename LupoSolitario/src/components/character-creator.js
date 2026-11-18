@@ -1,77 +1,26 @@
-// Character Creator Component
+// Character creation, Book 1 rules: Combat Skill = roll + 10, Endurance = roll + 20, Gold = roll,
+// 5 Kai Disciplines (Weaponskill's weapon picked by the Destiny Table), an Axe, a Meal, the Map, one item from the table.
 import { getRandomDestinyNumber } from './destiny-table.js';
 import { gameState } from '../game-state.js';
+import { UIHelpers } from '../utils/ui-helpers.js';
+import { icon, esc, rollDigits, sfx } from '../ui/kit.js';
 
 export const KAI_ARTS = [
-  {
-    name: 'Mimetismo',
-    emoji: '🎭',
-    image: 'public/img/arti-ramas/mimetismo.webp',
-    description: 'Ti permette di adattarti all\'ambiente circostante e nasconderti'
-  },
-  {
-    name: 'Caccia',
-    emoji: '🏹',
-    image: 'public/img/arti-ramas/caccia.webp',
-    description: 'Ti permette di procurarti cibo in natura. Non devi consumare Pasti quando richiesto.'
-  },
-  {
-    name: 'Sesto Senso',
-    emoji: '👁️',
-    image: 'public/img/arti-ramas/sesto-senso.webp',
-    description: 'Ti avverte di pericoli imminenti e rivela la natura di oggetti strani'
-  },
-  {
-    name: 'Orientamento',
-    emoji: '🧭',
-    image: 'public/img/arti-ramas/orientamento.webp',
-    description: 'Ti permette di scegliere sempre il percorso giusto'
-  },
-  {
-    name: 'Guarigione',
-    emoji: '💊',
-    image: 'public/img/arti-ramas/guarigione.webp',
-    description: 'Recuperi 1 punto Resistenza per ogni sezione senza combattimento'
-  },
-  {
-    name: 'Scherma',
-    emoji: '⚔️',
-    image: 'public/img/arti-ramas/scherma.webp',
-    description: 'Maestria con un\'arma specifica: +2 Combattività quando la usi'
-  },
-  {
-    name: 'Psicoschermo',
-    emoji: '🛡️',
-    image: 'public/img/arti-ramas/psicoschermo.webp',
-    description: 'Protegge dagli attacchi Psicolaser dei nemici'
-  },
-  {
-    name: 'Psicolaser',
-    emoji: '⚡',
-    image: 'public/img/arti-ramas/psicolaser.webp',
-    description: 'Attacca i nemici con la forza della mente: +2 Combattività'
-  },
-  {
-    name: 'Affinità animale',
-    emoji: '🐺',
-    image: 'public/img/arti-ramas/affinita-animale.webp',
-    description: 'Comunica con gli animali e comprendi le loro intenzioni'
-  },
-  {
-    name: 'Telecinesi',
-    emoji: '🔮',
-    image: 'public/img/arti-ramas/telecinesi.webp',
-    description: 'Muovi piccoli oggetti con la concentrazione mentale'
-  }
+  { name: 'Mimetismo', image: 'public/img/arti-ramas/mimetismo.webp', description: 'Ti confondi con l\'ambiente e passi inosservato.' },
+  { name: 'Caccia', image: 'public/img/arti-ramas/caccia.webp', description: 'Trovi cibo in natura: non consumi Pasti quando richiesto.' },
+  { name: 'Sesto Senso', image: 'public/img/arti-ramas/sesto-senso.webp', description: 'Senti il pericolo prima che arrivi e capisci le intenzioni altrui.' },
+  { name: 'Orientamento', image: 'public/img/arti-ramas/orientamento.webp', description: 'Trovi sempre la strada giusta, anche al buio.' },
+  { name: 'Guarigione', image: 'public/img/arti-ramas/guarigione.webp', description: '+1 Resistenza per ogni sezione senza combattimento.' },
+  { name: 'Scherma', image: 'public/img/arti-ramas/scherma.webp', description: 'Maestria in un\'arma: +2 Combattività quando la impugni.' },
+  { name: 'Psicoschermo', image: 'public/img/arti-ramas/psicoschermo.webp', description: 'Ti protegge dagli attacchi mentali dei nemici.' },
+  { name: 'Psicolaser', image: 'public/img/arti-ramas/psicolaser.webp', description: 'Attacchi con la mente: +2 Combattività, se il nemico non è immune.' },
+  { name: 'Affinità animale', image: 'public/img/arti-ramas/affinita-animale.webp', description: 'Capisci gli animali e a volte li convinci ad aiutarti.' },
+  { name: 'Telecinesi', image: 'public/img/arti-ramas/telecinesi.webp', description: 'Muovi piccoli oggetti con la forza della mente.' },
 ];
 
-export const WEAPONS = [
-  'Pugnale', 'Lancia', 'Mazza', 'Daga', 'Martello',
-  'Spada', 'Ascia', 'Spada', 'Asta', 'Spadone'
-];
+// The Weaponskill table, indexed by the Destiny Table number: the Sword appears twice in the book too.
+export const WEAPONS = ['Pugnale', 'Lancia', 'Mazza', 'Daga', 'Martello', 'Spada', 'Ascia', 'Spada', 'Asta', 'Spadone'];
 
-// Maps a weapon's display name to its icon - used anywhere a weapon is shown
-// with an image instead of (or alongside) the generic ⚔️ emoji.
 export const WEAPON_IMAGES = {
   'Pugnale': 'public/img/weapon/pugnale.webp',
   'Daga': 'public/img/weapon/daga.webp',
@@ -82,20 +31,10 @@ export const WEAPON_IMAGES = {
   'Spada Corta': 'public/img/weapon/spada-corta.webp',
   'Ascia': 'public/img/weapon/ascia.webp',
   'Asta': 'public/img/weapon/asta.webp',
-  'Spadone': 'public/img/weapon/spadone.webp'
+  'Spadone': 'public/img/weapon/spadone.webp',
 };
 
-// <img> tag for a weapon icon, or '' if the weapon has no known icon (safe to
-// splice directly into a template string).
-export function weaponIconHTML(weaponName) {
-  const src = WEAPON_IMAGES[weaponName];
-  return src ? `<img class="weapon-icon-small" src="${src}" alt="${weaponName}">` : '';
-}
-
-// Maps a Backpack/Special Item's display name to its icon. Only the items
-// actually granted during character creation and book transitions have real
-// artwork - the game also has hundreds of one-off narrative item names (found
-// deep in the books) that fall back to a generic icon wherever this is used.
+// Only the items handed out at creation and between books have artwork; the many one-off items found in the books get a glyph.
 export const ITEM_IMAGES = {
   'Elmo': 'public/img/oggetti/elmo.webp',
   'Cotta di Maglia': 'public/img/oggetti/cotta-di-maglia.webp',
@@ -105,21 +44,24 @@ export const ITEM_IMAGES = {
   'Mappa': 'public/img/oggetti/mappa.webp',
   'Mappa di Kalte': 'public/img/oggetti/mappa.webp',
   'Mappa delle Terre del Sud': 'public/img/oggetti/mappa.webp',
+  'Mappa di Vassagonia': 'public/img/oggetti/mappa.webp',
   'Sigillo di Hammerdal': 'public/img/oggetti/sigillo-di-hammerdal.webp',
   'Pozione Magica': 'public/img/oggetti/pozione-magica.webp',
   'Pozione Curativa': 'public/img/oggetti/pozione-curativa.webp',
-  'Pozione di Laumspur': 'public/img/oggetti/pozione-di-laumspur.webp'
+  'Pozione di Laumspur': 'public/img/oggetti/pozione-di-laumspur.webp',
 };
 
-// <img> tag for a known item icon, or '' if this item has no dedicated
-// artwork (the vast majority of narrative item names - callers should fall
-// back to a generic emoji in that case).
-export function itemIconHTML(itemName) {
-  const src = ITEM_IMAGES[itemName];
-  return src ? `<img class="weapon-icon-small" src="${src}" alt="${itemName}">` : '';
+// Picture for an item (weapon, Kai art or object): its artwork, or a Lucide glyph.
+export function thumbHTML(name, kind = 'item') {
+  const art = kind === 'art' ? KAI_ARTS.find((a) => a.name === name)?.image : (WEAPON_IMAGES[name] || ITEM_IMAGES[name]);
+  if (art) return `<img src="${art}" alt="" loading="lazy">`;
+  const glyph = kind === 'weapon' ? 'sword' : kind === 'art' ? 'sparkles' : /pozione|fiala|olio/i.test(name) ? 'flask-conical' : /mappa/i.test(name) ? 'map' : kind === 'special' ? 'gem' : 'backpack';
+  return `<span class="glyph">${icon(glyph)}</span>`;
 }
 
+// Book 1 equipment table, indexed by the Destiny Table number (0 is the Broadsword, as in the book).
 const STARTING_ITEMS = [
+  { type: 'weapon', name: 'Spadone' },
   { type: 'weapon', name: 'Spada' },
   { type: 'special', name: 'Elmo', bonus: { resistenza: 2 } },
   { type: 'meal', count: 2 },
@@ -129,537 +71,233 @@ const STARTING_ITEMS = [
   { type: 'weapon', name: 'Asta' },
   { type: 'weapon', name: 'Lancia' },
   { type: 'gold', amount: 12 },
-  { type: 'weapon', name: 'Spadone' }
 ];
+const RECOMMENDED = ['Sesto Senso', 'Mimetismo', 'Guarigione', 'Caccia', 'Scherma']; // easy mode
+const STEPS = ['intro', 'stats', 'arts', 'item', 'summary'];
+
+export function itemLabel(item) {
+  if (item.type === 'meal') return `${item.count} Pasti`;
+  if (item.type === 'gold') return `${item.amount} Corone d'Oro`;
+  if (item.bonus?.resistenza) return `${item.name} (+${item.bonus.resistenza} Resistenza)`;
+  if (item.bonus?.combattivita) return `${item.name} (+${item.bonus.combattivita} Combattività)`;
+  return item.name + (item.count > 1 ? ` (x${item.count})` : '');
+}
 
 export class CharacterCreator {
   constructor(onComplete) {
     this.onComplete = onComplete;
     this.character = {
-      combattivita: 0,
-      resistenza: 0,
-      resistenzaMax: 0,
-      artiRamas: [],
-      armi: ['Ascia'], // Starting weapon
-      zaino: [],
-      corone: 0,
-      pasti: 1, // Starting meal
-      oggettiSpeciali: ['Mappa di Sommerlund']
+      combattivita: 0, resistenza: 0, resistenzaMax: 0,
+      artiRamas: [], armi: ['Ascia'], zaino: [], corone: 0, pasti: 1,
+      oggettiSpeciali: ['Mappa di Sommerlund'],
     };
+    this.rolled = { combattivita: null, resistenza: null, corone: null };
     this.weaponMastery = null;
-    this.currentStep = 'intro';
+    this.itemRoll = null;
+    this.step = 'intro';
   }
 
   render() {
-    const container = document.createElement('div');
-    container.className = 'character-creator';
-    container.innerHTML = this.getStepHTML();
-    this.attachEventListeners(container);
-    return container;
+    this.el = document.createElement('div');
+    this.el.className = 'screen wide';
+    this.draw();
+    return this.el;
   }
 
-  getStepHTML() {
-    switch (this.currentStep) {
-      case 'intro':
-        return this.getIntroHTML();
-      case 'combat-stats':
-        return this.getCombatStatsHTML();
-      case 'kai-arts':
-        return this.getKaiArtsHTML();
-      case 'starting-item':
-        return this.getStartingItemHTML();
-      case 'summary':
-        return this.getSummaryHTML();
-      default:
-        return '';
-    }
+  go(step) { this.step = step; sfx.page(); this.draw(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+  draw() {
+    const i = STEPS.indexOf(this.step);
+    const enter = this.drawn !== this.step; // animate a new step in, not every click inside it
+    this.drawn = this.step;
+    this.el.innerHTML = `<div class="card ${enter ? 'enter' : ''}">
+      <div class="steps" aria-hidden="true">${STEPS.map((_, n) => `<i class="${n <= i ? 'on' : ''}"></i>`).join('')}</div>
+      ${this[this.step]()}
+    </div>`;
+    this.bind();
   }
 
-  getIntroHTML() {
+  intro() {
     return `
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">🐺 Creazione del Personaggio</h2>
-        </div>
-        <div style="text-align: center;">
-          <div style="font-size: 4rem; margin: 2rem 0;">⚔️</div>
-          <h3>Benvenuto, giovane Ramas!</h3>
-          <p class="text-muted">Sei l'ultimo sopravvissuto del monastero di Ramas.</p>
-          <p class="text-muted">È tempo di determinare le tue abilità per l'avventura che ti attende.</p>
-          <button class="btn btn-primary btn-large btn-block" id="start-creation">
-            Inizia Creazione
-          </button>
-        </div>
+      <p class="kicker">Libro 1 · Creazione del personaggio</p>
+      <h2 class="title" style="margin-top:.6rem">Benvenuto, <span class="grad">giovane Ramas.</span></h2>
+      <div class="prose">
+        <p>Sei l'ultimo sopravvissuto del monastero di Ramas. Prima di partire, la Tabella del Destino deciderà quanto sei forte, quanto resisti e cosa porti con te.</p>
+        <p>Poi sceglierai cinque Arti Ramas. Scegli bene: ti accompagneranno per tutti e cinque i libri.</p>
       </div>
-    `;
+      <div class="stack"><button class="btn btn-primary" type="button" data-go="stats">${icon('dices')}Iniziamo</button></div>`;
   }
 
-  getCombatStatsHTML() {
+  stats() {
+    const box = (key, label, ic, plus) => {
+      const r = this.rolled[key];
+      return `<div class="roll-box">
+        <h3 style="display:flex;align-items:center;justify-content:center;gap:.45rem">${icon(ic)}${label}</h3>
+        <p class="muted" style="font-size:.85rem;margin-top:.2rem">Tabella del Destino${plus ? ` + ${plus}` : ''}</p>
+        <div class="dice ${r !== null ? 'landed' : ''}" id="dice-${key}">${r !== null ? r : '?'}</div>
+        <div class="total" id="total-${key}">${r !== null ? `${this.character[key]}` : ''}</div>
+        <button class="btn btn-ghost btn-sm" type="button" data-roll="${key}" ${r !== null ? 'disabled' : ''} style="margin-top:.5rem">${icon('dices')}Lancia</button>
+      </div>`;
+    };
+    const done = Object.values(this.rolled).every((v) => v !== null);
     return `
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">💪 Statistiche di Combattimento</h2>
-        </div>
-        <div>
-          <div class="stat-section">
-            <h3>⚔️ Combattività</h3>
-            <p class="text-muted">Lancia il Destino e aggiungi 10</p>
-            <div class="destiny-display" style="text-align: center; margin: 2rem 0;">
-              <div class="stat-value" style="font-size: 3rem;" id="combat-roll">?</div>
-            </div>
-            <button class="btn btn-primary btn-large btn-block" id="roll-combat">
-              🎲 Lancia per Combattività
-            </button>
-            <div id="combat-result" style="margin-top: 1rem; text-align: center;"></div>
-          </div>
-
-          <div class="stat-section" id="resistance-section" style="display: none; margin-top: 2rem;">
-            <h3>❤️ Resistenza</h3>
-            <p class="text-muted">Lancia il Destino e aggiungi 20</p>
-            <div class="destiny-display" style="text-align: center; margin: 2rem 0;">
-              <div class="stat-value" style="font-size: 3rem;" id="resistance-roll">?</div>
-            </div>
-            <button class="btn btn-primary btn-large btn-block" id="roll-resistance">
-              🎲 Lancia per Resistenza
-            </button>
-            <div id="resistance-result" style="margin-top: 1rem; text-align: center;"></div>
-          </div>
-
-          <div id="stats-complete" style="display: none; margin-top: 2rem;">
-            <button class="btn btn-success btn-large btn-block" id="continue-to-arts">
-              Continua →
-            </button>
-          </div>
-        </div>
+      <p class="kicker">Il tuo Registro di Guerra</p>
+      <h2 class="title" style="margin-top:.6rem">Forza, <span class="grad">resistenza, oro.</span></h2>
+      <div class="rolls">
+        ${box('combattivita', 'Combattività', 'swords', 10)}
+        ${box('resistenza', 'Resistenza', 'heart', 20)}
+        ${box('corone', 'Corone d\'Oro', 'coins', 0)}
       </div>
-    `;
+      <div class="stack"><button class="btn btn-primary" type="button" data-go="arts" ${done ? '' : 'disabled'}>Avanti${icon('arrow-right')}</button></div>`;
   }
 
-  getKaiArtsHTML() {
-    const isEasy = gameState.getState().easyMode;
-    const recommendedArts = ['Sesto Senso', 'Mimetismo', 'Guarigione', 'Caccia', 'Scherma'];
-
+  arts() {
+    const easy = gameState.getState().easyMode;
+    const chosen = this.character.artiRamas;
     return `
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">🧙 Arti Kai Ramas</h2>
-          <p class="text-muted">Scegli 5 Arti Kai (${this.character.artiRamas.length}/5)</p>
-          ${isEasy ? `<p style="color: #22c55e; font-weight: 600; margin-top: 0.5rem;">💡 Easy Mode: Le 5 Arti consigliate per vincere sono evidenziate in verde (Sesto Senso, Mimetismo, Guarigione, Caccia, Scherma).</p>` : ''}
-        </div>
-        <div class="kai-arts-grid">
-          ${KAI_ARTS.map((art, index) => {
-            const isRec = isEasy && recommendedArts.includes(art.name);
-            return `
-            <div class="kai-art-card ${this.character.artiRamas.includes(art.name) ? 'selected' : ''} ${isRec ? 'easy-mode-art-recommendation' : ''}"
-                 data-art="${art.name}">
-              <img class="kai-art-emoji" src="${art.image}" alt="${art.name}">
-              <div class="kai-art-name">
-                ${art.name}
-                ${isRec ? '<span class="easy-mode-badge" style="font-size: 0.65rem; margin-left: 4px;">💡 Easy</span>' : ''}
-              </div>
-              <div class="kai-art-desc">${art.description}</div>
-            </div>
-          `;
-          }).join('')}
-        </div>
-        <div style="margin-top: 2rem;">
-          <button class="btn btn-success btn-large btn-block" id="continue-to-item" 
-                  ${this.character.artiRamas.length !== 5 ? 'disabled' : ''}>
-            Continua →
-          </button>
-        </div>
+      <p class="kicker">Arti Ramas · ${chosen.length}/5</p>
+      <h2 class="title" style="margin-top:.6rem">Scegli <span class="grad">cinque Arti.</span></h2>
+      ${easy ? `<p class="note easy">${icon('lightbulb')} Facile: le cinque Arti più utili per arrivare in fondo sono evidenziate.</p>` : ''}
+      <div class="choose">
+        ${KAI_ARTS.map((a) => `
+          <button class="option ${chosen.includes(a.name) ? 'on' : ''} ${easy && RECOMMENDED.includes(a.name) ? 'rec' : ''}" type="button" data-art="${a.name}" aria-pressed="${chosen.includes(a.name)}">
+            <img src="${a.image}" alt="" loading="lazy">
+            <span><b>${a.name}${easy && RECOMMENDED.includes(a.name) ? '<span class="badge">Consigliata</span>' : ''}</b>
+            <small>${a.description}</small>
+            ${a.name === 'Scherma' && this.weaponMastery ? `<small class="master">Maestria: ${this.weaponMastery}</small>` : ''}</span>
+          </button>`).join('')}
       </div>
-      <style>
-        .kai-arts-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-          gap: 1rem;
-          margin-top: 1rem;
-        }
-        .kai-art-card {
-          background: rgba(139, 92, 246, 0.1);
-          border: 2px solid transparent;
-          border-radius: 12px;
-          padding: 1rem;
-          text-align: center;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-        .kai-art-card:hover {
-          background: rgba(139, 92, 246, 0.2);
-          transform: translateY(-4px);
-        }
-        .kai-art-card.selected {
-          background: rgba(139, 92, 246, 0.3);
-          border-color: var(--color-primary);
-          box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
-        }
-        .kai-art-emoji {
-          display: block;
-          width: 110px;
-          height: 110px;
-          object-fit: contain;
-          margin: 0 auto 0.75rem;
-          border-radius: 12px;
-        }
-        .kai-art-name {
-          font-weight: 700;
-          margin-bottom: 0.5rem;
-        }
-        .kai-art-desc {
-          font-size: 0.875rem;
-          color: var(--text-muted);
-        }
-      </style>
-    `;
+      <div class="btn-row">
+        <button class="btn btn-ghost" type="button" data-go="stats">${icon('arrow-left')}Indietro</button>
+        <button class="btn btn-primary" type="button" data-go="item" ${chosen.length === 5 ? '' : 'disabled'}>Avanti${icon('arrow-right')}</button>
+      </div>`;
   }
 
-  getStartingItemHTML() {
+  item() {
+    const r = this.itemRoll;
+    const found = r !== null ? STARTING_ITEMS[r] : null;
     return `
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">🎁 Oggetto Iniziale</h2>
-        </div>
-        <div style="text-align: center;">
-          <p class="text-muted">Tra le rovine del monastero trovi...</p>
-          
-          <div style="background: rgba(0,0,0,0.2); border-radius: 8px; padding: 1rem; margin: 1rem 0; text-align: left;">
-            <h4 style="margin-bottom: 0.5rem; text-align: center;">Tabella del Destino: Equipaggiamento</h4>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.5rem; font-size: 0.9rem;">
-              ${STARTING_ITEMS.map((item, idx) => {
-      let name = item.name;
-      if (item.type === 'meal') name = 'Pasti';
-      else if (item.type === 'gold') name = 'Corone d\'Oro';
-
-      return `
-                <div style="padding: 0.25rem 0.5rem; background: rgba(255,255,255,0.05); border-radius: 4px;">
-                  <strong style="color: var(--color-primary);">${idx}</strong>: ${item.type === 'weapon' ? weaponIconHTML(name) + ' ' : itemIconHTML(name) + ' '}${name}
-                  ${item.count ? `(x${item.count})` : ''}
-                  ${item.amount ? `(${item.amount})` : ''}
-                  ${item.bonus ? `(+${Object.values(item.bonus)[0]})` : ''}
-                </div>
-              `}).join('')}
-            </div>
-          </div>
-
-          <div class="destiny-display" style="margin: 2rem 0;">
-            <div class="stat-value" style="font-size: 3rem;" id="item-roll">?</div>
-          </div>
-          <button class="btn btn-primary btn-large btn-block" id="roll-item" ${this.startingItemRolled ? 'disabled' : ''}>
-            ${this.startingItemRolled ? 'Oggetto Assegnato' : '🎲 Scopri cosa hai trovato'}
-          </button>
-          <div id="item-result" style="margin-top: 2rem;"></div>
-          <div id="item-complete" style="display: ${this.startingItemRolled ? 'block' : 'none'}; margin-top: 2rem;">
-            <button class="btn btn-success btn-large btn-block" id="finish-creation">
-              Completa Creazione →
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
+      <p class="kicker">Equipaggiamento</p>
+      <h2 class="title" style="margin-top:.6rem">Tra le rovine <span class="grad">del monastero...</span></h2>
+      <p class="muted" style="margin-top:.75rem">Hai un'Ascia, un Pasto e la Mappa di Sommerlund. Il Destino decide cos'altro trovi.</p>
+      <div class="table10">${STARTING_ITEMS.map((it, n) => `<div class="${n === r ? 'on' : ''}"><b>${n}</b>${it.name ? thumbHTML(it.name, it.type) : `<span class="glyph">${icon(it.type === 'gold' ? 'coins' : 'drumstick')}</span>`}${itemLabel(it)}</div>`).join('')}</div>
+      <div class="dice ${r !== null ? 'landed' : ''}" id="dice-item">${r !== null ? r : '?'}</div>
+      <div id="found">${found ? `<div class="found"><b>${esc(itemLabel(found))}</b><span class="muted">${this.foundText(found)}</span></div>` : ''}</div>
+      <div class="btn-row">
+        ${r === null ? `<button class="btn btn-primary" type="button" data-roll-item>${icon('dices')}Lancia il Destino</button>` : `<button class="btn btn-primary" type="button" data-go="summary">Avanti${icon('arrow-right')}</button>`}
+      </div>`;
   }
 
-  getSummaryHTML() {
+  foundText(it) {
+    return { weapon: 'Va tra le tue armi.', special: 'Oggetto Speciale: la tua Resistenza sale.', meal: 'Nello zaino.', potion: 'Nello zaino: +4 Resistenza quando la bevi.', gold: `Ora hai ${this.character.corone} Corone.` }[it.type];
+  }
+
+  summary() {
+    const c = this.character;
+    const list = (items, kind) => `<div class="tiles">${items.map((n) => `<div class="tile">${thumbHTML(n, kind)}<span>${esc(n)}</span></div>`).join('')}</div>`;
     return `
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">📋 Riepilogo Personaggio</h2>
-        </div>
-        <div>
-          <div class="stat-row">
-            <span class="stat-label">⚔️ Combattività</span>
-            <span class="stat-value">${this.character.combattivita}</span>
-          </div>
-          <div class="stat-row">
-            <span class="stat-label">❤️ Resistenza</span>
-            <span class="stat-value">${this.character.resistenza}/${this.character.resistenzaMax}</span>
-          </div>
-          <div class="stat-row">
-            <span class="stat-label">💰 Corone d'Oro</span>
-            <span class="stat-value">${this.character.corone}</span>
-          </div>
-          <div class="stat-row">
-            <span class="stat-label">🍖 Pasti</span>
-            <span class="stat-value">${this.character.pasti}</span>
-          </div>
-          
-          <h4 style="margin-top: 2rem;">🧙 Arti Kai Ramas</h4>
-          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem;">
-            ${this.character.artiRamas.map(art => {
-      const artData = KAI_ARTS.find(a => a.name === art);
-      return `<span class="inventory-item"><img class="weapon-icon-small" src="${artData?.image}" alt="${art}"> ${art}</span>`;
-    }).join('')}
-          </div>
-
-          <h4 style="margin-top: 2rem;">⚔️ Armi</h4>
-          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem;">
-            ${this.character.armi.map(weapon =>
-      `<span class="inventory-item">${weaponIconHTML(weapon)} ${weapon}</span>`
-    ).join('')}
-          </div>
-
-          ${this.character.zaino.length > 0 ? `
-            <h4 style="margin-top: 2rem;">🎒 Zaino</h4>
-            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem;">
-              ${this.character.zaino.map(item =>
-      `<span class="inventory-item">${itemIconHTML(item) || '🎒'} ${item}</span>`
-    ).join('')}
-            </div>
-          ` : ''}
-
-          ${this.character.oggettiSpeciali.length > 0 ? `
-            <h4 style="margin-top: 2rem;">✨ Oggetti Speciali</h4>
-            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem;">
-              ${this.character.oggettiSpeciali.map(item =>
-      `<span class="inventory-item">${itemIconHTML(item) || '✨'} ${item}</span>`
-    ).join('')}
-            </div>
-          ` : ''}
-
-          <button class="btn btn-success btn-large btn-block" id="begin-adventure" style="margin-top: 2rem;">
-            🚀 Inizia l'Avventura!
-          </button>
-        </div>
+      <p class="kicker">Pronto a partire</p>
+      <h2 class="title" style="margin-top:.6rem">Lupo <span class="grad">Solitario.</span></h2>
+      <div class="sheet-stats" style="margin-top:1.25rem">
+        <div class="stat">${icon('swords')}<span>Combattività</span><b>${c.combattivita}</b></div>
+        <div class="stat">${icon('heart')}<span>Resistenza</span><b>${c.resistenza}</b></div>
+        <div class="stat">${icon('coins')}<span>Corone d'Oro</span><b>${c.corone}</b></div>
+        <div class="stat">${icon('drumstick')}<span>Pasti</span><b>${c.pasti}</b></div>
       </div>
-    `;
+      <p class="label">${icon('sparkles')}Arti Ramas</p>${list(c.artiRamas, 'art')}
+      ${this.weaponMastery && c.artiRamas.includes('Scherma') ? `<p class="muted" style="font-size:.85rem;margin-top:.5rem">Maestria con: <b>${this.weaponMastery}</b></p>` : ''}
+      <p class="label">${icon('sword')}Armi</p>${list(c.armi, 'weapon')}
+      ${c.zaino.length ? `<p class="label">${icon('backpack')}Zaino</p>${list(c.zaino, 'item')}` : ''}
+      <p class="label">${icon('gem')}Oggetti Speciali</p>${list(c.oggettiSpeciali, 'special')}
+      <div class="btn-row">
+        <button class="btn btn-primary" type="button" id="begin-adventure">${icon('book-open')}Inizia l'avventura</button>
+      </div>`;
   }
 
-  attachEventListeners(container) {
-    // Intro
-    const startBtn = container.querySelector('#start-creation');
-    if (startBtn) {
-      startBtn.addEventListener('click', () => {
-        // Roll initial gold
-        this.character.corone = getRandomDestinyNumber();
-        this.currentStep = 'combat-stats';
-        this.updateView(container);
-      });
-    }
-
-    // Combat stats
-    const rollCombatBtn = container.querySelector('#roll-combat');
-    if (rollCombatBtn) {
-      rollCombatBtn.addEventListener('click', () => this.rollCombat(container));
-    }
-
-    const rollResistanceBtn = container.querySelector('#roll-resistance');
-    if (rollResistanceBtn) {
-      rollResistanceBtn.addEventListener('click', () => this.rollResistance(container));
-    }
-
-    const continueToArtsBtn = container.querySelector('#continue-to-arts');
-    if (continueToArtsBtn) {
-      continueToArtsBtn.addEventListener('click', () => {
-        this.currentStep = 'kai-arts';
-        this.updateView(container);
-      });
-    }
-
-    // Kai Arts
-    const artCards = container.querySelectorAll('.kai-art-card');
-    artCards.forEach(card => {
-      card.addEventListener('click', () => this.toggleKaiArt(card, container));
-    });
-
-    const continueToItemBtn = container.querySelector('#continue-to-item');
-    if (continueToItemBtn) {
-      continueToItemBtn.addEventListener('click', () => {
-        this.currentStep = 'starting-item';
-        this.updateView(container);
-      });
-    }
-
-    // Starting item
-    const rollItemBtn = container.querySelector('#roll-item');
-    if (rollItemBtn) {
-      rollItemBtn.addEventListener('click', () => this.rollStartingItem(container));
-    }
-
-    const finishBtn = container.querySelector('#finish-creation');
-    if (finishBtn) {
-      finishBtn.addEventListener('click', () => {
-        this.currentStep = 'summary';
-        this.updateView(container);
-      });
-    }
-
-    // Summary
-    const beginBtn = container.querySelector('#begin-adventure');
-    if (beginBtn) {
-      beginBtn.addEventListener('click', () => {
-        // Include weaponMastery in character data
-        if (this.weaponMastery) {
-          this.character.weaponMastery = this.weaponMastery;
-        }
-        gameState.setCharacter(this.character);
-        if (this.onComplete) this.onComplete();
-      });
-    }
+  bind() {
+    const $ = (s) => this.el.querySelectorAll(s);
+    $('[data-go]').forEach((b) => b.addEventListener('click', () => this.go(b.dataset.go)));
+    $('[data-roll]').forEach((b) => b.addEventListener('click', () => this.rollStat(b.dataset.roll, b)));
+    $('[data-art]').forEach((b) => b.addEventListener('click', () => this.toggleArt(b.dataset.art)));
+    $('[data-roll-item]').forEach((b) => b.addEventListener('click', () => this.rollItem(b)));
+    $('#begin-adventure').forEach((b) => b.addEventListener('click', () => this.finish()));
   }
 
-  rollCombat(container) {
-    if (this.character.combattivita > 0) return;
-
-    const btn = container.querySelector('#roll-combat');
-    if (btn) btn.disabled = true;
-
+  async rollStat(key, btn) {
+    if (this.rolled[key] !== null) return;
+    btn.disabled = true;
     const roll = getRandomDestinyNumber();
-    const total = roll + 10;
-    this.character.combattivita = total;
-
-    const display = container.querySelector('#combat-roll');
-    const result = container.querySelector('#combat-result');
-
-    this.animateRoll(display, roll, () => {
-      result.innerHTML = `<h3 style="color: var(--color-success);">Combattività: ${total}</h3>`;
-      container.querySelector('#resistance-section').style.display = 'block';
-    });
+    this.rolled[key] = roll;
+    const total = roll + ({ combattivita: 10, resistenza: 20, corone: 0 })[key];
+    this.character[key] = total;
+    if (key === 'resistenza') this.character.resistenzaMax = total;
+    await rollDigits(this.el.querySelector(`#dice-${key}`), roll);
+    this.el.querySelector(`#total-${key}`).textContent = total;
+    if (Object.values(this.rolled).every((v) => v !== null)) this.el.querySelector('[data-go="arts"]').disabled = false;
   }
 
-  rollResistance(container) {
-    if (this.character.resistenzaMax > 0) return;
-
-    const btn = container.querySelector('#roll-resistance');
-    if (btn) btn.disabled = true;
-
-    const roll = getRandomDestinyNumber();
-    const total = roll + 20;
-    this.character.resistenza = total;
-    this.character.resistenzaMax = total;
-
-    const display = container.querySelector('#resistance-roll');
-    const result = container.querySelector('#resistance-result');
-
-    this.animateRoll(display, roll, () => {
-      result.innerHTML = `<h3 style="color: var(--color-success);">Resistenza: ${total}</h3>`;
-      container.querySelector('#stats-complete').style.display = 'block';
-    });
-  }
-
-  toggleKaiArt(card, container) {
-    const artName = card.dataset.art;
-    const index = this.character.artiRamas.indexOf(artName);
-
-    if (index > -1) {
-      this.character.artiRamas.splice(index, 1);
-      card.classList.remove('selected');
+  async toggleArt(name) {
+    const arts = this.character.artiRamas;
+    if (arts.includes(name)) arts.splice(arts.indexOf(name), 1);
+    else if (arts.length < 5) {
+      arts.push(name);
+      sfx.item();
+      if (name === 'Scherma' && !this.weaponMastery) this.weaponMastery = await rollWeaponMastery();
     } else {
-      if (this.character.artiRamas.length < 5) {
-        this.character.artiRamas.push(artName);
-        card.classList.add('selected');
-
-        // Handle Scherma - prompt for weapon mastery
-        if (artName === 'Scherma' && !this.weaponMastery) {
-          // Create a modal to select the weapon
-          const modal = document.createElement('div');
-          modal.className = 'modal-overlay';
-          modal.innerHTML = `
-               <div class="modal">
-                 <div class="modal-header">
-                   <h2>⚔️ Seleziona Arma per Scherma</h2>
-                 </div>
-                 <p>In quale arma sei maestro? (+2 Combattività quando la usi)</p>
-                 <div class="weapon-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-top: 1rem;">
-                    ${WEAPONS.map((w, i) => `<button class="btn btn-outline weapon-select-btn" data-weapon="${w}">${weaponIconHTML(w)} ${w}</button>`).join('')}
-                 </div>
-               </div>
-             `;
-          document.body.appendChild(modal);
-
-          modal.querySelectorAll('.weapon-select-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-              this.weaponMastery = btn.dataset.weapon;
-              // Add to character object property? Handled in summary? 
-              // Ideally we should tell the user.
-              const message = document.createElement('div');
-              message.className = 'kai-art-desc';
-              message.style.color = "var(--color-success)";
-              message.innerText = `Maestria: ${this.weaponMastery}`;
-              card.appendChild(message);
-
-              modal.remove();
-            });
-          });
-        }
-      }
+      UIHelpers.showToast('Hai già cinque Arti: togline una per cambiarla', 'info');
     }
-
-    // Update continue button
-    const continueBtn = container.querySelector('#continue-to-item');
-    if (continueBtn) {
-      continueBtn.disabled = this.character.artiRamas.length !== 5;
-    }
-
-    // Update header count
-    const header = container.querySelector('.card-header p');
-    if (header) {
-      header.textContent = `Scegli 5 Arti Kai (${this.character.artiRamas.length}/5)`;
-    }
+    this.draw();
   }
 
-  rollStartingItem(container) {
-    if (this.startingItemRolled) return;
-    this.startingItemRolled = true;
-
-    const btn = container.querySelector('#roll-item');
-    if (btn) {
-      btn.disabled = true;
-      btn.textContent = 'Oggetto Assegnato';
-    }
-
+  async rollItem(btn) {
+    if (this.itemRoll !== null) return;
+    btn.disabled = true;
     const roll = getRandomDestinyNumber();
-    const item = STARTING_ITEMS[roll];
+    this.itemRoll = roll;
+    const it = STARTING_ITEMS[roll];
+    const c = this.character;
+    if (it.type === 'weapon') c.armi.push(it.name);
+    else if (it.type === 'special') {
+      c.oggettiSpeciali.push(it.name);
+      c.resistenza += it.bonus.resistenza; c.resistenzaMax += it.bonus.resistenza;
+    } else if (it.type === 'meal') c.pasti += it.count;
+    else if (it.type === 'potion') c.zaino.push(it.name);
+    else if (it.type === 'gold') c.corone = Math.min(50, c.corone + it.amount);
+    await rollDigits(this.el.querySelector('#dice-item'), roll);
+    this.draw();
+  }
 
-    const display = container.querySelector('#item-roll');
-    const result = container.querySelector('#item-result');
+  finish() {
+    const character = { ...this.character, weaponMastery: this.character.artiRamas.includes('Scherma') ? this.weaponMastery : null };
+    gameState.setCharacter(character);
+    if (this.onComplete) this.onComplete();
+  }
+}
 
-    this.animateRoll(display, roll, () => {
-      let resultHTML = '<div class="card" style="background: rgba(16, 185, 129, 0.1); border-color: var(--color-success);">';
-
-      if (item.type === 'weapon') {
-        this.character.armi.push(item.name);
-        resultHTML += `<h3>${weaponIconHTML(item.name)} ${item.name}</h3><p>Aggiunta alle tue armi!</p>`;
-      } else if (item.type === 'special') {
-        this.character.oggettiSpeciali.push(item.name);
-        if (item.bonus) {
-          if (item.bonus.resistenza) {
-            this.character.resistenza += item.bonus.resistenza;
-            this.character.resistenzaMax += item.bonus.resistenza;
-            resultHTML += `<h3>${itemIconHTML(item.name)} ${item.name}</h3><p>+${item.bonus.resistenza} Resistenza bonus!</p>`;
-          }
-        }
-      } else if (item.type === 'meal') {
-        this.character.pasti += item.count;
-        resultHTML += `<h3>🍖 ${item.count} Pasti</h3><p>Aggiunti al tuo zaino!</p>`;
-      } else if (item.type === 'potion') {
-        this.character.zaino.push(item.name);
-        resultHTML += `<h3>${itemIconHTML(item.name)} ${item.name}</h3><p>Aggiunta allo zaino!</p>`;
-      } else if (item.type === 'gold') {
-        this.character.corone += item.amount;
-        resultHTML += `<h3>💰 ${item.amount} Corone d'Oro</h3><p>Totale: ${this.character.corone}</p>`;
-      }
-
-      resultHTML += '</div>';
-      result.innerHTML = resultHTML;
-      container.querySelector('#item-complete').style.display = 'block';
+// Weaponskill: the Destiny Table picks the weapon (book rules). Resolves to the weapon's name.
+export function rollWeaponMastery() {
+  return new Promise((resolve) => {
+    const modal = UIHelpers.showModal(`
+      <p class="modal-text">La Tabella del Destino sceglie l'arma in cui sei maestro: +2 Combattività quando la impugni.</p>
+      <div class="table10">${WEAPONS.map((w, n) => `<div data-n="${n}"><b>${n}</b>${thumbHTML(w, 'weapon')}${w}</div>`).join('')}</div>
+      <div class="dice" id="dice-mastery">?</div>
+      <div class="modal-actions"><button class="btn btn-primary btn-block" type="button" data-action="roll">${icon('dices')}Lancia il Destino</button></div>`, {
+      title: 'Scherma',
+      dismissible: false,
+      buttons: {
+        '[data-action="roll"]': async (e, m) => {
+          const btn = e.currentTarget;
+          if (btn.dataset.weapon) { m.close(); resolve(btn.dataset.weapon); return; }
+          btn.disabled = true;
+          const n = getRandomDestinyNumber();
+          await rollDigits(m.querySelector('#dice-mastery'), n);
+          m.querySelector(`[data-n="${n}"]`).classList.add('on');
+          btn.dataset.weapon = WEAPONS[n];
+          btn.innerHTML = `${icon('check')}Maestria: ${WEAPONS[n]}`;
+          btn.disabled = false;
+        },
+      },
     });
-  }
-
-  animateRoll(element, finalValue, callback) {
-    let count = 0;
-    const interval = setInterval(() => {
-      element.textContent = Math.floor(Math.random() * 10);
-      count++;
-      if (count > 10) {
-        clearInterval(interval);
-        element.textContent = finalValue;
-        if (callback) callback();
-      }
-    }, 100);
-  }
-
-  updateView(container) {
-    container.innerHTML = this.getStepHTML();
-    this.attachEventListeners(container);
-  }
+    modal.querySelector('.modal').classList.add('wide');
+  });
 }

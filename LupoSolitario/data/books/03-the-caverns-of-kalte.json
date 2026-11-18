@@ -573,7 +573,6 @@
    ]
   },
   "36": {
-   "image": "public/img/book03/sec36.png",
    "text": "<p>Sali oltre cinquanta gradini prima di raggiungere l'arcata. Mentre riprendi fiato, noti un velo di nebbia ondeggiante che copre completamente l'arco, nascondendo ciò che si trova oltre. Ti accorgi all'improvviso che la temperatura attorno a questa arcata è molto più fredda.</p>",
    "choices": [
     {
@@ -1069,7 +1068,6 @@
    ]
   },
   "72": {
-   "image": "public/img/book03/sec72.png",
    "text": "<p>Esamini con attenzione l'altare e i due bastoni neri che sporgono dalla sua superficie. Il ciclone continua a ululare, ma finché porti con te la Sfera di Fuoco, non avanzerà verso l'altare.</p><p>Noti che, nel punto in cui prima giaceva la statua, sono emersi dalla superficie due bottoni di pietra.</p>",
    "choices": [
     {
@@ -1174,7 +1172,6 @@
    ]
   },
   "79": {
-   "image": "public/img/book03/sec79.png",
    "text": "<p>Apri la porta quanto basta per versare la Erba dei Sepolcri (veleno) nel brodo bollente. Non devi attendere a lungo prima che i Barbari dei Ghiacci consumino quella che sarà la loro ultima cena. Ora sei libero di esplorare. (Ricordati di cancellare questa pozione dal tuo Registro di Guerra.)</p><p>La cucina è piccola e sorprendentemente ben fornita di erbe. «Devono provenire dall'emporio di Ljuk» dice Loi-Kymar, scrutando i numerosi vasetti e boccette. Prende diversi barattoli di erbe e li infila nelle tasche della veste. Sei ansioso di andartene, temendo che altre guardie possano sopraggiungere, ma il vecchio mago sembra completamente assorto nelle sue nuove scoperte. Apre due piccoli vasetti e ne mescola il contenuto, invitandoti a mangiare con lui. «Ti darà forza, Lupo Solitario» dice. Mentre mastichi le foglie secche, senti un calore piacevole diffondersi in tutto il corpo. Recupera 6 punti Resistenza.</p>",
    "effects": {
     "removeItem": "Erba dei Sepolcri (veleno)",
@@ -1381,7 +1378,6 @@
    ]
   },
   "91": {
-   "image": "public/img/book03/sec91.png",
    "text": "<p>Trattieni il respiro mentre spalmi manciate del grasso untuoso sotto la giacca. Ma non appena l'olio penetra nella pelle, senti un calore piacevole, come se fossi vicino a un fuoco acceso. Più grasso applichi, più ti scaldi. Noti anche che il terribile odore sta gradualmente svanendo. (Segna sul tuo Registro di Guerra il fatto che hai applicato l'Olio di Baknar, anche se non occupa spazio e vale solo per la durata di questa avventura.)</p><p>«Una volta che è penetrato nella pelle non se ne sente più l'odore» dice Irian, invitando gli altri a prendere un po' di Olio di Baknar. Quest'olio è un ottimo isolante contro le temperature gelide di Kalte, e potrebbe esserti molto utile in futuro. Mentre tornate alla tenda, solo i cani Kanu sembrano infastiditi dall'odore. Guaiscono e affondano il muso nella neve al tuo passaggio.</p>",
    "effects": {
     "addItem": "Olio di Baknar"
@@ -1531,7 +1527,6 @@
    ]
   },
   "102": {
-   "image": "public/img/book03/sec102.png",
    "text": "<p>Un vano segreto si apre alla base del bastone sinistro dell'altare. All'interno scopri una piccola statuetta, un'Effigie raffigurante una strana creatura tentacolata.</p><p>Se vuoi conservare questa Effigie, mettila in tasca e segnala sul tuo Registro di Guerra come Oggetto Speciale.</p>",
    "effects": {
     "canAddItems": [
@@ -1797,7 +1792,6 @@
    ]
   },
   "119": {
-   "image": "public/img/book03/sec119.png",
    "text": "<p>Grandi blocchi di ghiaccio si staccano dal lato inferiore del ponte, e si apre un'ampia crepa. Riesci a mantenere la slitta in rotta e a raggiungere l'altro lato della gola, ma scopri presto che uno dei pattini della slitta si è rotto ed è irreparabile. Sei costretto ad abbandonare la slitta e a proseguire a piedi, ma essa contiene ancora un po' di equipaggiamento utile: cibo sufficiente per un massimo di 5 Pasti (ciascuno conta come 1 oggetto), Pellicce da Notte (2 oggetti), una Tenda (3 oggetti) e una Corda (2 oggetti). Puoi prenderne quanto vuoi e riporlo nel tuo Zaino, ricordando il limite massimo di otto oggetti in totale.</p><p>Fenor, Irian e Dyce ti seguono rapidamente, ma mentre raggiungono il centro del ponte, la sventura colpisce. Dyce inciampa con un piede nella superficie incrinata e cade. Guardi inorridito mentre scivola oltre il bordo. Ma riesce ad aggrapparsi al bordo con la punta delle dita.</p><p>«Aiuto, aiuto!», grida, perdendo lentamente la presa.</p>",
    "effects": {
     "canAddMeals": 5,
@@ -2012,7 +2006,6 @@
    ]
   },
   "133": {
-   "image": "public/img/book03/sec133.png",
    "text": "<p>Una ciotola di M'lare pende dal soffitto, proprio sopra la fessura.</p>",
    "choices": [
     {
@@ -2220,7 +2213,6 @@
    ]
   },
   "147": {
-   "image": "public/img/book03/sec147.png",
    "text": "<p>Perlustri ogni centimetro quadrato della porta e delle pareti circostanti, ma non sembrano esserci elementi insoliti. Stai esaminando la rampa di pietra quando un ruggito assordante ti gela il sangue. Un Kalkoth è entrato nella sala di ghiaccio. Ti volti e vedi la creatura balzare verso di te, le fauci spalancate a rivelare la sua lingua uncinata. Non puoi evitare il Kalkoth: devi combatterlo fino alla morte.</p>",
    "combat": {
     "name": "Kalkoth",
@@ -2282,7 +2274,6 @@
    ]
   },
   "150": {
-   "image": "public/img/book03/sec150.png",
    "text": "<p>Il tuo colpo incrina la superficie liscia e bianca della statua. Una raffica di vento gelido sibila dalla fessura e, in pochi secondi, una patina di ghiaccio scintillante ricopre ogni centimetro della camera. A meno che tu non abbia applicato l'Olio di Baknar sulla pelle, perdi 2 punti Resistenza a causa del brusco calo di temperatura.</p><p>Con crescente orrore, vedi che il vento sta assumendo la forma di un piccolo ciclone, che attira verso il proprio nucleo tutto il ghiaccio e la roccia sparsi nella camera. Hai liberato un Demone di Ghiaccio, ed è deciso a distruggerti.</p>",
    "choices": [
     {
@@ -2387,7 +2378,6 @@
    ]
   },
   "157": {
-   "image": "public/img/book03/sec157.png",
    "text": "<p>Prendi la Pozione dallo Zaino e apri con cautela la porta, giusto quanto basta per rovesciare il contenuto della fiala nel calderone che bolle. Non devi aspettare a lungo prima che i Barbari dei Ghiacci si addormentino dopo il pasto.</p><p>La cucina è piccola e sorprendentemente ben fornita di erbe. «Vengono dall'Emporio di Ljuk» dice Loi-Kymar, scrutando da vicino i vasetti etichettati, molti dei quali finiscono nelle sue tasche. Aprendo due vasetti di erbe, ne mescola il contenuto e te lo offre. «Ti darà forza, Lupo Solitario» dice. Mangi le foglie secche e senti un tepore caldo diffondersi in tutto il corpo.</p>",
    "effects": {
     "restoreEndurance": 6,
@@ -2469,7 +2459,6 @@
    ]
   },
   "162": {
-   "image": "public/img/book03/sec162.png",
    "text": "<p>La slitta viene scaricata e l'equipaggiamento viene trasportato dall'altra parte pezzo per pezzo. Tutto procede secondo i piani finché non tocca alla slitta stessa attraversare la gola. Dyce la guida, sforzandosi di tenerla al centro dello stretto ponte, quando all'improvviso i due cani Kanu di testa scivolano e cadono nella gola. Restano appesi impotenti alle briglie, ululando e scalciando nel vuoto. Dyce tira freneticamente le redini per impedire che anche gli altri cadano, ma i suoi sforzi sono vani. Uno dopo l'altro, gli altri quattro cani vengono trascinati giù dal ponte dal peso crescente di quelli sotto.</p><p>«Salta, Dyce, salta!» grida Irian, mentre l'ultimo cane precipita nel vuoto. Dyce si getta di lato proprio mentre la slitta rovina nella gola, ma atterra sulla sezione più stretta del ghiaccio e perde l'equilibrio.</p><p>«Aiutami, aiutami!» grida, le dita che si aggrappano al ghiaccio scivoloso.</p>",
    "choices": [
     {
@@ -2622,7 +2611,6 @@
    ]
   },
   "173": {
-   "image": "public/img/book03/sec173.png",
    "text": "<p>La Sala del Brumalmarc è una vasta camera costruita in blocchi di cristallo che si innalzano fino a un plateau centrale. Su di esso si erge il trono del Brumalmarc, antico quanto Ikaya stessa. Lì siede Vonotar, circondato dai tomi e dagli arnesi arcani di un negromante. È assorto nello studio e non ti vede entrare nella sala. Rimane ignaro della tua presenza finché Loi-Kymar non starnutisce.</p><p>«Chi osa disturbarmi?» sibila, alzandosi dal trono del Brumalmarc, gli occhi che cercano l'intruso. Nel vederti, emette un ansito terrorizzato e brancola in cerca del suo bastone nero. Ha l'aspetto di un criminale colto sul fatto nell'atto di un crimine orrendo. In fretta sollevi l'Arma e cominci a scalare la piramide di cristallo. Sai di avere poco tempo per raggiungerlo, se vuoi sopraffarlo e catturarlo vivo.</p><p>Raggiungi il bordo del plateau in tempo per vedere un ampio cerchio di blocchi scendere intorno al trono. Tra te e Vonotar si sta formando un profondo fossato. Poi, dalle profondità del fossato, senti un orribile farfugliare disumano. Ti prepari al combattimento, ma non sei affatto pronto per l'orrore che ora ti si para davanti. Dall'oscurità striscia un enorme mostro verde e ghignante. La sua testa deforme è una massa di tentacoli e ventose che trasudano una melma nera e putrida. Al centro di questa massa contorta pulsa un orribile occhio giallo. Vonotar ha il controllo di questo mostro e lo sta dirigendo contro di te.</p>",
    "choices": [
     {
@@ -2793,7 +2781,6 @@
    ]
   },
   "184": {
-   "image": "public/img/book03/sec184.png",
    "text": "<p>Il tunnel è breve e ti conduce presto in una piccola caverna. Al centro della caverna giacciono due cadaveri, entrambi umani. Nonostante la temperatura gelida, sono gravemente decomposti: sono morti da moltissimo tempo. Entrambi indossano pellicce, e uno stringe ancora un pugnale di selce in una mano. Dalla posizione dei corpi, sembra che si siano uccisi a vicenda in una disperata lotta.</p>",
    "choices": [
     {
@@ -2910,7 +2897,6 @@
    ]
   },
   "191": {
-   "image": "public/img/book03/sec191.png",
    "text": "<p>Tremante per lo shock e la fatica, raggiungi finalmente il passo proprio mentre sta per calare la notte. In lontananza scorgi una piccola grotta, situata proprio sotto una cascata ghiacciata. Il vento si è fatto molto più forte e decidi di rifugiarti nella grotta per la notte. Tuttavia, non appena entri, resti sorpreso nel vedere un raggio di luce che filtra da una fessura in fondo alla grotta.</p><p>Ti avvicini con cautela allo strano bagliore, ma non vedi un crepaccio coperto di neve e ci cadi dentro in una valanga di neve e ghiaccio.</p>",
    "choices": [
     {
@@ -3052,7 +3038,6 @@
    ]
   },
   "201": {
-   "image": "public/img/book03/sec201.png",
    "text": "<p>La ciotola di M'lare scricchiola e frammenti di pietra cadono dal soffitto mentre ti lanci attraverso la fenditura nera, ma la fortuna è dalla tua parte: la Corda regge e atterri sano e salvo dall'altro lato. Con un rapido gesto del polso recuperi la Corda e riprendi il cammino lungo il corridoio.</p><p>Hai percorso solo poche decine di metri quando noti, alla tua sinistra, una porta di pietra ad arco, ornata di strane incisioni. Le incisioni raffigurano centinaia di scheletri intrecciati attorno a levigati blocchi di pietra. Accanto alla porta vedi che una leva nel muro è sollevata.</p>",
    "choices": [
     {
@@ -3264,7 +3249,6 @@
    ]
   },
   "216": {
-   "image": "public/img/book03/sec216.png",
    "text": "<p>Hai percorso meno di due chilometri quando i primi esploratori dei Barbari dei Ghiacci compaiono a nord, su sci. Dapprima sono solo due dei temibili guerrieri, ma vengono presto raggiunti da altri tre. Sono grandi, muscolosi e ricoperti di pellicce. Alcuni indossano armature d'osso. Nonostante la loro mole, scivolano sulla neve con una grazia e una velocità quasi feline. Ognuno porta un'asta legata sulla schiena, da cui sventola una piccola bandiera.</p><p>Improvvisamente, una freccia dalla punta d'osso ti sibila accanto al ginocchio e si conficca nella slitta. Un esploratore dei Barbari dei Ghiacci ti passa accanto sciando a meno di dieci metri sulla tua destra. Riesci a vedere chiaramente i suoi occhi obliqui e gli zigomi pronunciati. All'improvviso ti rendi conto che ciò che avevi scambiato per muscoli e pelliccia è in realtà un bambino dei Barbari dei Ghiacci. Ogni esploratore porta un grande zaino contenente un bambino. Questi bambini sono armati di piccoli archi d'osso e scagliano un flusso continuo di frecce mentre i loro padri sciano sempre più vicino.</p><p>Improvvisamente Irian cade, con una freccia conficcata nella schiena. Dyce corre in suo aiuto ma viene abbattuto prima di aver fatto una dozzina di passi. Fenor viene colpito. Una freccia gli trapassa la gola da parte a parte. Barcolla coraggiosamente per quasi un minuto prima di crollare nella neve. Sei rimasto solo. Un esploratore dei Barbari dei Ghiacci ti passa accanto a sinistra e torna verso di te, dritto davanti. Ha una lancia sotto un braccio, puntata al tuo petto.</p>",
    "choices": [
     {
@@ -3326,7 +3310,6 @@
    ]
   },
   "221": {
-   "image": "public/img/book03/sec221.png",
    "text": "<p>Il corridoio in cui ora ti trovi è molto più caldo della caverna gelida all'esterno. Per la prima volta dopo molti giorni, puoi abbassare il cappuccio del mantello e togliere i guanti senza rischiare il congelamento.</p><p>Noti che il passaggio di pietra sale verso un pianerottolo da cui si diparte un altro passaggio verso est. Ciotole di M'lare pendono a intervalli regolari lungo il soffitto ad arco, la loro luce innaturale illumina le pareti scolpite.</p><p>Mentre ti avvicini al pianerottolo, noti un arco che conduce a una piccola stanza. Uno strano spettacolo ti si presenta agli occhi. Pellicce logore, cocci di terracotta e i detriti di centinaia di anni sembrano essere stati gettati alla rinfusa in questa camera. Una grande leva sporge dal muro accanto all'arco.</p>",
    "choices": [
     {
@@ -3366,7 +3349,6 @@
    ]
   },
   "224": {
-   "image": "public/img/book03/sec224.png",
    "text": "<p>Venti metri esattamente sotto il varco, vedi un uomo vestito con un mantello scuro. È inginocchiato al centro di un grande pentagramma, tracciato col gesso sul pavimento della squallida cella.</p>",
    "choices": [
     {
@@ -3380,7 +3362,6 @@
    ]
   },
   "225": {
-   "image": "public/img/book03/sec225.png",
    "text": "<p>Il tappo è sigillato con la cera. Se vuoi rompere il sigillo, devi rischiare di frantumare il vetro sottile della Fiala.</p>",
    "choices": [
     {
@@ -3513,7 +3494,6 @@
    ]
   },
   "235": {
-   "image": "public/img/book03/sec235.png",
    "text": "<p>Dopo una breve camminata, giungi in un'immensa sala di ghiaccio piena di stalattiti e stalagmiti di cristallo. Il pavimento è coperto di tracce animali e ossa, eppure la vasta sala sembra deserta e immobile. Noti che la parete settentrionale è una superficie completamente liscia di blocchi di granito, che si innalza fino al soffitto ghiacciato, oltre cento piedi più in alto. Realizzi all'improvviso di trovarti davanti alle fondamenta di Ikaya: hai raggiunto la fortezza di ghiaccio.</p><p>Parzialmente nascosta da un grande cumulo di cristalli, riesci a scorgere una rampa che conduce a una massiccia porta di pietra nella parete della fortezza. La scoperta ti dà nuova speranza. Se riesci a entrare a Ikaya e a catturare rapidamente Vonotar, c'è ancora tempo per raggiungere la tua nave, la <cite>Cardonal</cite>, prima che il pack si ghiacci.</p>",
    "choices": [
     {
@@ -3640,7 +3620,6 @@
    ]
   },
   "245": {
-   "image": "public/img/book03/sec245.png",
    "text": "<p>Mentre la bestia emette un raccapricciante grido di morte, un fetore orribile proveniente dal suo corpo ti invade le narici. Persino i cani Kanu arricciano il naso disgustati e si allontanano dal terribile odore.</p><p>Quando Irian ti si affianca con un coltello da scuoiatore, trasalisci al solo pensiero di scuoiare questa orrenda creatura. Osservi con ripugnanza mentre Irian apre la bestia dalla gola al ventre e stacca la spessa pelliccia bianca. Non puoi credere ai tuoi occhi quando ne estrae manciate di olio denso e se lo spalma su viso e corpo. «Olio di Baknar» esclama entusiasta. «Ti tiene asciutto e al caldo. Meglio della pelliccia per proteggersi dal ghiaccio di Kalte.» Ti offre una manciata di quell'olio ripugnante.</p>",
    "choices": [
     {
@@ -3721,7 +3700,6 @@
    ]
   },
   "252": {
-   "image": "public/img/book03/sec252.png",
    "text": "<p>«Il tuo momento è giunto» esclama una voce, ma è Loi-Kymar a parlare, non Vonotar. Un fascio di erbe vola nell'aria e colpisce Vonotar in pieno petto. In un istante, il mago gobbo viene avvolto da un groviglio di viticci che lo imprigionano dalla testa ai piedi. Loi-Kymar getta un ponte di rampicanti sul fossato e ti raggiunge sulla piattaforma.</p><p>«Assicurati di togliergli anelli e amuleti» dice, mentre fruga in cerca del suo Bastone della Gilda. «È un maestro dell'inganno. Non vorremmo che si perdesse lo speciale ritorno a casa che lo attende a Sommerlund.»</p><p>Ammiri la compostezza del vecchio. Dopo una lotta così disperata, sembra completamente impassibile. «Ah! Eccola» annuncia trionfante, estraendo il suo Bastone della Gilda da sotto il trono del Brumalmarc.</p><p>Gli porgi la tua mappa di Kalte e indichi la posizione della <cite>Cardonal</cite>. «Non ne avrò bisogno» risponde, con un pizzico di sufficienza. «Le mappe sono immancabilmente sbagliate: preferisco affidarmi al mio senso dell'orientamento.» Il vecchio mago solleva il suo bastone e un fascio di luce abbagliante ne scaturisce dalla punta. Compie tre ampi movimenti nell'aria e la Sala del Brumalmarc si trasforma in un ombrello di colori.</p>",
    "choices": [
     {
@@ -3953,7 +3931,6 @@
    ]
   },
   "265": {
-   "image": "public/img/book03/sec265.png",
    "text": "<p>Questa strana creatura è una Serpe Glaciale di Cristallo, una bestia necrofaga che ormai si nutre dei resti delle sventurate creature entrate nella caverna. La sua pelle dura è quasi trasparente, e i suoi organi interni si vedono pulsare al suo interno. Un'ampia bocca si apre nella testa cristallina, rivelando file su file di denti di cristallo aguzzi. Hai la schiena premuta contro la porta di pietra e non c'è modo di evitare il mostro. Devi combatterlo fino alla morte. È immune al Psicolaser.</p>",
    "combat": {
     "name": "Serpe Glaciale di Cristallo",
@@ -4044,7 +4021,6 @@
    ]
   },
   "272": {
-   "image": "public/img/book03/sec272.png",
    "text": "<p>Mentre il vile Akraa'Neonor trema e muore, Vonotar interrompe lo scontro mentale e corre verso il trono del Brumalmarc.</p><p>Loi-Kymar è gravemente scosso ma è sopravvissuto alla prova. Ti raggiunge in fretta sul bordo del fossato e getta una manciata di erbe nell'oscurità sottostante. Nel giro di pochi secondi, una massa di viticci e rampicanti si arrotola verso l'alto formando un ponte. Sei a metà del ponte quando Vonotar riappare all'improvviso, un'asta di cristallo levata in mano. Prende la mira contro la massa di rampicanti e un gelido cono di brina si scaglia dalla punta dell'asta.</p><p>Se non possiedi la Spada del Sole, pesca un numero dalla Tabella del Destino.</p>",
    "choices": [
     {
@@ -4260,7 +4236,6 @@
    ]
   },
   "285": {
-   "image": "public/img/book03/sec285.png",
    "text": "<p>Mentre la porta scorre indietro, sei inorridito nel vedere gli occhi vuoti e senza pupille del Barbaro dei Ghiacci fissarti dritto in volto. Un grido basso e innaturale gli sfugge dalla bocca spalancata, e in un istante i Lupi della Perdizione sono già svegli e ringhiano.</p>",
    "choices": [
     {
@@ -4336,7 +4311,6 @@
    ]
   },
   "290": {
-   "image": "public/img/book03/sec290.png",
    "text": "<p>La porta di pietra scorre lentamente di lato. Rivela uno stretto varco a volta, colmo di nebbia turbinante e ondeggiante che nasconde qualunque cosa si celi oltre. Noti un brusco calo di temperatura.</p>",
    "choices": [
     {
@@ -4382,7 +4356,6 @@
    ]
   },
   "292": {
-   "image": "public/img/book03/sec292.png",
    "text": "<p>L'enorme porta scorre e si apre, rivelando una lunga passerella di pietra che attraversa una vasta camera immersa nel bagliore arancione di fornaci ardenti. Una folata d'aria calda e putrida ti investe, e un rumore assordante ti assale le orecchie. Quindici metri sotto la passerella, grandi vasche di pietra pendono sospese sopra fiamme ruggenti. Ogni vasca è colma di melma ribollente che si contorce e si dimena come se fosse viva.</p><p>Paura e ripugnanza ti stringono lo stomaco mentre cominci a intuire il sinistro segreto di questa sala. File su file di piedistalli di pietra recano i cadaveri mutilati di Barbari dei Ghiacci, la pelle strappata via e fissata aperta con spilli. Ogni cadavere è assistito da creature raccapriccianti, una legione spettrale di mutanti che striscia e si contorce sul pavimento intriso di sangue. Questa sala è un luogo di grande malvagità, un laboratorio da incubo, un tempio dell'Arte Nera della Negromanzia costruito da Vonotar il Traditore.</p><p>Dall'altra parte della passerella, un'altra porta scorre improvvisamente indietro rivelando quattro Barbari dei Ghiacci mutanti. Mentre avanzano verso di te strascicando i piedi, un misto di orrore e pietà ti sopraffà i sensi.</p>",
    "choices": [
     {
@@ -4469,7 +4442,6 @@
    ]
   },
   "298": {
-   "image": "public/img/book03/sec298.png",
    "text": "<p>Scopri uno strano Triangolo di Pietra Blu attaccato a una catena. È stretto saldamente nella mano scheletrica di uno dei cadaveri, e sei costretto a spezzare le ossa delle dita per poter esaminare più da vicino il monile. Se vuoi tenere questo Triangolo di Pietra Blu, infilalo al collo e portalo sotto la giacca. Segnalo sul tuo Registro di Guerra come Oggetto Speciale.</p>",
    "effects": {
     "canAddItems": [
@@ -4572,7 +4544,6 @@
    ]
   },
   "303": {
-   "image": "public/img/book03/sec303.png",
    "text": "<p>Inserisci la Chiave e la giri in senso orario. Uno scatto secco conferma che ha funzionato. Lentamente lo stelo della Chiave ti sfugge dalla presa e scompare dentro la serratura, mentre il grande coperchio di pietra si apre rivelando un magnifico Elmo d'Argento. (Ricorda di cancellare la Chiave d'Argento Ornata dal tuo Registro di Guerra.)</p>",
    "effects": {
     "removeItem": "Chiave d'Argento Ornata"
@@ -4616,7 +4587,6 @@
    ]
   },
   "305": {
-   "image": "public/img/book03/sec305.png",
    "text": "<p>La pesante bestia rotola giù dalla slitta e giace immobile sul ghiaccio. Fenor è riuscito ad accendere una torcia e la agita contro gli altri due Baknar. Terrorizzati dal fuoco, si voltano rapidamente e fuggono. Esulti nel vederli scomparire e ti volti per congratularti con le tue coraggiose guide, ma resti sbalordito nello scoprire che hanno già iniziato a scuoiare il Baknar morto. Guardi con disgusto mentre Dyce apre la bestia dalla gola al ventre con il suo coltello da caccia affilato. Tira indietro rapidamente la pelliccia bianca e raccoglie manciate di olio denso da sotto la pelle. L'odore di quest'olio è orribile, così orribile che perfino i cani Kanu affondano il muso nella neve per evitarlo. Non credi ai tuoi occhi quando i due guide iniziano a spalmarsi quest'olio ripugnante su tutto il viso e dentro i vestiti.</p><p>«Olio di Baknar», esclama Fenor con entusiasmo. «Niente di meglio per restare caldi e asciutti.» Ritira la mano dalla bestia morta e ti offre una manciata della gelatina fetida.</p>",
    "choices": [
     {
@@ -4643,7 +4613,6 @@
    ]
   },
   "307": {
-   "image": "public/img/book03/sec307.png",
    "text": "<p>Preparandoti al combattimento, fai segno agli altri di attaccare. I Barbari dei Ghiacci si accorgono subito del pericolo e fuggono verso ovest. Con tuo sgomento, vedi che sono equipaggiati con sci e riescono a dileguarsi rapidamente. Portano piccole aste attaccate sulla schiena ricoperta di pelliccia, da cui sventolano strane bandiere blu. «Esploratori di convoglio», dice Irian, riparandosi gli occhi dal riverbero della neve. «Il loro Banach blu, ossia le bandiere sulla schiena, significa che sono esploratori di una carovana di slitte. Probabilmente stanno tornando dal mercato di Ljuk; il loro convoglio non può essere a più di qualche miglio di distanza, cinque al massimo.»</p>",
    "choices": [
     {
@@ -4762,7 +4731,6 @@
    ]
   },
   "317": {
-   "image": "public/img/book03/sec317.png",
    "text": "<p>Il portale di pietra cigola aprendosi ma si blocca bruscamente a metà corsa. Lo spazio è poco più di sessanta centimetri e riesci a malapena a infilarti nella camera oltre. L'aria nella stanza è fredda e stantia; questa camera è rimasta chiaramente indisturbata per migliaia di anni. Scaffali di pietra sono colmi di bottiglie e fiaschi. Su un tavolo al centro giace una splendida sacca piena di pozioni di vari colori.</p>",
    "choices": [
     {
@@ -4794,7 +4762,6 @@
    ]
   },
   "320": {
-   "image": "public/img/book03/sec320.png",
    "text": "<p>Riesci ad afferrare il bambino che si dimena, e gli sfili un pugnale d'osso dallo stivale per evitare che ti pugnali alla schiena.</p><p>I Barbari dei Ghiacci si sono disposti in cerchio intorno a te, ma non osano attaccare finché tieni in ostaggio uno dei loro figli. Tenendo il pugnale d'osso alla gola del bambino, ti muovi lentamente verso la slitta. Ti rendi presto conto che non riuscirai mai a distanziarli su una slitta carica. Dovrai pensare a qualcosa, e in fretta.</p>",
    "choices": [
     {
@@ -4938,7 +4905,6 @@
    ]
   },
   "330": {
-   "image": "public/img/book03/sec330.png",
    "text": "<p>Giungi presto ai piedi di una scala a chiocciola; non sembra esserci altra scelta che salirla. Dopo aver superato oltre duecento gradini, arrivi in un lungo corridoio che termina in un balcone. Circa nove metri più in basso, vedi Vonotar il Traditore in piedi davanti a due guerrieri Barbari dei Ghiacci. Sta infilando un bracciale d'oro al polso di uno di loro, ignaro della tua presenza. Da qui non ci sono scale che portino alla sala sottostante, ma c'è una porta all'estremità del balcone.</p>",
    "choices": [
     {
@@ -5012,7 +4978,6 @@
    ]
   },
   "334": {
-   "image": "public/img/book03/sec334.png",
    "text": "<p>Un pannello nascosto si apre vicino al bastone di destra. All'interno scopri un magnifico Cristallo Luminoso, caldo al tatto. Se vuoi conservare questo Cristallo Luminoso, infilalo in tasca e segnalo sul tuo Registro di Guerra come Oggetto Speciale.</p>",
    "effects": {
     "canAddItems": [
@@ -5083,7 +5048,6 @@
    "isDeathSection": true
   },
   "340": {
-   "image": "public/img/book03/sec340.png",
    "text": "<p>Trascini i corpi fuori dalla cucina e li appoggi dietro la porta segreta. Quando ritorni, Loi-Kymar è intento a esaminare le boccette di erbe allineate sugli scaffali della cucina. Si intasca diversi vasetti e mescola il contenuto di altri due in una piccola ciotola di pietra. Ti offre una manciata delle foglie secche e ti esorta a mangiarle. «Ti restituiranno le forze, Lupo Solitario.» Mangi le erbe dal sapore dolce e senti un caldo bagliore irradiarsi in tutto il corpo. Ripristina 6 punti Resistenza al tuo totale attuale.</p>",
    "effects": {
     "restoreEndurance": 6
@@ -5230,7 +5194,6 @@
    ]
   },
   "350": {
-   "image": "public/img/book03/sec350.png",
    "text": "<p>Mentre i colori svaniscono, avverti un improvviso calo di temperatura. Ti trovi ora sulla banchisa di Ljuk, a meno di un chilometro dal punto in cui la <cite>Cardonal</cite> è ancorata. Loi-Kymar e Vonotar sono vicino a te, entrambi tremanti nell'aria gelida del mattino. Nel giro di pochi minuti venite avvistati dalla vedetta della nave e viene calata una scialuppa. Mentre un Vonotar che si dimena viene issato senza tante cerimonie a bordo della <cite>Cardonal</cite> e rinchiuso in cella, il capitano è il primo a congratularsi con te per la tua abilità e il tuo coraggio.</p><p>«Ma come avete fatto a tornare così in fretta?» chiede incredulo. «Non vi aspettavamo prima di altri dieci giorni.»</p><p>«Diciamo», interviene Loi-Kymar, «che la saggezza dei Ramas e la sapienza della Gilda dei Maghi possono superare persino i limiti del tempo stesso.»</p><p>Un'espressione perplessa attraversa il volto del capitano, ma viene gradualmente sostituita da un sorriso, mentre comincia a comprendere la curiosa risposta del mago.</p><p>Il viaggio verso Anskaven è rapido, ma sei rattristato dal ricordo delle coraggiose guide lasciate indietro. Il tuo arrivo in porto è accolto da una folla in ansia, che teme che il tuo ritorno anticipato sia segno del fallimento della missione. Quando si diffonde la notizia della cattura di Vonotar, le tue abilità di guerriero sono nuovamente richieste, questa volta per difendere il tuo nemico dalla folla inferocita di Sommlending che assale la prigione di Anskaven. Viene infine garantito un passaggio sicuro fino a Toran, dove il traditore dovrà affrontare il processo.</p><p>All'alba della festa di Maesmarn, nelle profondità della Gilda della Stella di Cristallo, Vonotar il Traditore viene processato dalla sua confraternita e giudicato colpevole dei suoi terribili crimini. Viene condotto via in silenzio fino alla camera più profonda della Gilda, dove si trova il Daziarn: un portale di totale oscurità, la soglia di una prigione eterna da cui non si può fuggire.</p><p>Sei tu il vendicatore dei suoi crimini, e sei tu a gettare il miserabile traditore nel limbo del Daziarn. La tua missione è ora compiuta. Sei sopravvissuto alle caverne di Kalte e hai liberato Sommerlund dalla minaccia di Vonotar.</p>",
    "isVictory": true
   }

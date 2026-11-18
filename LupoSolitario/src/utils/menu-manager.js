@@ -1,189 +1,116 @@
-// Menu Manager - Game menu handling
-
-import { UIHelpers } from '../utils/ui-helpers.js';
+// Menus: the in-game menu, the saves list and the rules. Used from the title screen too.
+import { UIHelpers } from './ui-helpers.js';
 import { saveManager } from '../save-manager.js';
-import { gameState } from '../game-state.js';
-import { authManager } from '../auth.js';
+import { icon, esc, noEmoji } from '../ui/kit.js';
+import { BOOKS } from './screen-manager.js';
 
-export class MenuManager {
-  constructor(onSave, onNewGame, onLogout) {
-    this.onSave = onSave;
-    this.onNewGame = onNewGame;
-    this.onLogout = onLogout;
-  }
+const when = (ms) => (ms ? new Date(ms).toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '');
 
-  show() {
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    modal.innerHTML = `
-      <div class="modal">
-        <div class="modal-header">
-          <h2>☰ Menu</h2>
-          <button class="modal-close" id="close-menu">×</button>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 1rem;">
-          <button class="btn btn-primary btn-block" id="save-game-btn">
-            💾 Salva Partita
-          </button>
-          <button class="btn btn-secondary btn-block" id="view-saves-btn">
-            📋 Gestisci Salvataggi
-          </button>
-          <button class="btn btn-warning btn-block" id="new-game-menu-btn">
-            🆕 Nuova Partita
-          </button>
-          <button class="btn btn-danger btn-block" id="logout-menu-btn">
-            🚪 Esci
-          </button>
-        </div>
-      </div>
-    `;
+// actions: { onSave, onSaves, onRules, onNewGame, onTitle }
+export function openMenu(actions) {
+  const item = (id, ic, label, cls = 'btn-ghost') => `<button class="btn ${cls} btn-block" type="button" data-action="${id}">${icon(ic)}${label}</button>`;
+  const run = (fn) => (e, modal) => { modal.close(); fn(); };
+  UIHelpers.showModal(`
+    <div class="modal-actions" style="margin-top:0">
+      ${item('save', 'save', 'Salva ora', 'btn-primary')}
+      ${item('saves', 'folder-open', 'Salvataggi')}
+      ${item('rules', 'scroll-text', 'Regole')}
+      ${item('new', 'plus', 'Nuova partita')}
+      ${item('title', 'arrow-left', 'Torna all\'inizio')}
+    </div>`, {
+    title: 'Menu',
+    buttons: {
+      '[data-action="save"]': run(actions.onSave),
+      '[data-action="saves"]': run(actions.onSaves),
+      '[data-action="rules"]': run(actions.onRules),
+      '[data-action="new"]': run(actions.onNewGame),
+      '[data-action="title"]': run(actions.onTitle),
+    },
+  });
+}
 
-    document.body.appendChild(modal);
-
-    // Close button
-    modal.querySelector('#close-menu').addEventListener('click', () => modal.remove());
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) modal.remove();
-    });
-
-    // Save game
-    modal.querySelector('#save-game-btn').addEventListener('click', async () => {
-      await this.onSave();
-      UIHelpers.showToast('💾 Gioco salvato!', 'success');
-      modal.remove();
-    });
-
-    // View saves
-    modal.querySelector('#view-saves-btn').addEventListener('click', () => {
-      modal.remove();
-      this.showSaveManager();
-    });
-
-    // New game
-    modal.querySelector('#new-game-menu-btn').addEventListener('click', () => {
-      UIHelpers.showConfirm(
-        'Iniziare una nuova partita? I progressi non salvati andranno persi.',
-        () => {
-          modal.remove();
-          this.onNewGame();
+// canSave: a game is open, so it can be saved under a name. onLoad(save) gets the chosen save.
+export async function openSaves({ canSave, state, onLoad }) {
+  const modal = UIHelpers.showModal(`
+    <p class="muted" style="margin-bottom:1rem;font-size:.9rem">${saveManager.cloud ? 'Salvati nel cloud, con il tuo account Google.' : 'Salvati in questo browser.'} Quello automatico si aggiorna da solo mentre giochi.</p>
+    <div class="save-list" id="saves-list"><div class="loading" style="min-height:6rem"><div class="spinner"></div></div></div>
+    ${canSave ? `<div class="modal-actions"><button class="btn btn-primary btn-block" type="button" data-action="new-save">${icon('plus')}Salva con un nome</button></div>` : ''}`, {
+    title: 'Salvataggi',
+    wide: true,
+    buttons: {
+      '[data-action="new-save"]': async () => {
+        const name = await UIHelpers.promptAsync('Come vuoi chiamare questo salvataggio?', { title: 'Nuovo salvataggio', placeholder: 'Prima del ponte' });
+        if (!name) return;
+        try {
+          await saveManager.saveGame('save_' + Date.now(), state(), name);
+          UIHelpers.showToast(`Salvato: ${name}`, 'success');
+        } catch (error) {
+          console.error(error);
+          UIHelpers.showToast('Non riesco a salvare', 'error');
         }
-      );
-    });
+        render();
+      },
+    },
+  });
+  const list = modal.querySelector('#saves-list');
 
-    // Logout
-    modal.querySelector('#logout-menu-btn').addEventListener('click', () => {
-      UIHelpers.showConfirm(
-        'Uscire? Assicurati di aver salvato i progressi.',
-        () => {
-          this.onLogout();
-        }
-      );
-    });
-  }
-
-  async showSaveManager() {
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    modal.innerHTML = `
-        <div class="modal" style="max-width: 600px; width: 90%;">
-          <div class="modal-header">
-            <h2>📋 Gestione Salvataggi</h2>
-            <button class="modal-close" id="close-saves">×</button>
-          </div>
-          <div id="saves-list" style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;">
-            <p style="text-align: center;">Caricamento salvataggi...</p>
-          </div>
-          <div style="margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
-            <button class="btn btn-primary btn-block" id="create-new-save">
-              ➕ Crea Nuovo Salvataggio
-            </button>
-          </div>
-        </div>
-      `;
-    document.body.appendChild(modal);
-
-    const closeBtn = modal.querySelector('#close-saves');
-    closeBtn.addEventListener('click', () => modal.remove());
-
-    const createBtn = modal.querySelector('#create-new-save');
-    createBtn.addEventListener('click', async () => {
-      const saveName = prompt("Inserisci un nome per il salvataggio:");
-      if (saveName) {
-        const id = 'save_' + Date.now();
-        // Add name to flags or metadata to store legible name
-        const state = gameState.getState();
-        const newState = { ...state, flags: { ...state.flags, saveName: saveName } };
-
-        await saveManager.saveGame(id, newState);
-        UIHelpers.showToast(`✅ Partita "${saveName}" salvata!`, 'success');
-        this.renderSavesList(modal.querySelector('#saves-list'), modal);
-      }
-    });
-
-    await this.renderSavesList(modal.querySelector('#saves-list'), modal);
-  }
-
-  async renderSavesList(container, modal) {
+  async function render() {
+    let saves;
     try {
-      const saves = await saveManager.listSaves();
-      container.innerHTML = '';
-
-      if (saves.length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">Nessun salvataggio trovato.</p>';
-        return;
-      }
-
-      saves.forEach(save => {
-        const saveName = save.flags && save.flags.saveName ? save.flags.saveName : (save.saveId === 'autosave' ? 'Salvataggio Automatico' : `Salvataggio ${new Date(save.timestamp.seconds * 1000).toLocaleDateString()}`);
-        const date = new Date(save.timestamp.seconds * 1000).toLocaleString();
-        const section = save.currentSection;
-
-        const item = document.createElement('div');
-        item.className = 'save-item';
-        item.style.cssText = `
-            background: rgba(255,255,255,0.05); 
-            padding: 1rem; 
-            border-radius: 8px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-          `;
-
-        item.innerHTML = `
-            <div>
-              <div style="font-weight: bold;">${saveName}</div>
-              <div style="font-size: 0.8rem; color: var(--text-muted);">Sezione: ${section} | ${date}</div>
-            </div>
-            <div style="display: flex; gap: 0.5rem;">
-              <button class="btn btn-sm btn-success load-btn">Carica</button>
-              <button class="btn btn-sm btn-danger delete-btn">Elimina</button>
-            </div>
-          `;
-
-        item.querySelector('.load-btn').addEventListener('click', async () => {
-          UIHelpers.showConfirm(`Caricare "${saveName}"?`, () => {
-            gameState.loadState(save);
-            UIHelpers.showToast('✅ Partita caricata!', 'success');
-            modal.remove();
-            // Optionally reload or ensure the view updates
-            // gameState loadState triggers listeners so it should update views but for safety we can trigger a re-render if needed
-            // It's already reactive.
-          });
-        });
-
-        item.querySelector('.delete-btn').addEventListener('click', async () => {
-          UIHelpers.showConfirm(`Eliminare "${saveName}"?`, async () => {
-            await saveManager.deleteSave(save.id);
-            UIHelpers.showToast('🗑️ Salvataggio eliminato.', 'info');
-            this.renderSavesList(container, modal);
-          });
-        });
-
-        container.appendChild(item);
-      });
-    } catch (e) {
-      console.error("Error listing saves", e);
-      container.innerHTML = '<p style="color: var(--color-danger);">Errore nel caricamento dei salvataggi.</p>';
+      saves = await saveManager.listSaves();
+    } catch (error) {
+      console.error('Error listing saves', error);
+      list.innerHTML = '<p class="muted">Non riesco a leggere i salvataggi. Riprova tra poco.</p>';
+      return;
     }
+    if (!saves.length) {
+      list.innerHTML = '<p class="muted">Ancora nessun salvataggio.</p>';
+      return;
+    }
+    list.innerHTML = saves.map((s, i) => `
+      <div class="save-item">
+        <div>
+          <b>${s.saveId === 'autosave' ? 'Salvataggio automatico' : esc(s.name || 'Senza nome')}</b>
+          <small>Libro ${esc(s.bookNumber)} · ${esc(BOOKS[s.bookNumber]?.title || '')} · sezione ${esc(s.currentSection)}</small>
+          <small>${when(s.savedAt)}</small>
+        </div>
+        <div class="acts">
+          <button class="btn btn-primary btn-sm" type="button" data-load="${i}">Carica</button>
+          <button class="icon-btn" type="button" data-del="${i}" aria-label="Elimina">${icon('trash-2')}</button>
+        </div>
+      </div>`).join('');
+    list.querySelectorAll('[data-load]').forEach((b) => b.addEventListener('click', async () => {
+      const save = saves[Number(b.dataset.load)];
+      if (canSave && !(await UIHelpers.confirmAsync('Caricare questo salvataggio? La partita in corso resta solo nel salvataggio automatico.', { yes: 'Carica' }))) return;
+      modal.close();
+      onLoad(save);
+    }));
+    list.querySelectorAll('[data-del]').forEach((b) => b.addEventListener('click', async () => {
+      const save = saves[Number(b.dataset.del)];
+      const label = save.saveId === 'autosave' ? 'il salvataggio automatico' : `"${esc(save.name || 'Senza nome')}"`;
+      if (!(await UIHelpers.confirmAsync(`Eliminare ${label}? Non si torna indietro.`, { yes: 'Elimina', danger: true }))) return;
+      try {
+        await saveManager.deleteSave(save.saveId);
+        UIHelpers.showToast('Salvataggio eliminato', 'info');
+      } catch (error) {
+        console.error(error);
+        UIHelpers.showToast('Non riesco a eliminarlo', 'error');
+      }
+      render();
+    }));
   }
+  render();
+}
+
+export function openRules(intro) {
+  const s = intro?.sections;
+  if (!s) return;
+  const arts = (s.kaiArts.arts || []).map((a) => `<li><b>${esc(a.name)}</b>: ${a.description}</li>`).join('');
+  UIHelpers.showModal(`
+    <div class="rules">
+      ${s.rules.content}
+      <h3>${noEmoji(s.combat.title)}</h3>${s.combat.content}
+      <h3>${noEmoji(s.kaiArts.title)}</h3>${s.kaiArts.content}<ul>${arts}</ul>
+      <h3>${noEmoji(s.equipment.title)}</h3>${s.equipment.content}
+    </div>`, { title: noEmoji(s.rules.title), wide: true });
 }

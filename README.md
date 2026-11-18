@@ -20,7 +20,7 @@
 ### What it does
 
 - Ten games that run in the browser, served at **davide-mariotti.github.io/games/**.
-- **Lupo Solitario**: gamebooks you can play, with dice, inventory and saves (Firebase, sign in with Google).
+- **Lupo Solitario**: the first five gamebooks, playable: dice, fights and Action Chart handled by the game, saves in the browser or, with Google, in the cloud.
 - **War Run**, **Digital Jump**, **Snake**, **Maze Rush**, **Fruit Catcher**, **Tic-Tac-Toe**: quick arcade games.
 - **Never Have I Ever** (Non ho mai): the party game, 381 cards in English and Italian.
 - **Truth or Dare** (Obbligo o Verità): with friends, as a couple or in a parked car, 199 cards in English and Italian.
@@ -35,7 +35,7 @@
 ### How it's organised
 
 One folder per game, each with its own `index.html`. `index.html` at the root is the list of games.
-`shared/arcade.css` and `shared/arcade.js` are the kit of the rebuilt games (Fruit Catcher, Digital Jump, Snake, Maze Rush, Tic-Tac-Toe, War Run, Non ho mai, Obbligo o Verità, Wordle): site colours, icons, sound, menus.
+`shared/arcade.css` and `shared/arcade.js` are the kit of the rebuilt games (Fruit Catcher, Digital Jump, Snake, Maze Rush, Tic-Tac-Toe, War Run, Non ho mai, Obbligo o Verità, Wordle, Lupo Solitario): site colours, icons, sound, menus.
 The repo is served as it is by GitHub Pages (`.nojekyll`): push to `main` and it's online.
 
 ### Support
@@ -53,7 +53,7 @@ The code is [MIT](LICENSE). Lupo Solitario's texts belong to their authors and a
 ### Cosa fa
 
 - Dieci giochi che girano nel browser, su **davide-mariotti.github.io/games/**.
-- **Lupo Solitario**: i librogame giocabili, con dadi, inventario e salvataggi (Firebase, accesso con Google).
+- **Lupo Solitario**: i primi cinque librogame, giocabili: dadi, combattimenti e Registro di Guerra li tiene il gioco, i salvataggi stanno nel browser o, con Google, nel cloud.
 - **War Run**, **Digital Jump**, **Snake**, **Maze Rush**, **Fruit Catcher**, **Tic-Tac-Toe**: giochi arcade veloci.
 - **Non ho mai** (Never Have I Ever): il gioco da serata, 381 carte in italiano e in inglese.
 - **Obbligo o Verità** (Truth or Dare): tra amici, in due o in un parcheggio, 199 carte in italiano e in inglese.
@@ -68,7 +68,7 @@ The code is [MIT](LICENSE). Lupo Solitario's texts belong to their authors and a
 ### Com'è organizzata
 
 Una cartella per gioco, ognuna col suo `index.html`. L'`index.html` nella radice è l'elenco dei giochi.
-`shared/arcade.css` e `shared/arcade.js` sono il kit dei giochi rifatti (Fruit Catcher, Digital Jump, Snake, Maze Rush, Tic-Tac-Toe, War Run, Non ho mai, Obbligo o Verità, Wordle): colori del sito, icone, suoni, menu.
+`shared/arcade.css` e `shared/arcade.js` sono il kit dei giochi rifatti (Fruit Catcher, Digital Jump, Snake, Maze Rush, Tic-Tac-Toe, War Run, Non ho mai, Obbligo o Verità, Wordle, Lupo Solitario): colori del sito, icone, suoni, menu.
 La repo viene servita così com'è da GitHub Pages (`.nojekyll`): push su `main` ed è online.
 
 ### Supporto

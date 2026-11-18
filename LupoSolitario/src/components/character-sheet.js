@@ -1,199 +1,144 @@
-// Character Sheet Component - Always visible character display
+// Character sheet (the Action Chart): always on screen, collapsible on phones. Potions are drunk from here.
 import { gameState } from '../game-state.js';
 import { UIHelpers } from '../utils/ui-helpers.js';
-import { KAI_ARTS, WEAPON_IMAGES, ITEM_IMAGES } from './character-creator.js';
+import { thumbHTML } from './character-creator.js';
+import { icon, esc, sfx, replay } from '../ui/kit.js';
+
+// What a potion does when drunk. Healing ones only outside combat ("after combat", as the books say);
+// Alether adds 2 Combat Skill to the fight in progress.
+export const POTIONS = {
+  'Pozione Magica': { heal: 4 },
+  'Pozione Curativa': { heal: 4 },
+  'Pozione di Laumspur': { heal: 4 },
+  'Pozione di Laumspur Rossa': { heal: 4 },
+  'Fiala di Olio di Larnuma': { heal: 2 },
+  'Olio di Larnuma': { heal: 2 },
+  'Pozione di Alether': { combat: 2 },
+};
 
 export class CharacterSheet {
   constructor() {
-    this.isCollapsed = window.innerWidth < 768; // Collapsed on mobile by default
+    this.isCollapsed = typeof window !== 'undefined' && window.innerWidth < 860;
+    this.last = null;
   }
 
   render() {
     const container = document.createElement('div');
-    container.className = `character-sheet ${this.isCollapsed ? 'collapsed' : ''}`;
+    container.className = 'card sheet';
     container.id = 'character-sheet';
-
-    gameState.subscribe((state) => this.update(container, state));
+    this.unsubscribe = gameState.subscribe((state) => this.update(container, state));
     this.update(container, gameState.getState());
-
     return container;
   }
 
-  update(container, state) {
-    const { character } = state;
+  destroy() { if (this.unsubscribe) this.unsubscribe(); }
 
-    // Update container class
-    if (this.isCollapsed) {
-      container.classList.add('collapsed');
-    } else {
-      container.classList.remove('collapsed');
-    }
+  update(container, state) {
+    const c = state.character;
+    const p = c.resistenzaMax ? c.resistenza / c.resistenzaMax : 0;
+    const health = p <= 0.3 ? 'low' : p <= 0.6 ? 'mid' : '';
+    const prev = this.last;
+    this.last = { r: c.resistenza, cs: c.combattivita, g: c.corone, m: c.pasti };
+    container.classList.toggle('collapsed', this.isCollapsed);
+
+    const tile = (name, kind, type, index) => {
+      const potion = POTIONS[name];
+      return `<div class="tile ${potion ? 'usable' : ''}" ${potion ? `data-drink="${index}" role="button" tabindex="0" title="Bevi"` : ''}>
+        ${thumbHTML(name, kind)}<span>${esc(name)}</span>
+        <button class="tile-x" type="button" data-type="${type}" data-index="${index}" aria-label="Lascia ${esc(name)}">${icon('x')}</button>
+      </div>`;
+    };
+    const empty = (n, label) => Array.from({ length: Math.max(0, n) }, () => `<div class="tile empty">${label}</div>`).join('');
+    const mastery = c.artiRamas.includes('Scherma') && c.weaponMastery;
 
     container.innerHTML = `
-      <div class="sheet-header">
-        <button class="btn btn-small" id="toggle-sheet">
-          ${this.isCollapsed ? '📋 Mostra' : '❌ Nascondi'}
-        </button>
-        <h3>🐺 Lupo Solitario</h3>
+      <div class="sheet-head">
+        <h3>Registro di Guerra</h3>
+        <button class="icon-btn sheet-toggle" type="button" id="toggle-sheet" aria-expanded="${!this.isCollapsed}" aria-label="${this.isCollapsed ? 'Mostra il Registro' : 'Nascondi il Registro'}">${icon(this.isCollapsed ? 'backpack' : 'x')}</button>
       </div>
-      
-      <div class="sheet-content ${this.isCollapsed ? 'hidden' : ''}">
-        <!-- Stats -->
-        <div class="stats-section">
-          <div class="stat-row">
-            <span class="stat-label"><span class="stat-emoji">⚔️</span> Combattività</span>
-            <span class="stat-value">${character.combattivita}</span>
-          </div>
-          <div class="stat-row">
-            <span class="stat-label"><span class="stat-emoji">❤️</span> Resistenza</span>
-            <span class="stat-value ${this.getHealthClass(character.resistenza, character.resistenzaMax)}">
-              ${character.resistenza}/${character.resistenzaMax}
-            </span>
-          </div>
-          <div class="health-bar">
-            <div class="health-fill" style="width: ${(character.resistenza / character.resistenzaMax) * 100}%"></div>
-          </div>
-          <div class="stat-row">
-            <span class="stat-label"><span class="stat-emoji">💰</span> Corone</span>
-            <span class="stat-value">${character.corone}/50</span>
-          </div>
-          <div class="stat-row">
-            <span class="stat-label"><span class="stat-emoji">🍖</span> Pasti</span>
-            <span class="stat-value">${character.pasti}</span>
-          </div>
-          ${character.pasti > 0 ? `
-            <button class="btn btn-secondary btn-small btn-block" id="consume-meal">
-              🍖 Consuma Pasto
-            </button>
-          ` : ''}
+      ${this.isCollapsed ? `<div class="sheet-stats" style="grid-template-columns:repeat(4,auto);justify-content:space-between;margin-top:.6rem">
+        <span class="mono">${icon('swords')} ${c.combattivita}</span><span class="mono ${health}" style="${health === 'low' ? 'color:var(--danger)' : ''}">${icon('heart')} ${c.resistenza}</span>
+        <span class="mono">${icon('coins')} ${c.corone}</span><span class="mono">${icon('drumstick')} ${c.pasti}</span></div>` : ''}
+      <div class="sheet-body">
+        <div class="sheet-stats">
+          <div class="stat" id="st-cs">${icon('swords')}<span>Combattività</span><b>${c.combattivita}</b></div>
+          <div class="stat ${health}" id="st-r">${icon('heart')}<span>Resistenza</span><b>${c.resistenza}<small>/${c.resistenzaMax}</small></b></div>
+          <div class="meter ${health}"><i style="--p:${Math.max(0, Math.min(1, p))}"></i></div>
+          <div class="stat" id="st-g">${icon('coins')}<span>Corone d'Oro</span><b>${c.corone}<small>/50</small></b></div>
+          <div class="stat" id="st-m">${icon('drumstick')}<span>Pasti</span><b>${c.pasti}</b></div>
         </div>
 
-        <!-- Kai Arts -->
-        <div class="section">
-          <h4>🧙 Arti Kai</h4>
-          <div class="kai-arts-list">
-            ${character.artiRamas.map(art => {
-      const artData = KAI_ARTS.find(a => a.name === art);
-      return this.itemCardHTML({ imgSrc: artData?.image, emoji: '✨', label: art });
-    }).join('')}
-          </div>
-        </div>
+        <p class="label">${icon('sparkles')}Arti Ramas</p>
+        <div class="tiles">${c.artiRamas.map((a) => `<div class="tile">${thumbHTML(a, 'art')}<span>${esc(a)}</span></div>`).join('')}</div>
+        ${mastery ? `<p class="muted" style="font-size:.78rem;margin-top:.4rem">Scherma con: <b style="color:var(--ink)">${esc(c.weaponMastery)}</b>${c.armi.includes(c.weaponMastery) ? ' · in mano, +2' : ''}</p>` : ''}
 
-        <!-- Weapons -->
-        <div class="section">
-          <h4>⚔️ Armi (${character.armi.length}/2)</h4>
-          <div class="weapons-list">
-            ${character.armi.map((weapon, index) => this.itemCardHTML({
-      imgSrc: WEAPON_IMAGES[weapon],
-      emoji: '⚔️',
-      label: weapon,
-      removeButtonHTML: `<button class="btn-remove" data-type="weapon" data-index="${index}">×</button>`
-    })).join('')}
-            ${character.armi.length < 2 ? '<div class="inventory-item-empty">Slot vuoto</div>' : ''}
-          </div>
-        </div>
+        <p class="label">${icon('sword')}Armi · ${c.armi.length}/2</p>
+        <div class="tiles">${c.armi.map((w, i) => tile(w, 'weapon', 'weapon', i)).join('')}${empty(2 - c.armi.length, 'Libera')}</div>
 
-        <!-- Backpack -->
-        <div class="section">
-          <h4>🎒 Zaino (${character.zaino.length}/8)</h4>
-          <div class="inventory-grid">
-            ${character.zaino.map((item, index) => this.itemCardHTML({
-      imgSrc: ITEM_IMAGES[item],
-      emoji: '🎒',
-      label: item,
-      removeButtonHTML: `<button class="btn-remove" data-type="zaino" data-index="${index}">×</button>`
-    })).join('')}
-            ${Array(8 - character.zaino.length).fill(0).map(() =>
-      '<div class="inventory-item-empty">Vuoto</div>'
-    ).join('')}
-          </div>
-        </div>
+        <p class="label">${icon('backpack')}Zaino · ${c.zaino.length + c.pasti}/8</p>
+        <div class="tiles">${c.zaino.map((it, i) => tile(it, 'item', 'zaino', i)).join('')}${c.pasti ? `<div class="tile"><span class="glyph">${icon('drumstick')}</span><span>${c.pasti} ${c.pasti === 1 ? 'Pasto' : 'Pasti'}</span></div>` : ''}${empty(8 - c.zaino.length - c.pasti, 'Vuoto')}</div>
+        ${c.zaino.some((it) => POTIONS[it]) ? '<p class="muted" style="font-size:.75rem;margin-top:.4rem">Tocca una pozione per berla.</p>' : ''}
 
-        <!-- Special Items -->
-        ${character.oggettiSpeciali.length > 0 ? `
-          <div class="section">
-            <h4>✨ Oggetti Speciali</h4>
-            <div class="inventory-grid">
-              ${character.oggettiSpeciali.map((item, index) => this.itemCardHTML({
-      imgSrc: ITEM_IMAGES[item],
-      emoji: '✨',
-      label: item,
-      removeButtonHTML: `<button class="btn-remove" data-type="special" data-index="${index}">×</button>`
-    })).join('')}
-            </div>
-          </div>
-        ` : ''}
-      </div>
-    `;
+        ${c.oggettiSpeciali.length ? `<p class="label">${icon('gem')}Oggetti Speciali</p>
+        <div class="tiles">${c.oggettiSpeciali.map((it, i) => tile(it, 'special', 'special', i)).join('')}</div>` : ''}
+      </div>`;
 
-    // Attach event listeners
-    const toggleBtn = container.querySelector('#toggle-sheet');
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', () => {
-        this.isCollapsed = !this.isCollapsed;
-        this.update(container, state);
-      });
+    // flash what changed since the last render
+    if (prev) {
+      if (prev.r !== c.resistenza) replay(container.querySelector('#st-r b'), 'bump');
+      if (prev.cs !== c.combattivita) replay(container.querySelector('#st-cs b'), 'bump');
+      if (prev.g !== c.corone) replay(container.querySelector('#st-g b'), 'bump');
+      if (prev.m !== c.pasti) replay(container.querySelector('#st-m b'), 'bump');
     }
 
-    const consumeMealBtn = container.querySelector('#consume-meal');
-    if (consumeMealBtn) {
-      consumeMealBtn.addEventListener('click', () => {
-        if (gameState.consumePasto()) {
-          UIHelpers.showToast('🍖 Pasto consumato!', 'success');
-        }
-      });
-    }
-
-    // Remove buttons
-    const removeButtons = container.querySelectorAll('.btn-remove');
-    removeButtons.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const type = e.target.dataset.type;
-        const index = parseInt(e.target.dataset.index);
-        this.removeItem(type, index);
-      });
+    container.querySelector('#toggle-sheet').addEventListener('click', () => {
+      this.isCollapsed = !this.isCollapsed;
+      this.update(container, gameState.getState());
+    });
+    container.querySelectorAll('.tile-x').forEach((btn) => btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.removeItem(btn.dataset.type, Number(btn.dataset.index));
+    }));
+    container.querySelectorAll('[data-drink]').forEach((el) => {
+      const drink = () => this.drink(c.zaino[Number(el.dataset.drink)]);
+      el.addEventListener('click', drink);
+      el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); drink(); } });
     });
   }
 
-  getHealthClass(current, max) {
-    const percentage = (current / max) * 100;
-    if (percentage > 60) return 'health-good';
-    if (percentage > 30) return 'health-warning';
-    return 'health-danger';
-  }
-
-  // A compact icon-on-top, label-below card used for every inventory row
-  // (Kai Arts, Weapons, Backpack, Special Items) - falls back to a generic
-  // emoji for the many narrative item names that have no dedicated artwork.
-  itemCardHTML({ imgSrc, emoji, label, removeButtonHTML = '' }) {
-    const icon = imgSrc
-      ? `<img class="inventory-item-icon" src="${imgSrc}" alt="${label}">`
-      : `<span class="inventory-item-icon inventory-item-icon-emoji">${emoji}</span>`;
-    return `
-      <div class="inventory-item">
-        ${removeButtonHTML}
-        ${icon}
-        <span class="inventory-item-label">${label}</span>
-      </div>
-    `;
+  async drink(name) {
+    const potion = POTIONS[name];
+    const state = gameState.getState();
+    if (!potion) return;
+    if (potion.heal) {
+      if (state.inCombat) { UIHelpers.showToast('Le pozioni curative si bevono a combattimento finito', 'info'); return; }
+      const c = state.character;
+      if (c.resistenza >= c.resistenzaMax) { UIHelpers.showToast('Sei già al massimo della Resistenza', 'info'); return; }
+      if (!(await UIHelpers.confirmAsync(`Bere ${esc(name)}? Recuperi ${potion.heal} punti Resistenza (fino a ${c.resistenzaMax}).`, { yes: 'Bevi' }))) return;
+      gameState.removeFromZaino(name, true);
+      gameState.heal(potion.heal);
+      sfx.item();
+      UIHelpers.showToast(`+${Math.min(potion.heal, c.resistenzaMax - c.resistenza)} Resistenza`, 'success');
+    } else if (potion.combat) {
+      if (!state.inCombat || !state.combatState) { UIHelpers.showToast('L\'Alether si beve durante un combattimento', 'info'); return; }
+      if (!(await UIHelpers.confirmAsync(`Bere ${esc(name)}? +${potion.combat} Combattività fino alla fine di questo combattimento.`, { yes: 'Bevi' }))) return;
+      gameState.removeFromZaino(name, true);
+      const cs = gameState.getState().combatState;
+      gameState.setState({ combatState: { ...cs, playerCombatBonus: (cs.playerCombatBonus || 0) + potion.combat } });
+      sfx.item();
+      UIHelpers.showToast(`+${potion.combat} Combattività per questo combattimento`, 'success');
+    }
   }
 
   async removeItem(type, index) {
-    const state = gameState.getState();
-    if (type === 'weapon') {
-      const weapon = state.character.armi[index];
-      const confirmed = await UIHelpers.confirmAsync(`Rimuovere l'arma ${weapon}?`);
-      if (confirmed) {
-        gameState.removeWeapon(weapon);
-        UIHelpers.showToast(`Arma rimossa: ${weapon}`, 'info');
-      }
-    } else if (type === 'zaino') {
-      const item = state.character.zaino[index];
-      const confirmed = await UIHelpers.confirmAsync(`Rimuovere ${item}?`);
-      if (confirmed) {
-        gameState.removeFromZaino(item);
-        UIHelpers.showToast(`Oggetto rimosso: ${item}`, 'info');
-      }
-    }
+    const c = gameState.getState().character;
+    const name = type === 'weapon' ? c.armi[index] : type === 'zaino' ? c.zaino[index] : c.oggettiSpeciali[index];
+    if (!name) return;
+    const warn = type === 'special' ? ' Gli Oggetti Speciali di solito servono più avanti.' : '';
+    if (!(await UIHelpers.confirmAsync(`Lasciare ${esc(name)}?${warn} Non potrai riprenderlo.`, { yes: 'Lascia', danger: true }))) return;
+    if (type === 'weapon') gameState.removeWeapon(name);
+    else if (type === 'zaino') gameState.removeFromZaino(name, true);
+    else gameState.updateStats({ oggettiSpeciali: c.oggettiSpeciali.filter((_, i) => i !== index) });
+    UIHelpers.showToast(`Hai lasciato: ${name}`, 'info');
   }
 }

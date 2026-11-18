@@ -1,15 +1,35 @@
 import { gameState } from '../game-state.js';
 import { combatManager } from './combat-manager.js';
 import { UIHelpers } from '../utils/ui-helpers.js';
-import { saveManager } from '../save-manager.js';
 import { getRandomDestinyNumber } from './destiny-table.js';
 import { WEAPONS } from './character-creator.js';
+import { swapWeapon } from './book-transition.js';
+import { icon, esc, noEmoji, rollDigits, sfx, replay } from '../ui/kit.js';
+
+// Loot piles mix weapons with Backpack Items; anything that is a weapon goes to the weapon slots.
+const WEAPON_NAME = /^(Pugnale|Lancia|Mazza|Daga|Martello|Spada|Ascia|Asta|Spadone|Arco|Tridente|Sciabola)\b/i;
+export const isWeapon = (name) => WEAPONS.includes(name) || WEAPON_NAME.test(name);
+
+// Enemy portraits (public/img/portraits/<slug>.webp), matched on the start of a word of the enemy's name
+const PORTRAITS = ['akraaneonor', 'baknar', 'barbaro-dei-ghiacci', 'barraka', 'demone-di-ghiaccio', 'drakkar', 'elix', 'giak',
+  'gurgaz', 'helghast', 'kalkoth', 'kraan', 'tigerwolf', 'vonotar', 'vordak', 'zlanbeast'];
+export function portraitFor(name) {
+  const slug = '-' + String(name).toLowerCase().normalize('NFD').replace(/[̀-ͯ']/g, '').replace(/[^a-z]+/g, '-') + '-';
+  const hit = PORTRAITS.find((p) => slug.includes('-' + p));
+  return hit ? `public/img/portraits/${hit}.webp` : null;
+}
+
+const NEXT_BOOK = { 1: 'Fuoco sulle Acque', 2: 'Le Caverne di Kalte', 3: 'Il Baratro della Perdizione', 4: 'Ombra sulla Sabbia' };
 
 export class StoryReader {
-  constructor(bookData, onContinueNextBook = null) {
+  // hooks: { onNextBook, onRestartBook, onNewGame, onGameOver(message, title) }
+  constructor(bookData, onContinueNextBook = null, hooks = {}) {
     this.bookData = bookData;
     this.onContinueNextBook = onContinueNextBook;
+    this.hooks = hooks;
     this.easyModeMap = {};
+    this.shownSection = null;
+    this.busy = false; // a choice, roll or combat round is being resolved: ignore further clicks
     if (bookData) this.buildEasyModeMap(bookData);
   }
 
@@ -81,205 +101,147 @@ export class StoryReader {
 
   render() {
     const container = document.createElement('div');
-    container.className = 'story-container';
+    container.className = 'story';
     container.id = 'story-reader';
-
-    gameState.subscribe((state) => this.update(container, state));
+    this.container = container;
+    this.unsubscribe = gameState.subscribe((state) => this.update(container, state));
     this.update(container, gameState.getState());
-
     return container;
   }
 
   update(container, state) {
-    const { currentSection, history, inCombat, combatState } = state;
+    const { currentSection, inCombat, combatState } = state;
     if (!this.easyModeMap || Object.keys(this.easyModeMap).length === 0) {
       this.buildEasyModeMap(this.bookData);
     }
     const section = this.bookData.sections[currentSection];
+    const fresh = this.shownSection !== currentSection; // a new page: animate it in and go back to the top
+    this.shownSection = currentSection;
 
     if (!section) {
-      container.innerHTML = `
-        <div class="card">
-          <h2>❌ Sezione non trovata</h2>
-          <p>Sezione ${currentSection} non disponibile.</p>
-        </div>
-      `;
+      container.innerHTML = `<div class="card"><p class="kicker">Sezione ${esc(currentSection)}</p>
+        <h2 class="title" style="margin-top:.6rem">Pagina mancante</h2>
+        <p class="muted" style="margin-top:.75rem">Questa sezione non c'è nel libro caricato. Dal menu puoi caricare un salvataggio.</p></div>`;
       return;
     }
 
     let html = `
-      <div class="card">
-        <span class="section-number">Sezione ${currentSection}</span>
-        ${section.image ? `<img src="${section.image}" alt="Illustrazione" class="section-image" style="width: 100%; border-radius: 8px; margin-bottom: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">` : ''}
-        ${section.title ? `<h2>${section.title}</h2>` : ''}
-        <div class="section-text">${section.text}</div>
-    `;
+      <article class="card ${fresh ? '' : 'still'}">
+        <p class="kicker section-num">Sezione <b>${currentSection}</b></p>
+        ${section.title ? `<h2 class="title section-title">${noEmoji(section.title)}</h2>` : ''}
+        ${section.image ? `<img src="${section.image}" alt="" class="section-image" loading="lazy">` : ''}
+        <div class="prose">${section.text}</div>`;
 
-    // Show combat if in combat
     if (inCombat && combatState) {
       html += this.renderCombat(combatState);
-    }
-
-    // Show choices, Destiny Test, or Death/Victory Message
-    if (!inCombat) {
-      if (section.isDeathSection) {
-        html += this.renderDeathSection();
-      } else if (section.isFailureEnding) {
-        html += this.renderFailureEndingSection();
-      } else if (section.isVictory) {
-        html += this.renderVictorySection(state.bookNumber, this.onContinueNextBook && state.bookNumber < 5);
-      } else if (section.numericPuzzle) {
-        // A physical-book puzzle (a combination lock, a map-derived code):
-        // the "correct" outcome isn't one of a fixed set of buttons, it's
-        // whatever section number the player works out from clues elsewhere
-        // in the book. Any other guess falls through to a single fixed
-        // "wrong guess" section - see numericPuzzle.wrongSection. A section
-        // can still offer regular choices alongside it (e.g. "give up
-        // without trying") - those render as normal buttons above the puzzle.
-        if (section.choices && section.choices.length > 0) html += this.renderStandardChoices(section.choices, state);
-        html += this.renderNumericPuzzle();
-      } else if (section.choices && section.choices.length > 0) {
-        if (section.doubleDestinyRoll) {
-          // A rarer Destiny Table variant: draw two numbers in sequence and
-          // compare them to each other (rather than matching one modified
-          // roll against fixed ranges) - see handleDoubleDestinyRoll.
-          html += this.renderDestinyTest();
-        } else if (this.isDestinyTest(section.choices)) {
-          // A "bypass" choice (e.g. "if you possess the Sommerswerd, turn to
-          // X") can sit alongside a real Destiny Table roll - show it as a
-          // normal button; if its requirements don't pass, the player just
-          // uses the roll below instead. handleDestinyRoll already ignores
-          // non-range choices when matching the result, so this is safe.
-          const bypassChoices = section.choices.filter(c => this.parseDestinyRange(c.text) === null);
-          if (bypassChoices.length > 0) html += this.renderStandardChoices(bypassChoices, state);
-          html += this.renderDestinyTest();
-        } else {
-          html += this.renderStandardChoices(section.choices, state);
-        }
+    } else if (section.isDeathSection) {
+      html += this.renderDeathSection();
+    } else if (section.isFailureEnding) {
+      html += this.renderFailureEndingSection();
+    } else if (section.isVictory) {
+      html += this.renderVictorySection(state.bookNumber, this.onContinueNextBook && state.bookNumber < 5);
+    } else if (section.numericPuzzle) {
+      // A physical-book puzzle (a combination lock, a map-derived code): the right answer is a section number
+      // worked out from clues; any other guess goes to numericPuzzle.wrongSection. Regular choices can sit alongside.
+      if (section.choices && section.choices.length > 0) html += this.renderStandardChoices(section.choices, state);
+      html += this.renderNumericPuzzle();
+    } else if (section.choices && section.choices.length > 0) {
+      if (section.doubleDestinyRoll) {
+        html += this.renderDestinyTest();
+      } else if (this.isDestinyTest(section.choices)) {
+        // A "bypass" choice (e.g. "if you have the Sommerswerd, turn to X") can sit next to a real roll
+        const bypassChoices = section.choices.filter((c) => this.parseDestinyRange(c.text) === null);
+        if (bypassChoices.length > 0) html += this.renderStandardChoices(bypassChoices, state);
+        html += this.renderDestinyTest();
+      } else {
+        html += this.renderStandardChoices(section.choices, state);
       }
     }
-
-
-
-    html += `</div>`;
+    html += '</article>';
     container.innerHTML = html;
 
-    // Smooth scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (fresh && typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      sfx.page();
+    }
+    const log = container.querySelector('.log');
+    if (log) log.scrollTop = log.scrollHeight;
 
-    // Attach event listeners
-    const choiceBtns = container.querySelectorAll('.choice-btn');
-    choiceBtns.forEach(btn => {
+    container.querySelectorAll('.choice').forEach((btn) => {
       btn.addEventListener('click', () => {
-        const nextSection = parseInt(btn.dataset.section);
-        const choice = section.choices[parseInt(btn.dataset.index)];
-        this.navigateToSection(nextSection, section, choice);
+        const choice = section.choices[Number(btn.dataset.index)];
+        this.navigateToSection(Number(btn.dataset.section), section, choice);
       });
     });
-
-
-
-    // Combat buttons
-    const fightBtn = container.querySelector('#fight-btn');
-    if (fightBtn) {
-      fightBtn.addEventListener('click', () => this.executeCombatRound());
-    }
-
-    const fleeBtn = container.querySelector('#flee-btn');
-    if (fleeBtn) {
-      fleeBtn.addEventListener('click', () => this.fleeCombat());
-    }
-
-    const destinyBtn = container.querySelector('#destiny-roll-btn');
-    if (destinyBtn) {
-      if (section.doubleDestinyRoll) {
-        destinyBtn.addEventListener('click', () => this.handleDoubleDestinyRoll(container, section));
-      } else {
-        destinyBtn.addEventListener('click', () => this.handleDestinyRoll(container, section));
-      }
-    }
-
-    const puzzleBtn = container.querySelector('#numeric-puzzle-btn');
-    if (puzzleBtn) {
-      puzzleBtn.addEventListener('click', () => this.handleNumericPuzzle(container, section));
-    }
-
-    const continueNextBookBtn = container.querySelector('#continue-next-book-btn');
-    if (continueNextBookBtn) {
-      continueNextBookBtn.addEventListener('click', () => {
-        if (this.onContinueNextBook) this.onContinueNextBook();
-      });
-    }
-
-    const restartBtn = container.querySelector('#restart-btn');
-    if (restartBtn) {
-      restartBtn.addEventListener('click', async () => {
-        await saveManager.deleteSave('autosave');
-        gameState.resetGame();
-        // Use window.location.href to force a clean reload to the root or index
-        window.location.reload();
-      });
-    }
-
-
+    const on = (sel, fn) => { const el = container.querySelector(sel); if (el) el.addEventListener('click', fn); };
+    on('#fight-btn', () => this.executeCombatRound());
+    on('#flee-btn', () => this.fleeCombat());
+    on('#destiny-roll-btn', () => (section.doubleDestinyRoll ? this.handleDoubleDestinyRoll(container, section) : this.handleDestinyRoll(container, section)));
+    on('#numeric-puzzle-btn', () => this.handleNumericPuzzle(container, section));
+    on('#continue-next-book-btn', () => this.onContinueNextBook && this.onContinueNextBook());
+    on('#restart-book-btn', () => this.hooks.onRestartBook && this.hooks.onRestartBook());
+    on('#new-game-btn', () => this.hooks.onNewGame && this.hooks.onNewGame());
+    const input = container.querySelector('#numeric-puzzle-input');
+    if (input) input.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.handleNumericPuzzle(container, section); });
   }
 
   async navigateToSection(sectionNumber, currentSection, choice = null) {
-    // Handle section effects (items, stat changes, etc.)
-    if (currentSection.effects) {
-      try {
-        await this.applyEffects(currentSection.effects);
-      } catch (error) {
-        console.error('Error applying effects:', error);
-        UIHelpers.showToast('⚠️ Errore nell\'applicare gli effetti', 'warning');
+    if (this.navigating) return; // a double click must not apply the section's effects twice
+    this.navigating = true;
+    try {
+      for (const effects of [currentSection.effects, choice && choice.effects]) {
+        if (!effects) continue;
+        try {
+          await this.applyEffects(effects);
+        } catch (error) {
+          console.error('Error applying effects:', error);
+          UIHelpers.showToast('Errore nell\'applicare gli effetti', 'warning');
+        }
+        if (this.dead) return;
       }
-    }
 
-    // Some choices carry their own effects (e.g. "roll 0-4: you fall, -2 Resistenza")
-    if (choice && choice.effects) {
-      try {
-        await this.applyEffects(choice.effects);
-      } catch (error) {
-        console.error('Error applying choice effects:', error);
-        UIHelpers.showToast('⚠️ Errore nell\'applicare gli effetti', 'warning');
-      }
-    }
-
-    // Check for combat
-    const nextSection = this.bookData.sections[sectionNumber];
-    // A single-enemy combat can be entirely skipped under some condition (e.g.
-    // "you cannot fight with an injured arm, you fall instead") - bypassEffects
-    // then substitutes for the fight. See Book 5 section 162.
-    const combatSkipped = nextSection && nextSection.combat && !Array.isArray(nextSection.combat) &&
-      nextSection.combat.requirements && !this.checkRequirements(nextSection.combat.requirements, gameState.getState());
-    if (combatSkipped) {
-      if (nextSection.combat.bypassEffects) {
+      const nextSection = this.bookData.sections[sectionNumber];
+      // A single-enemy combat can be skipped under some condition (e.g. "you cannot fight with an injured arm,
+      // you fall instead") - bypassEffects then replaces the fight. See Book 5 section 162.
+      const combatSkipped = nextSection && nextSection.combat && !Array.isArray(nextSection.combat) &&
+        nextSection.combat.requirements && !this.checkRequirements(nextSection.combat.requirements, gameState.getState());
+      if (combatSkipped && nextSection.combat.bypassEffects) {
         try {
           await this.applyEffects(nextSection.combat.bypassEffects);
         } catch (error) {
           console.error('Error applying combat bypass effects:', error);
-          UIHelpers.showToast('⚠️ Errore nell\'applicare gli effetti', 'warning');
+          UIHelpers.showToast('Errore nell\'applicare gli effetti', 'warning');
         }
+        if (this.dead) return;
       }
-    } else if (nextSection && nextSection.combat) {
-      // Some sections apply a combat bonus/penalty (terrain, surprise, etc.)
-      // to the whole encounter rather than to a specific enemy - fold it into
-      // every enemy in the fight so combatManager only has one mechanism to handle.
-      let combatData = nextSection.combat;
-      if (nextSection.playerCombatBonus) {
-        const bonus = nextSection.playerCombatBonus;
-        const applyBonus = (enemy) => ({ ...enemy, playerCombatBonus: (enemy.playerCombatBonus || 0) + bonus });
-        combatData = Array.isArray(combatData) ? combatData.map(applyBonus) : applyBonus(combatData);
-      }
-      if (nextSection.playerCombatPenalty) {
-        const penalty = nextSection.playerCombatPenalty;
-        const applyPenalty = (enemy) => ({ ...enemy, playerCombatPenalty: (enemy.playerCombatPenalty || 0) + penalty });
-        combatData = Array.isArray(combatData) ? combatData.map(applyPenalty) : applyPenalty(combatData);
-      }
-      combatManager.startCombat(combatData);
-    }
 
-    gameState.goToSection(sectionNumber);
+      // Move first, then start the fight: Healing (+1 per section without combat) looks at whether the section
+      // being left had a fight, and starting the new fight first used to flag the wrong section.
+      gameState.goToSection(sectionNumber);
+
+      if (!combatSkipped && nextSection && nextSection.combat) {
+        // Section-wide bonus/penalty (terrain, surprise) is folded into every enemy of the fight
+        let combatData = nextSection.combat;
+        const fold = (key, amount) => {
+          const add = (enemy) => ({ ...enemy, [key]: (enemy[key] || 0) + amount });
+          combatData = Array.isArray(combatData) ? combatData.map(add) : add(combatData);
+        };
+        if (nextSection.playerCombatBonus) fold('playerCombatBonus', nextSection.playerCombatBonus);
+        if (nextSection.playerCombatPenalty) fold('playerCombatPenalty', nextSection.playerCombatPenalty);
+        combatManager.startCombat(combatData);
+      }
+    } finally {
+      this.navigating = false;
+    }
+  }
+
+  // After a reload in the middle of a fight, put the combat manager back in step with the save.
+  resumeCombat() {
+    const state = gameState.getState();
+    const section = this.bookData.sections[state.currentSection];
+    if (state.inCombat && state.combatState && section && section.combat && !combatManager.combatData) {
+      combatManager.resume(section.combat, state.combatState);
+    }
   }
 
   // All keys present on a requirements object must pass (AND, not "first match
@@ -420,11 +382,11 @@ export class StoryReader {
         // up this way must still go through the weapon slot (with its own
         // 2-weapon swap prompt), not into the Zaino - otherwise it silently
         // never counts as "equipped" for Scherma's mastery bonus.
-        if (WEAPONS.includes(item)) {
+        if (isWeapon(item)) {
           await this.handleWeaponAcquisition(item);
           continue;
         }
-        const confirmed = await UIHelpers.confirmAsync(`Vuoi prendere ${item}?`);
+        const confirmed = await UIHelpers.confirmAsync(`Vuoi prendere ${item}?`, { yes: 'Prendi', no: 'Lascia' });
         if (confirmed) {
           if (gameState.addToZaino(item)) {
             UIHelpers.showToast(`✅ Preso: ${item}`, 'success');
@@ -459,7 +421,7 @@ export class StoryReader {
       let accepted = 0;
       for (const opt of options) {
         if (accepted >= count) break;
-        const confirmed = await UIHelpers.confirmAsync(`Vuoi prendere: ${opt.label}?`);
+        const confirmed = await UIHelpers.confirmAsync(`Vuoi prendere: ${opt.label}?`, { yes: 'Prendi', no: 'Lascia' });
         if (!confirmed) continue;
         if (opt.type === 'weapon') {
           await this.handleWeaponAcquisition(opt.value);
@@ -480,7 +442,7 @@ export class StoryReader {
     // Book 5 sections 27/211/388.
     if (effects.shopItems) {
       for (const opt of effects.shopItems) {
-        const confirmed = await UIHelpers.confirmAsync(`Vuoi acquistare: ${opt.label}?`);
+        const confirmed = await UIHelpers.confirmAsync(`Vuoi comprare: ${opt.label}?`, { yes: 'Compra', no: 'No, grazie' });
         if (!confirmed) continue;
         if (gameState.getState().character.corone < opt.cost) {
           UIHelpers.showToast(`💰 Non hai abbastanza Corone d'Oro per: ${opt.label}`, 'error');
@@ -534,7 +496,7 @@ export class StoryReader {
       if (!prevented) {
         gameState.takeDamage(effects.loseEndurance);
         UIHelpers.showToast(`💔 Persi ${effects.loseEndurance} punti Resistenza`, 'error');
-        await this.checkDeath();
+        if (await this.checkDeath()) return;
       }
     }
 
@@ -547,7 +509,7 @@ export class StoryReader {
       const { total, modifier } = this.resolveModifiedRoll(effects.loseEnduranceFromRoll, roll, gameState.getState());
       gameState.takeDamage(total);
       UIHelpers.showToast(`🎲 Tabella del Destino: ${roll}${modifier ? ` (${modifier > 0 ? '+' : ''}${modifier})` : ''} - perdi ${total} punti Resistenza`, 'error');
-      await this.checkDeath();
+      if (await this.checkDeath()) return;
     }
 
     // Erase an item from the Action Chart (e.g. handing over a Special Item)
@@ -561,23 +523,18 @@ export class StoryReader {
       // Check for Caccia (Hunting) - doesn't work in Book 3, nor in Book 5 section 320
       const state = gameState.getState();
       const huntingWorks = state.bookNumber !== 3 && !(state.bookNumber === 5 && state.currentSection === 320);
-      if (huntingWorks && gameState.hasKaiArt('Caccia')) {
-        UIHelpers.showToast('🏹 Caccia: Hai procurato del cibo e non devi consumare un Pasto.', 'success');
-        const state = gameState.getState();
-        const currentSection = state.currentSection;
-        const mealFlagKey = `meal_consumed_section_${currentSection}`;
-        gameState.setFlag(mealFlagKey, true); // Mark as handled
-        return; // Skip the rest
-      }
-
       const currentSection = state.currentSection;
       const mealFlagKey = `meal_consumed_section_${currentSection}`;
 
-      if (gameState.getFlag(mealFlagKey)) {
+      if (huntingWorks && gameState.hasKaiArt('Caccia')) {
+        // (this used to `return`, silently skipping every effect listed after the meal)
+        UIHelpers.showToast('Caccia: trovi da mangiare, niente Pasto', 'success');
+        gameState.setFlag(mealFlagKey, true);
+      } else if (gameState.getFlag(mealFlagKey)) {
         UIHelpers.showToast('ℹ️ Hai già consumato il pasto per questa sezione.', 'info');
       } else {
         if (state.character.pasti > 0) {
-          const confirmed = await UIHelpers.confirmAsync(`Devi mangiare un pasto o perderai ${effects.mustEatOrLoseEndurance} punti Resistenza. Vuoi mangiare?`);
+          const confirmed = await UIHelpers.confirmAsync(`Devi mangiare un Pasto o perdi ${effects.mustEatOrLoseEndurance} punti Resistenza. Mangi?`, { yes: 'Mangio', no: 'Resto a digiuno' });
           if (confirmed) {
             gameState.consumePasto();
             UIHelpers.showToast('🍖 Hai consumato un pasto', 'info');
@@ -585,13 +542,13 @@ export class StoryReader {
           } else {
             gameState.takeDamage(effects.mustEatOrLoseEndurance);
             UIHelpers.showToast(`💔 Hai perso ${effects.mustEatOrLoseEndurance} punti Resistenza`, 'error');
-            await this.checkDeath();
+            if (await this.checkDeath()) return;
             gameState.setFlag(mealFlagKey, true); // Mark as handled even if took damage
           }
         } else {
           await UIHelpers.showAlert(`Non hai pasti! Perdi ${effects.mustEatOrLoseEndurance} punti Resistenza.`, 'Denutrizione');
           gameState.takeDamage(effects.mustEatOrLoseEndurance);
-          await this.checkDeath();
+          if (await this.checkDeath()) return;
           gameState.setFlag(mealFlagKey, true);
         }
       }
@@ -610,7 +567,7 @@ export class StoryReader {
         ? state.character.resistenzaMax
         : effects.restoreEndurance;
       gameState.heal(amount);
-      UIHelpers.showToast('💚 Resistenza completamente recuperata!', 'success');
+      UIHelpers.showToast(effects.restoreEndurance === 'full' ? 'Resistenza al massimo' : `Recuperi ${amount} punti Resistenza`, 'success');
     }
 
     // Restore ENDURANCE based on lifetime damage taken (not just the last
@@ -632,7 +589,7 @@ export class StoryReader {
     if (effects.damage) {
       gameState.takeDamage(effects.damage);
       UIHelpers.showToast(`💔 Subiti ${effects.damage} danni`, 'error');
-      await this.checkDeath();
+      if (await this.checkDeath()) return;
     }
 
     // Lose all weapons only (backpack, if any, is kept)
@@ -713,247 +670,204 @@ export class StoryReader {
 
   renderCombat(combat) {
     const state = gameState.getState();
-    const log = combatManager.getLog();
-
+    const c = state.character;
+    const ratio = combatManager.combatData ? combatManager.calculateForceRatio() : null;
+    const canFlee = combatManager.canFlee;
+    const fleeReady = canFlee && combatManager.canPlayerFlee();
+    const fleeIn = canFlee && !fleeReady && combatManager.combatData?.fleeAfterRounds
+      ? combatManager.combatData.fleeAfterRounds - combat.rounds.length : 0;
+    const pct = (v, max) => Math.max(0, Math.min(1, v / (max || 1)));
+    const heroP = pct(c.resistenza, c.resistenzaMax);
+    const foe = portraitFor(combat.enemy);
+    const queue = combatManager.enemyQueue.length;
     return `
-      <div class="combat-container">
-        <div class="combat-header">
-          <h3>⚔️ COMBATTIMENTO</h3>
-          <p>Contro: <strong>${combat.enemy}</strong></p>
+      <section class="combat" id="combat">
+        <div class="combat-head">
+          <h3>${icon('swords')}Combattimento</h3>
+          ${ratio !== null ? `<span class="ratio ${ratio > 0 ? 'good' : ratio < 0 ? 'bad' : ''}">Rapporto di forza <b>${ratio > 0 ? '+' : ''}${ratio}</b></span>` : ''}
         </div>
-
-        <div class="combat-fighters">
-          <div class="fighter-card">
-            <div class="fighter-name">🐺 Lupo Solitario</div>
-            <div class="health-bar">
-              <div class="health-fill" style="width: ${(state.character.resistenza / state.character.resistenzaMax) * 100}%"></div>
-              <div class="health-text">${state.character.resistenza}/${state.character.resistenzaMax}</div>
-            </div>
-            <p>⚔️ Combattività: ${state.character.combattivita}</p>
+        <div class="fighters">
+          <div class="fighter hero" id="fighter-hero">
+            <img class="portrait" src="public/img/portraits/lupo-solitario.webp" alt="">
+            <span class="name">Lupo Solitario</span>
+            <span class="meta">Combattività ${c.combattivita}</span>
+            <div class="meter ${heroP <= 0.3 ? 'low' : heroP <= 0.6 ? 'mid' : ''}"><i style="--p:${heroP}"></i></div>
+            <span class="hp">${c.resistenza}/${c.resistenzaMax}</span>
           </div>
-
-          <div class="fighter-card">
-            <div class="fighter-name">👹 ${combat.enemy}</div>
-            <div class="health-bar">
-              <div class="health-fill" style="width: ${(combat.currentEnemyResistenza / combat.resistenza) * 100}%"></div>
-              <div class="health-text">${combat.currentEnemyResistenza}/${combat.resistenza}</div>
-            </div>
-            <p>⚔️ Combattività: ${combat.combattivita}</p>
+          <span class="vs">vs</span>
+          <div class="fighter foe ${combat.currentEnemyResistenza <= 0 ? 'down' : ''}" id="fighter-foe">
+            ${foe ? `<img class="portrait" src="${foe}" alt="">` : `<span class="portrait glyph">${icon('skull')}</span>`}
+            <span class="name">${esc(combat.enemy)}</span>
+            <span class="meta">Combattività ${combat.combattivita}${queue ? ` · poi altri ${queue}` : ''}</span>
+            <div class="meter enemy"><i style="--p:${pct(combat.currentEnemyResistenza, combat.resistenza)}"></i></div>
+            <span class="hp">${Math.max(0, combat.currentEnemyResistenza)}/${combat.resistenza}</span>
           </div>
         </div>
-
-        <div class="combat-log">
-          ${log.map(entry => `
-            <div class="combat-log-entry">${entry.message}</div>
-          `).join('')}
+        <div class="log" aria-live="polite">${combatManager.getLog().map((e) => `<div class="${e.kind || ''}">${esc(noEmoji(e.message))}</div>`).join('')}</div>
+        <div class="btn-row">
+          <button class="btn btn-primary" type="button" id="fight-btn" ${this.busy ? 'disabled' : ''}>${icon('swords')}Combatti</button>
+          ${canFlee ? `<button class="btn btn-ghost" type="button" id="flee-btn" ${fleeReady && !this.busy ? '' : 'disabled'}>${icon('footprints')}Fuggi${fleeIn > 0 ? `<small>tra ${fleeIn} round</small>` : ''}</button>` : ''}
         </div>
-
-        <div style="display: flex; gap: 1rem;">
-          <button class="btn btn-danger btn-large" id="fight-btn" style="flex: 1;">
-            ⚔️ Combatti
-          </button>
-          ${combatManager.canFlee ? `
-            <button class="btn btn-warning" id="flee-btn" ${!combatManager.canPlayerFlee() ? 'disabled' : ''}>
-              🏃 Fuggi ${!combatManager.canPlayerFlee() ? '(Tra ' + (combatManager.combatData.fleeAfterRounds - (state.combatState ? state.combatState.rounds.length : 0)) + ' round)' : ''}
-            </button>
-          ` : ''}
-        </div>
-      </div>
-    `;
+      </section>`;
   }
 
   executeCombatRound() {
+    if (this.busy || !combatManager.combatData) return;
+    const before = gameState.getState();
+    const heroBefore = before.character.resistenza;
     const result = combatManager.fightRound();
+    const terminal = ['victory', 'defeat', 'force-end'].includes(result);
+    if (terminal) this.busy = true; // the fight is over: no more rounds while the outcome plays out
+    const container = this.container || document.getElementById('story-reader');
+    this.update(container, gameState.getState());
 
-    // Force update
-    this.update(document.getElementById('story-reader'), gameState.getState());
+    // feedback: who got hurt this round
+    const last = before.combatState && gameState.getState().combatState?.rounds.at(-1);
+    if (last) {
+      if (last.heroDamage > 0) { replay(container.querySelector('#fighter-hero'), 'hurt'); replay(container.querySelector('#combat'), 'hit'); sfx.hurt(); }
+      if (last.enemyDamage > 0) { replay(container.querySelector('#fighter-foe'), 'hurt'); sfx.strike(); }
+    } else if (gameState.getState().character.resistenza < heroBefore) sfx.hurt();
 
-    if (result === 'next-enemy') {
-      // One enemy down, another already engaged by combatManager - keep fighting
-      return;
-    }
+    if (result === 'next-enemy') return;
 
-    // Some fights end without either side dying, cutting the combat short
-    // after a fixed number of rounds (see combatData.forceEndAfterRounds) -
-    // e.g. reinforcements interrupt the fight before it's resolved.
     if (result === 'force-end') {
+      // Some fights stop after a fixed number of rounds whatever the score (e.g. reinforcements arrive)
       setTimeout(() => {
         const forceEndSection = combatManager.combatData.forceEndSection;
-        const state = gameState.getState();
-        const currentSectionNum = state.currentSection;
+        const currentSectionNum = gameState.getState().currentSection;
         combatManager.endCombat('force-end');
+        this.busy = false;
         if (forceEndSection === currentSectionNum) {
-          // The story branches on this single round's outcome via the
-          // section's own choices (enemyLostMore/playerLostMore/combatTied)
-          // rather than a separate destination - just stop fighting and show
-          // them, instead of re-entering navigateToSection and restarting
-          // the same combat forever. See Book 5 section 244.
-          this.update(document.getElementById('story-reader'), gameState.getState());
+          // the section's own choices branch on how this round went (enemyLostMore/playerLostMore/combatTied)
+          this.update(container, gameState.getState());
         } else {
-          const currentSection = this.bookData.sections[currentSectionNum];
-          this.navigateToSection(forceEndSection, currentSection);
+          this.navigateToSection(forceEndSection, this.bookData.sections[currentSectionNum]);
         }
-      }, 1000);
+      }, 900);
       return;
     }
 
     if (result === 'victory') {
+      sfx.victory();
       setTimeout(() => {
         combatManager.endCombat('victory');
-        UIHelpers.showAlert('🎉 Hai vinto il combattimento!', 'Vittoria!');
-
-        // endCombat() already triggered a reactive re-render showing this
-        // section's choices (correctly enabled/disabled per their requirements,
-        // e.g. how many rounds the fight took). Only auto-advance when there's
-        // truly a single way forward - "fuggi" choices only make sense mid-combat.
+        this.busy = false;
+        UIHelpers.showToast('Hai vinto il combattimento', 'success');
+        // endCombat already re-rendered the section's choices (gated on how the fight went). Only move on by
+        // ourselves when there is a single way forward - flee choices only make sense mid-fight.
         const state = gameState.getState();
         const currentSection = this.bookData.sections[state.currentSection];
         const combatObj = (currentSection.combat && !Array.isArray(currentSection.combat)) ? currentSection.combat : null;
         const fleeSection = combatObj ? combatObj.fleeSection : undefined;
-        const fleeSectionTargets = combatObj ? (combatObj.fleeSections || []).map(f => f.section) : [];
-        const nonFleeChoices = currentSection.choices.filter(c => c.section !== fleeSection && !fleeSectionTargets.includes(c.section));
-
-        if (nonFleeChoices.length === 1) {
-          this.navigateToSection(nonFleeChoices[0].section, currentSection);
+        const fleeTargets = combatObj ? (combatObj.fleeSections || []).map((f) => f.section) : [];
+        const forward = (currentSection.choices || []).filter((c) => c.section !== fleeSection && !fleeTargets.includes(c.section));
+        if (forward.length === 1 && this.checkRequirements(forward[0].requirements, state)) {
+          this.navigateToSection(forward[0].section, currentSection, forward[0]);
         }
-      }, 1000);
+      }, 900);
     } else if (result === 'defeat') {
       setTimeout(async () => {
-        // Some enemies spare the hero instead of killing him (e.g. knocked
-        // unconscious rather than dead) - combatData.loseSection redirects
-        // there instead of ending the game. See Book 5 sections 20/135.
+        // Some enemies spare the hero (knocked out, captured): loseSection instead of the end. See Book 5 sections 20/135.
         const loseSection = combatManager.combatData.loseSection;
         combatManager.endCombat('defeat');
+        this.busy = false;
         if (loseSection) {
-          const currentSection = this.bookData.sections[gameState.getState().currentSection];
-          this.navigateToSection(loseSection, currentSection);
+          this.navigateToSection(loseSection, this.bookData.sections[gameState.getState().currentSection]);
         } else {
-          await this.endGame('💀 Sei stato sconfitto... L\'avventura finisce qui.', 'Game Over');
+          await this.endGame('Sei stato sconfitto. L\'avventura finisce qui.', 'Sconfitta');
         }
-      }, 1000);
+      }, 900);
     }
   }
 
-  // Ends the run immediately (death or an unrecoverable failure) without
-  // navigating to any section - used both after a lost combat and for the rare
-  // Destiny Test branch whose outcome is death with no "turn to" target at all.
+  // The run ends now (death in combat, wounds, or a roll whose outcome is death with no section to turn to).
   async endGame(message, title) {
-    await UIHelpers.showAlert(message, title);
-    await saveManager.deleteSave('autosave');
-    gameState.resetGame();
-    window.location.reload();
+    if (this.dead) return;
+    this.dead = true;
+    sfx.defeat();
+    if (this.hooks.onGameOver) this.hooks.onGameOver(message, title);
+    else await UIHelpers.showAlert(message, title);
   }
 
   async fleeCombat() {
+    if (this.busy) return;
     if (!combatManager.canPlayerFlee()) {
-      UIHelpers.showToast('Non puoi ancora fuggire!', 'warning');
+      UIHelpers.showToast('Non puoi ancora fuggire', 'warning');
       return;
     }
+    this.busy = true;
+    try {
+      // fleeSection(s) belong to the enemy being fought (combatManager.combatData): a multi-enemy fight is an array
+      const fleeSection = combatManager.combatData && combatManager.combatData.fleeSection;
+      // some encounters let the hero pick where to run (e.g. north or south) - see Book 3 section 108
+      const fleeSections = combatManager.combatData && combatManager.combatData.fleeSections;
 
-    // Read fleeSection from the currently engaged enemy (combatManager.combatData),
-    // not from currentSection.combat directly - for a multi-enemy fight that's an
-    // array, which has no .fleeSection of its own even when every enemy in it does.
-    const fleeSection = combatManager.combatData && combatManager.combatData.fleeSection;
-    // Some encounters let the hero pick a direction while fleeing (e.g.
-    // "run north" vs "run south") instead of a single fixed destination -
-    // see Book 3 section 108.
-    const fleeSections = combatManager.combatData && combatManager.combatData.fleeSections;
-
-    if (combatManager.flee()) {
-      // Fleeing can still cost enough Resistenza to kill the hero
-      const died = await this.checkDeath();
-      if (died) return;
-
-      const destination = fleeSections && fleeSections.length
-        ? await UIHelpers.chooseAsync('Da che parte vuoi fuggire?', fleeSections.map(f => ({ label: f.label, value: f.section })))
-        : fleeSection;
-
-      if (destination) {
-        const state = gameState.getState();
-        const currentSection = this.bookData.sections[state.currentSection];
-        this.navigateToSection(destination, currentSection);
-      } else {
-        // Fallback if no flee section defined
-        this.update(document.getElementById('story-reader'), gameState.getState());
+      if (combatManager.flee()) {
+        if (await this.checkDeath()) return; // fleeing can still cost enough Resistenza to kill
+        const destination = fleeSections && fleeSections.length
+          ? await UIHelpers.chooseAsync('Da che parte vuoi fuggire?', fleeSections.map((f) => ({ label: f.label, value: f.section })))
+          : fleeSection;
+        this.busy = false;
+        if (destination) {
+          const state = gameState.getState();
+          await this.navigateToSection(destination, this.bookData.sections[state.currentSection]);
+        } else {
+          this.update(this.container || document.getElementById('story-reader'), gameState.getState());
+        }
       }
+    } finally {
+      this.busy = false;
     }
   }
 
-  // --- Helper Methods for Rendering ---
+  // --- Rendering helpers ---
 
   renderStandardChoices(choices, state) {
-    let html = `<div class="choices">`;
-
-    // Filter available choices (where character meets requirements)
-    // and pick the choice leading to the shortest distance to victory
+    // Easy mode: highlight the available choice closest to the book's victory section
     let recommendedSection = null;
     if (state.easyMode && this.easyModeDistances) {
       let minDistance = Infinity;
-      choices.forEach(choice => {
-        const canChoose = this.checkRequirements(choice.requirements, state);
-        if (canChoose && choice.section && this.easyModeDistances[choice.section] !== undefined) {
+      choices.forEach((choice) => {
+        if (this.checkRequirements(choice.requirements, state) && choice.section && this.easyModeDistances[choice.section] !== undefined) {
           const d = this.easyModeDistances[choice.section];
-          if (d < minDistance) {
-            minDistance = d;
-            recommendedSection = choice.section;
-          }
+          if (d < minDistance) { minDistance = d; recommendedSection = choice.section; }
         }
       });
     }
-
-    choices.forEach((choice, index) => {
+    return `<div class="choices">${choices.map((choice, index) => {
       const canChoose = this.checkRequirements(choice.requirements, state);
-      const isEasyChoice = state.easyMode && recommendedSection && choice.section === recommendedSection && canChoose;
-
-      html += `
-          <button class="btn btn-secondary btn-large choice-btn ${isEasyChoice ? 'easy-mode-choice' : ''}"
-                  data-section="${choice.section}" data-index="${index}"
-                  ${!canChoose ? 'disabled' : ''}>
-            ${isEasyChoice ? '⭐ ' : ''}${choice.text}${isEasyChoice ? ' <span class="easy-mode-badge">💡 Easy</span>' : ''}
-          </button>
-        `;
-    });
-    html += `</div>`;
-    return html;
+      const easy = state.easyMode && recommendedSection && choice.section === recommendedSection && canChoose;
+      return `<button class="choice ${easy ? 'easy' : ''}" type="button" data-section="${choice.section}" data-index="${index}" ${canChoose ? '' : 'disabled data-locked="1"'}>
+          <span>${noEmoji(choice.text)}${easy ? '<span class="badge">Facile</span>' : ''}</span>${icon(canChoose ? 'chevron-right' : 'lock')}
+        </button>`;
+    }).join('')}</div>`;
   }
 
   isDestinyTest(choices) {
-    const rangeChoices = choices.filter(c => this.parseDestinyRange(c.text) !== null);
-    const nonRangeChoices = choices.filter(c => this.parseDestinyRange(c.text) === null);
-    // A pure Destiny Table roll: 2+ choices describing a range ("Numero X-Y",
-    // "Numero da X a Y", "Da X a Y", or a single "numero è N") and nothing else.
+    const rangeChoices = choices.filter((c) => this.parseDestinyRange(c.text) !== null);
+    const nonRangeChoices = choices.filter((c) => this.parseDestinyRange(c.text) === null);
+    // A pure Destiny Table roll: 2+ choices describing a range ("Numero X-Y", "Numero da X a Y", "Da X a Y",
+    // or a single "numero è N") and nothing else.
     if (nonRangeChoices.length === 0) return rangeChoices.length > 1;
-    // A roll with bypass choice(s) mixed in (e.g. "if you possess the
-    // Sommerswerd, turn to X" skips the roll entirely) - only treat it this
-    // way when EVERY non-range choice is actually gated by `requirements`,
-    // proving it's an intentional shortcut and not just an oddly-phrased
-    // range the parser failed to recognize (which should fall back to
-    // rendering as plain buttons, unchanged, rather than risk misreading it).
-    return rangeChoices.length > 1 && nonRangeChoices.every(c => !!c.requirements);
+    // A roll with bypass choice(s) mixed in - only when EVERY non-range choice is gated by `requirements`,
+    // proving it's an intentional shortcut and not an oddly-phrased range the parser missed.
+    return rangeChoices.length > 1 && nonRangeChoices.every((c) => !!c.requirements);
   }
 
-  // Extract the {min, max} roll range a choice text refers to, or null if it
-  // doesn't describe one. Handles the several phrasings used across the book.
+  // The {min, max} roll range a choice text refers to, or null. Handles the several phrasings used across the books.
   parseDestinyRange(text) {
     let match = text.match(/(\d+)\s*-\s*(\d+)/);
     if (match) return { min: parseInt(match[1]), max: parseInt(match[2]) };
 
-    // Min bound may be negative once a destinyModifier deduction is in play
-    // (e.g. "da -3 a 3") - the max bound is never negative in practice.
+    // Min bound may be negative once a destinyModifier deduction is in play (e.g. "da -3 a 3")
     match = text.match(/\bda\s*(-?\d+)\s*a\s*(\d+)\b/i);
     if (match) return { min: parseInt(match[1]), max: parseInt(match[2]) };
 
-    // Broadened from requiring "numero è N" - also catches the shortened
-    // follow-up phrasing used when a range choice earlier in the same list
-    // already established context (e.g. "Se è 0" right after "Se è da 6 a 9").
-    // Note: JS regex \b treats accented letters like "è" as non-word chars,
-    // so it can't anchor on "è" itself - anchor on the surrounding whitespace
-    // instead (è/e is always its own separate word in this phrasing).
+    // "numero è N", and the shortened follow-up "Se è 0". JS \b treats "è" as a non-word char, so anchor on whitespace.
     match = text.match(/(?:^|\s)(?:è|e)\s+(-?\d+)\b/i);
     if (match) return { min: parseInt(match[1]), max: parseInt(match[1]) };
 
-    // Bare "Numero N" with no è/e connector at all (e.g. "Numero 0" alongside
-    // "Numero 1-4" / "Numero 5-9" in the same choice list).
+    // Bare "Numero N" (e.g. "Numero 0" next to "Numero 1-4" / "Numero 5-9")
     match = text.match(/\bnumero\s+(-?\d+)\b/i);
     if (match) return { min: parseInt(match[1]), max: parseInt(match[1]) };
 
@@ -963,267 +877,158 @@ export class StoryReader {
   renderDestinyTest() {
     const state = gameState.getState();
     const recommendedSection = (state.easyMode && this.easyModeMap) ? this.easyModeMap[state.currentSection] : null;
-
     return `
-      <div class="destiny-test-container" style="text-align: center; margin-top: 2rem;">
-        <div class="card" style="background: rgba(139, 92, 246, 0.1); border-color: var(--color-primary);">
-          <h3>🎲 Tabella del Destino</h3>
-          <p>La tua sorte è nelle mani del destino...</p>
-          ${recommendedSection ? `<div style="margin: 0.5rem 0; color: #22c55e; font-weight: 600; font-size: 0.95rem;">💡 Easy Mode: Il percorso vincente porta alla Sezione ${recommendedSection}</div>` : ''}
-          
-          <div class="destiny-display" style="margin: 2rem 0;">
-            <div class="stat-value" style="font-size: 4rem;" id="destiny-roll-result">?</div>
-          </div>
-
-          <button class="btn btn-primary btn-large btn-block" id="destiny-roll-btn">
-            Lancia il Destino
-          </button>
-          
-          <div id="destiny-message" style="margin-top: 1rem; min-height: 1.5rem;"></div>
-        </div>
-      </div>
-    `;
+      <div class="widget">
+        <h3>${icon('dices')}Tabella del Destino</h3>
+        <p>Decide la sorte, non tu.</p>
+        ${recommendedSection ? `<p class="note easy">${icon('lightbulb')} Facile: la strada giusta passa dalla sezione ${recommendedSection}.</p>` : ''}
+        <div class="dice" id="destiny-roll-result">?</div>
+        <button class="btn btn-primary" type="button" id="destiny-roll-btn">${icon('dices')}Lancia il Destino</button>
+        <div class="result" id="destiny-message" aria-live="polite"></div>
+      </div>`;
   }
 
   renderNumericPuzzle() {
     return `
-      <div class="numeric-puzzle-container" style="text-align: center; margin-top: 2rem;">
-        <div class="card" style="background: rgba(139, 92, 246, 0.1); border-color: var(--color-primary);">
-          <h3>🔢 Enigma numerico</h3>
-          <p>Se conosci il numero della sezione corretta, scrivilo qui sotto e conferma.</p>
-          <input type="number" id="numeric-puzzle-input" class="stat-value" style="text-align: center; font-size: 2rem; width: 100%; margin: 1rem 0; background: transparent; border: 1px solid var(--color-primary); border-radius: 8px; padding: 0.5rem;" placeholder="?">
-          <button class="btn btn-primary btn-large btn-block" id="numeric-puzzle-btn">
-            Conferma
-          </button>
-        </div>
-      </div>
-    `;
+      <div class="widget">
+        <h3>${icon('lock')}Enigma</h3>
+        <p>Se hai capito a quale sezione andare, scrivi il numero.</p>
+        <input type="number" inputmode="numeric" id="numeric-puzzle-input" class="puzzle-input" placeholder="?" aria-label="Numero della sezione">
+        <button class="btn btn-primary" type="button" id="numeric-puzzle-btn">${icon('arrow-right')}Vai</button>
+      </div>`;
+  }
+
+  endingButtons(primary = '') {
+    const n = gameState.getState().bookNumber;
+    return `<div class="stack">
+      ${primary}
+      ${this.hooks.onRestartBook ? `<button class="btn ${primary ? 'btn-ghost' : 'btn-primary'}" type="button" id="restart-book-btn">${icon('rotate-ccw')}Ricomincia il Libro ${n}</button>` : ''}
+      <button class="btn btn-ghost" type="button" id="new-game-btn">${icon('plus')}Nuova partita</button>
+    </div>`;
   }
 
   renderDeathSection() {
-    return `
-      <div class="death-container" style="text-align: center; margin-top: 2rem;">
-        <div class="card" style="border-color: var(--color-danger); background: rgba(220, 38, 38, 0.1);">
-          <h3 style="color: var(--color-danger);">💀 GAME OVER</h3>
-          <p>La tua avventura finisce qui.</p>
-          <button class="btn btn-danger btn-large btn-block" id="restart-btn" style="margin-top: 1.5rem;">
-            🔄 Ricomincia l'avventura
-          </button>
-        </div>
-      </div>
-    `;
+    if (!this.endedHere) { this.endedHere = true; sfx.defeat(); }
+    return `<div class="ending lose"><p class="big">Fine.</p><p>La tua avventura finisce qui.</p>${this.endingButtons()}</div>`;
   }
 
   renderFailureEndingSection() {
-    return `
-      <div class="death-container" style="text-align: center; margin-top: 2rem;">
-        <div class="card" style="border-color: var(--color-warning); background: rgba(217, 119, 6, 0.1);">
-          <h3 style="color: var(--color-warning);">⚠️ MISSIONE FALLITA</h3>
-          <p>Sei sopravvissuto, ma non sei riuscito a completare la tua missione.</p>
-          <button class="btn btn-danger btn-large btn-block" id="restart-btn" style="margin-top: 1.5rem;">
-            🔄 Ricomincia l'avventura
-          </button>
-        </div>
-      </div>
-    `;
+    if (!this.endedHere) { this.endedHere = true; sfx.defeat(); }
+    return `<div class="ending fail"><p class="big">Missione fallita.</p><p>Sei vivo, ma non ce l'hai fatta.</p>${this.endingButtons()}</div>`;
   }
 
   renderVictorySection(bookNumber, canContinueToNextBook) {
-    const nextBookLabels = {
-      1: '🌊 Continua nel Libro 2: Fuoco sulle Acque',
-      2: '❄️ Continua nel Libro 3: Le Caverne di Kalte',
-      3: '⛰️ Continua nel Libro 4: Il Baratro della Perdizione',
-      4: '☀️ Continua nel Libro 5: Ombra sulla Sabbia'
-    };
-    return `
-      <div class="death-container" style="text-align: center; margin-top: 2rem;">
-        <div class="card" style="border-color: var(--color-success); background: rgba(16, 185, 129, 0.1);">
-          <h3 style="color: var(--color-success);">🏆 VITTORIA!</h3>
-          <p>Hai completato con successo la tua avventura!</p>
-          ${canContinueToNextBook ? `
-            <button class="btn btn-primary btn-large btn-block" id="continue-next-book-btn" style="margin-top: 1.5rem;">
-              ${nextBookLabels[bookNumber]}
-            </button>
-          ` : ''}
-          <button class="btn btn-success btn-large btn-block" id="restart-btn" style="margin-top: 1rem;">
-            🔄 Ricomincia l'avventura
-          </button>
-        </div>
-      </div>
-    `;
+    if (!this.endedHere) { this.endedHere = true; sfx.victory(); }
+    const next = canContinueToNextBook
+      ? `<button class="btn btn-primary" type="button" id="continue-next-book-btn">${icon('book-open')}Continua nel Libro ${bookNumber + 1}<small>${NEXT_BOOK[bookNumber]}</small></button>`
+      : '';
+    return `<div class="ending win"><p class="big">Vittoria.</p><p>${bookNumber < 5 ? 'Hai completato il libro. Il Registro di Guerra viene con te.' : 'Hai completato tutti i libri disponibili. Per ora.'}</p>${this.endingButtons(next)}</div>`;
+  }
+
+  // Locks the section's buttons while a roll plays out, so nothing else can be clicked meanwhile.
+  lockChoices(container, locked) {
+    container.querySelectorAll('.choice, #destiny-roll-btn').forEach((b) => { b.disabled = locked || b.dataset.locked === '1'; });
   }
 
   async handleDestinyRoll(container, section) {
-    const btn = container.querySelector('#destiny-roll-btn');
-    if (btn) btn.disabled = true;
-
+    if (this.busy) return;
+    this.busy = true;
+    this.lockChoices(container, true);
     const display = container.querySelector('#destiny-roll-result');
     const message = container.querySelector('#destiny-message');
 
-    // Animation
-    let count = 0;
-    const interval = setInterval(() => {
-      display.textContent = Math.floor(Math.random() * 10);
-      count++;
-      if (count > 10) {
-        clearInterval(interval);
+    // the roll, adjusted by any Kai Discipline/rank/Endurance modifier this section declares
+    const roll = getRandomDestinyNumber();
+    const modifier = this.calculateDestinyModifier(section, gameState.getState());
+    const total = roll + modifier;
+    await rollDigits(display, roll);
 
-        // Final roll, adjusted by any applicable Kai Discipline/rank/Endurance
-        // modifier this section declares (see calculateDestinyModifier)
-        const roll = getRandomDestinyNumber();
-        const modifier = this.calculateDestinyModifier(section, gameState.getState());
-        const total = roll + modifier;
-        display.textContent = roll;
-
-        // Find matching choice
-        const matchedChoice = section.choices.find(choice => {
-          const range = this.parseDestinyRange(choice.text);
-          return range && total >= range.min && total <= range.max;
-        });
-
-        if (matchedChoice) {
-          const totalLabel = modifier !== 0
-            ? `Risultato: ${roll} ${modifier > 0 ? '+' : ''}${modifier} = ${total}`
-            : `Risultato: ${roll}`;
-          message.innerHTML = `<span style="color: var(--color-success); font-weight: bold;">${totalLabel}</span>. ${matchedChoice.text}`;
-
-          setTimeout(() => {
-            // Rare case: the roll's outcome is death narrated inline, with no
-            // other section to "turn to" (e.g. Book 3 section 94, drowning).
-            if (matchedChoice.section === null && matchedChoice.isDeathSection) {
-              this.endGame('💀 ' + matchedChoice.text, 'Game Over');
-            } else {
-              this.navigateToSection(matchedChoice.section, section, matchedChoice);
-            }
-          }, 2000);
-        } else {
-          message.textContent = "Errore: Nessuna corrispondenza trovata.";
-          if (btn) btn.disabled = false;
-        }
+    const matchedChoice = section.choices.find((choice) => {
+      const range = this.parseDestinyRange(choice.text);
+      return range && total >= range.min && total <= range.max;
+    });
+    if (!matchedChoice) {
+      message.textContent = 'Nessuna uscita corrisponde a questo numero. Lancia di nuovo.';
+      this.busy = false;
+      this.lockChoices(container, false);
+      return;
+    }
+    const totalLabel = modifier !== 0 ? `${roll} ${modifier > 0 ? '+' : '-'} ${Math.abs(modifier)} = ${total}` : `${roll}`;
+    message.innerHTML = `<b>${totalLabel}</b> · ${noEmoji(matchedChoice.text)}`;
+    setTimeout(async () => {
+      this.busy = false;
+      // Rare case: the outcome is a death narrated inline, with no section to turn to (e.g. Book 3 section 94).
+      if (matchedChoice.section === null && matchedChoice.isDeathSection) {
+        await this.endGame(noEmoji(matchedChoice.text), 'Fine');
+      } else {
+        await this.navigateToSection(matchedChoice.section, section, matchedChoice);
       }
-    }, 100);
+    }, 1600);
   }
-  // Physical-book puzzle (combination lock, map-derived code): the player
-  // works out a section number from clues elsewhere in the book and jumps
-  // straight to it. Any other guess (including a blank/invalid one) falls
-  // through to the book's single fixed "wrong guess" section.
+
+  // A puzzle from the printed book (a lock, a code from the map): the right number leads to correctSection,
+  // anything else (blank included) to the book's single "wrong guess" section.
   handleNumericPuzzle(container, section) {
+    if (this.busy) return;
     const input = container.querySelector('#numeric-puzzle-input');
     const guess = parseInt(input.value, 10);
     const { correctSection, wrongSection } = section.numericPuzzle;
-    const target = guess === correctSection ? correctSection : wrongSection;
-    this.navigateToSection(target, section);
+    this.navigateToSection(guess === correctSection ? correctSection : wrongSection, section);
   }
 
-  // Rarer Destiny Table variant: draw two numbers in sequence and compare
-  // them to each other, rather than matching one modified roll against fixed
-  // ranges (see handleDestinyRoll). Only the first roll takes the section's
-  // destinyModifier - the book always narrates the second as a plain redraw.
-  // Choices are matched by an explicit `outcome` field ('secondLess' |
-  // 'secondMore' | 'equal') rather than text-parsed, since the range-based
-  // phrasings in parseDestinyRange don't describe a comparison between two
-  // rolls.
+  // Rarer Destiny Table variant: two numbers drawn in sequence and compared to each other. Only the first takes
+  // the section's destinyModifier. Choices match on an explicit `outcome`: 'secondLess' | 'secondMore' | 'equal'.
   async handleDoubleDestinyRoll(container, section) {
-    const btn = container.querySelector('#destiny-roll-btn');
-    if (btn) btn.disabled = true;
-
+    if (this.busy) return;
+    this.busy = true;
+    this.lockChoices(container, true);
     const display = container.querySelector('#destiny-roll-result');
     const message = container.querySelector('#destiny-message');
 
-    let count = 0;
-    const interval = setInterval(() => {
-      display.textContent = Math.floor(Math.random() * 10);
-      count++;
-      if (count > 10) {
-        clearInterval(interval);
+    const first = getRandomDestinyNumber();
+    const modifier = this.calculateDestinyModifier(section, gameState.getState());
+    const firstTotal = first + modifier;
+    const second = getRandomDestinyNumber();
+    display.classList.add('wide');
+    await rollDigits(display, `${firstTotal} · ${second}`);
 
-        const first = getRandomDestinyNumber();
-        const modifier = this.calculateDestinyModifier(section, gameState.getState());
-        const firstTotal = first + modifier;
-        const second = getRandomDestinyNumber();
-        display.textContent = `${firstTotal} / ${second}`;
-
-        const outcome = second < firstTotal ? 'secondLess' : (second > firstTotal ? 'secondMore' : 'equal');
-        const matchedChoice = section.choices.find(choice => choice.outcome === outcome);
-
-        if (matchedChoice) {
-          const firstLabel = modifier !== 0
-            ? `${first} ${modifier > 0 ? '+' : ''}${modifier} = ${firstTotal}`
-            : `${firstTotal}`;
-          message.innerHTML = `<span style="color: var(--color-success); font-weight: bold;">Primo numero: ${firstLabel} — Secondo numero: ${second}</span>. ${matchedChoice.text}`;
-
-          setTimeout(() => {
-            this.navigateToSection(matchedChoice.section, section, matchedChoice);
-          }, 2000);
-        } else {
-          message.textContent = "Errore: Nessuna corrispondenza trovata.";
-          if (btn) btn.disabled = false;
-        }
-      }
-    }, 100);
+    const outcome = second < firstTotal ? 'secondLess' : (second > firstTotal ? 'secondMore' : 'equal');
+    const matchedChoice = section.choices.find((choice) => choice.outcome === outcome);
+    if (!matchedChoice) {
+      message.textContent = 'Nessuna uscita corrisponde. Lancia di nuovo.';
+      this.busy = false;
+      this.lockChoices(container, false);
+      return;
+    }
+    const firstLabel = modifier !== 0 ? `${first} ${modifier > 0 ? '+' : '-'} ${Math.abs(modifier)} = ${firstTotal}` : `${firstTotal}`;
+    message.innerHTML = `<b>Primo ${firstLabel} · secondo ${second}</b> · ${noEmoji(matchedChoice.text)}`;
+    setTimeout(() => {
+      this.busy = false;
+      this.navigateToSection(matchedChoice.section, section, matchedChoice);
+    }, 1600);
   }
 
   async checkDeath() {
-    const state = gameState.getState();
-    if (state.character.resistenza <= 0) {
-      await this.endGame('💀 Sei morto per le ferite riportate... L\'avventura finisce qui.', 'Game Over');
+    if (this.dead) return true;
+    if (gameState.getState().character.resistenza <= 0) {
+      await this.endGame('Le ferite hanno avuto la meglio. L\'avventura finisce qui.', 'Fine');
       return true;
     }
     return false;
   }
-  async handleWeaponAcquisition(newWeapon) {
-    const state = gameState.getState();
-    const currentWeapons = state.character.armi;
 
-    if (currentWeapons.length < 2) {
-      // Logic for standard acquisition (less than 2 weapons)
-      const confirmed = await UIHelpers.confirmAsync(`Vuoi prendere l'arma: ${newWeapon}?`);
-      if (confirmed) {
+  async handleWeaponAcquisition(newWeapon) {
+    if (gameState.getState().character.armi.length < 2) {
+      if (await UIHelpers.confirmAsync(`Vuoi prendere ${esc(newWeapon)}?`, { yes: 'Prendi', no: 'Lascia' })) {
         gameState.addWeapon(newWeapon);
-        UIHelpers.showToast(`⚔️ Presa arma: ${newWeapon}`, 'success');
+        UIHelpers.showToast(`Preso: ${newWeapon}`, 'success');
       }
     } else {
-      // Logic for swap (already has 2 weapons)
-      return new Promise((resolve) => {
-        const content = `
-          <p class="modal-text">Hai già 2 armi (${currentWeapons.join(', ')}). Devi scartarne una per prendere <strong>${newWeapon}</strong>.</p>
-          <div class="modal-actions" style="flex-direction: column; gap: 1rem;">
-            <button class="btn btn-warning btn-large" data-action="swap1">
-              Scarta ${currentWeapons[0]} e prendi ${newWeapon}
-            </button>
-            <button class="btn btn-warning btn-large" data-action="swap2">
-              Scarta ${currentWeapons[1]} e prendi ${newWeapon}
-            </button>
-            <button class="btn btn-outline btn-large" data-action="cancel">
-              Non prendere ${newWeapon}
-            </button>
-          </div>
-        `;
-
-        UIHelpers.showModal(content, {
-          title: 'Zaino Armi Pieno',
-          buttons: {
-            '[data-action="swap1"]': (e, modal) => {
-              gameState.removeWeapon(currentWeapons[0]);
-              gameState.addWeapon(newWeapon);
-              UIHelpers.showToast(`⚔️ Scambiata ${currentWeapons[0]} con ${newWeapon}`, 'success');
-              modal.remove();
-              resolve();
-            },
-            '[data-action="swap2"]': (e, modal) => {
-              gameState.removeWeapon(currentWeapons[1]);
-              gameState.addWeapon(newWeapon);
-              UIHelpers.showToast(`⚔️ Scambiata ${currentWeapons[1]} con ${newWeapon}`, 'success');
-              modal.remove();
-              resolve();
-            },
-            '[data-action="cancel"]': (e, modal) => {
-              modal.remove();
-              resolve();
-            }
-          }
-        });
-      });
+      await swapWeapon(newWeapon);
     }
+  }
+
+  destroy() {
+    if (this.unsubscribe) this.unsubscribe();
   }
 }

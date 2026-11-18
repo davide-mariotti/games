@@ -32,7 +32,7 @@ mock.module('../src/save-manager.js', {
 globalThis.localStorage ??= { getItem: () => null, setItem: () => {} };
 
 const { gameState } = await import('../src/game-state.js');
-const { combatManager } = await import('../src/components/combat-manager.js');
+const { combatManager, COMBAT_TABLE, combatResult } = await import('../src/components/combat-manager.js');
 
 function resetGameState(characterOverrides = {}) {
   gameState.resetGame();
@@ -194,19 +194,19 @@ test('calculateForceRatio: combatModifiers "noKaiArt" penalty respects the "subs
 });
 
 test('fightRound: Sommerswerd doubles ENDURANCE lost by undead enemies, but only for undead', () => {
-  // combattivita 15 + Sommerswerd(+8) vs 15 => ratio 8; table['8'][destinyNumber=1] = [enemyDamage 8, heroDamage 3]
+  // combattivita 15 + Sommerswerd(+8) vs 15 => ratio 8; column +7/+8, number 1 = [enemyDamage 7, heroDamage 4]
   mockRollQueue = [1];
   resetGameState({ combattivita: 15, resistenza: 20, resistenzaMax: 20, zaino: ['Spada del Sole'] });
   combatManager.startCombat({ name: 'Helghast', combattivita: 15, resistenza: 30, undead: true });
   combatManager.fightRound();
-  assert.equal(gameState.getState().combatState.currentEnemyResistenza, 14, '30 - (8*2)');
-  assert.equal(gameState.getState().character.resistenza, 17, 'hero damage is never doubled');
+  assert.equal(gameState.getState().combatState.currentEnemyResistenza, 16, '30 - (7*2)');
+  assert.equal(gameState.getState().character.resistenza, 16, 'hero damage is never doubled');
 
   mockRollQueue = [1];
   resetGameState({ combattivita: 15, resistenza: 20, resistenzaMax: 20, zaino: ['Spada del Sole'] });
   combatManager.startCombat({ name: 'Ordinary enemy', combattivita: 15, resistenza: 30, undead: false });
   combatManager.fightRound();
-  assert.equal(gameState.getState().combatState.currentEnemyResistenza, 22, '30 - 8, not doubled without undead flag');
+  assert.equal(gameState.getState().combatState.currentEnemyResistenza, 23, '30 - 7, not doubled without undead flag');
 });
 
 test('fightRound: enduranceLossAfterRoundsFromRoll rolls once at combat start for how many rounds the hero can hold his breath, then adds extra loss past that - see Book 4 sections 194/234', () => {
@@ -280,13 +280,13 @@ test('fightRound: noPlayerLossRounds modifier zeroes hero damage only during the
 });
 
 test('endCombat: lastCombatSummary tracks damageDealt (enemy) alongside damageTaken (hero)', () => {
-  // combattivita 15 + Sommerswerd(+8) vs 15 => ratio 8; table['8'][destinyNumber=1] = [enemyDamage 8, heroDamage 3]
+  // combattivita 15 + Sommerswerd(+8) vs 15 => ratio 8; column +7/+8, number 1 = [enemyDamage 7, heroDamage 4]
   mockRollQueue = [1];
   resetGameState({ combattivita: 15, resistenza: 20, resistenzaMax: 20, zaino: ['Spada del Sole'] });
   combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 30 });
   combatManager.fightRound();
   combatManager.endCombat('victory');
-  assert.deepEqual(gameState.getState().lastCombatSummary, { rounds: 1, damageTaken: 3, damageDealt: 8 });
+  assert.deepEqual(gameState.getState().lastCombatSummary, { rounds: 1, damageTaken: 4, damageDealt: 7 });
 });
 
 test('canPlayerFlee: respects fleeAfterRounds gating', () => {
@@ -312,9 +312,9 @@ test('fightRound: forceEndAfterRounds cuts the combat short (neither side dead) 
 });
 
 test('fightRound: forceEndAfterRounds does not override a real victory/defeat reached within the cap', () => {
-  mockRollQueue = [1]; // ratio 8, destinyNumber 1 -> table['8'][1] = [enemyDamage 8, heroDamage 3]
+  mockRollQueue = [1]; // ratio 8, destinyNumber 1 -> column +7/+8 = [enemyDamage 7, heroDamage 4]
   resetGameState({ combattivita: 23, resistenza: 20, resistenzaMax: 20 });
-  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 8, forceEndAfterRounds: 3, forceEndSection: 394 });
+  combatManager.startCombat({ name: 'Enemy', combattivita: 15, resistenza: 7, forceEndAfterRounds: 3, forceEndSection: 394 });
   assert.equal(combatManager.fightRound(), 'victory');
 });
 
@@ -344,4 +344,23 @@ test('multi-enemy queue: canFlee/fleeSection are read fresh from each enemy, not
   assert.equal(combatManager.combatData.name, 'Enemy B');
   assert.equal(combatManager.canFlee, true, 'flee stays available once the fight moves to the next enemy, as long as that enemy also allows it');
   assert.equal(combatManager.combatData.fleeSection, 42, 'the section that navigateToSection/fleeCombat must read this from, not currentSection.combat (which has no .fleeSection on an array)');
+});
+
+test('COMBAT_TABLE: matches cells printed in the book and never rewards a worse combat ratio', () => {
+  // spot checks from Project Aon's Combat Results Table (crtneg.png / crtpos.png)
+  assert.deepEqual(combatResult(-11, 1), [0, 999]);
+  assert.deepEqual(combatResult(-1, 0), [11, 0]);
+  assert.deepEqual(combatResult(-2, 5), [6, 3]);
+  assert.deepEqual(combatResult(-6, 9), [8, 0]);
+  assert.deepEqual(combatResult(0, 0), [12, 0]);
+  assert.deepEqual(combatResult(7, 1), [7, 4]);
+  assert.deepEqual(combatResult(10, 9), [999, 0]);
+  assert.deepEqual(combatResult(25, 8), [999, 0]);
+  // a better ratio never means the enemy loses less, or Lone Wolf loses more
+  for (const row of COMBAT_TABLE) {
+    for (let c = 1; c < row.length; c++) {
+      assert.ok(row[c][0] >= row[c - 1][0], `enemy loss drops between columns ${c - 1} and ${c}`);
+      assert.ok(row[c][1] <= row[c - 1][1], `hero loss grows between columns ${c - 1} and ${c}`);
+    }
+  }
 });

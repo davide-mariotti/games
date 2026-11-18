@@ -1,11 +1,14 @@
 // Service Worker for offline support
-const CACHE_NAME = 'lupo-solitario-v7';
+// Network first (so updates arrive at once), cache as the fallback when offline.
+const CACHE_NAME = 'lupo-solitario-v8';
 const urlsToCache = [
     './',
     './index.html',
+    './manifest.json',
+    '../shared/arcade.css',
     './src/styles/main.css',
-    './src/styles/layout.css',
     './src/app.js',
+    './src/ui/kit.js',
     './src/firebase-config.js',
     './src/auth.js',
     './src/game-state.js',
@@ -19,11 +22,10 @@ const urlsToCache = [
     './src/components/story-reader.js',
     './src/components/combat-manager.js',
     './src/components/destiny-table.js',
-    './src/components/book2-transition.js',
-    './src/components/book3-transition.js',
-    './src/components/book4-transition.js',
-    './src/components/book5-transition.js',
-    './manifest.json'
+    './src/components/book-transition.js',
+    './data/intro-common.json',
+    './data/books/01-flight-from-the-dark.json',
+    './public/img/portraits/lupo-solitario.webp'
 ];
 
 // Install event - cache resources and take control immediately
@@ -32,10 +34,9 @@ self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
-                console.log('✅ Cache opened:', CACHE_NAME);
-                return cache.addAll(urlsToCache);
+                                return cache.addAll(urlsToCache);
             })
-            .catch((error) => console.warn('⚠️ Error caching initial resources:', error))
+            .catch((error) => console.warn('Precache failed:', error))
     );
 });
 
@@ -48,8 +49,7 @@ self.addEventListener('activate', (event) => {
             return Promise.all(
                 cacheNames.map((cacheName) => {
                     if (cacheName.startsWith('lupo-solitario-') && cacheWhitelist.indexOf(cacheName) === -1) {
-                        console.log('🧹 Deleting old cache:', cacheName);
-                        return caches.delete(cacheName);
+                                                return caches.delete(cacheName);
                     }
                 })
             );
