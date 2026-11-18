@@ -1,4 +1,4 @@
-/* Shared by the arcade games (Fruit Catcher, Digital Jump): same tokens as davide-mariotti.github.io */
+/* Shared by the arcade games (Fruit Catcher, Digital Jump, Snake): same tokens as davide-mariotti.github.io */
 :root {
   --bg: #050706; --surface: #0b0f0d; --line: rgb(255 255 255 / .08); --line-strong: rgb(255 255 255 / .16);
   --ink: #ecf3ee; --muted: #9aaba1; --faint: #5f6e66; --accent: #2fe37f; --lime: #c6f36b; --danger: #ff5a5f;
