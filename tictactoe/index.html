@@ -1,88 +1,87 @@
----
----
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-    <title>Tic-Tac-Toe | Davide Mariotti</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- CSS -->
-    <link href="/games/shared/legacy.css" rel="stylesheet" crossorigin="anonymous" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="main.css">
-
-    <!-- Icons -->
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Tic-Tac-Toe · Davide Mariotti</title>
+  <meta name="description" content="Tic-tac-toe in the browser: against a friend on the same screen, against the computer, or against one that never loses.">
+  <link rel="canonical" href="https://davide-mariotti.github.io/games/tictactoe/">
+  <meta property="og:title" content="Tic-Tac-Toe · Davide Mariotti">
+  <meta property="og:description" content="Three in a row wins. Against a friend or the computer.">
+  <meta property="og:image" content="https://davide-mariotti.github.io/og.png">
+  <meta name="theme-color" content="#050706">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/games/shared/arcade.css">
+  <link rel="stylesheet" href="main.css">
 </head>
-
 <body>
-    <nav class="dm-bar"><a class="dm-logo" href="/" aria-label="Davide Mariotti, home">dm<span>.</span></a><a href="/games/">&larr; All games</a></nav>
+  <header><div class="bar">
+    <a class="logo" href="/" aria-label="Davide Mariotti, home"><svg viewBox="7.5 12.5 108.8 68" role="img" aria-label="dm."><path d="M45,20V73M45,58A15,15 0 1 1 45,57.99M45,54A11,11 0 0 1 67,54V73M67,54A11,11 0 0 1 89,54V73" fill="none" stroke="#ecf3ee" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/><circle cx="107.7" cy="71.9" r="6.6" fill="#2fe37f"/></svg></a>
+    <a class="back" href="/games/" data-it="&larr; Tutti i giochi">&larr; All games</a>
+  </div></header>
 
-    <div class="container py-5 mt-5">
-        <div class="tictactoe-page-container">
-            <div class="text-center mb-5">
-                <h1 class="section-title display-4"><span class="text-gradient">Tic Tac</span> Toe</h1>
-                <p class="lead text-white opacity-75">The timeless battle of X and O, optimized for the digital forest.
-                </p>
-            </div>
-
-            <div class="glass-panel p-4 p-md-5">
-                <div id="tictactoe-wrapper">
-                    <!-- Turn Indicator -->
-                    <div class="turn-container">
-                        <div class="turn-indicator" id="indicator"></div>
-                        <div class="turn-box" id="turn-x">X</div>
-                        <div class="turn-box" id="turn-o">O</div>
-                    </div>
-
-                    <!-- Game Grid -->
-                    <div class="main-grid">
-                        <div class="box" data-index="0"></div>
-                        <div class="box" data-index="1"></div>
-                        <div class="box" data-index="2"></div>
-                        <div class="box" data-index="3"></div>
-                        <div class="box" data-index="4"></div>
-                        <div class="box" data-index="5"></div>
-                        <div class="box" data-index="6"></div>
-                        <div class="box" data-index="7"></div>
-                        <div class="box" data-index="8"></div>
-                    </div>
-
-                    <h2 id="results"></h2>
-
-                    <button id="play-again" class="btn btn-primary btn-glow rounded-pill px-5 py-3"
-                        style="display: none;">
-                        New Round
-                    </button>
-                </div>
-            </div>
-
-            <div class="game-info">
-                <h3>Strategy Guide</h3>
-                <p>Tic-Tac-Toe is a classic two-player game played on a 3x3 grid. The goal is to get three of your
-                    symbols in a row, column, or diagonal.</p>
-                <ul class="mt-4">
-                    <li>The game starts with Player X.</li>
-                    <li>Players take turns placing their symbol in an empty cell.</li>
-                    <li>First to 3-in-a-row wins.</li>
-                    <li>If the grid fills with no winner, it's a draw.</li>
-                </ul>
-            </div>
+  <main>
+    <section class="stage" id="stage">
+      <div class="hud">
+        <div>
+          <p class="kicker"><span data-it="Partita">Round</span> <span id="round">1</span></p>
+          <p class="best" id="mode-label"></p>
         </div>
-    </div>
+        <div class="hud-r">
+          <button class="icon-btn" id="mute" type="button" aria-label="Sound"></button>
+          <button class="icon-btn" id="modes" type="button" aria-label="Change mode"><i data-icon="menu"></i></button>
+        </div>
+      </div>
 
-    <footer class="dm-foot">Made by <a href="/">Davide Mariotti</a> &middot; <a href="https://ko-fi.com/Z0X32ATNHL">buy me a coffee</a></footer>
+      <div class="arena">
+        <div class="players">
+          <div id="p-X"><i data-icon="x" class="c-accent"></i><span id="n-X"></span><b id="w-X">0</b></div>
+          <div><span data-it="Pareggi">Draws</span><b id="w-D">0</b></div>
+          <div id="p-O"><i data-icon="circle"></i><span id="n-O"></span><b id="w-O">0</b></div>
+        </div>
+        <div class="board" id="game" role="group">
+          <svg class="lines" viewBox="0 0 300 300" aria-hidden="true">
+            <g class="grid">
+              <line x1="100" y1="12" x2="100" y2="288" pathLength="1"/>
+              <line x1="200" y1="12" x2="200" y2="288" pathLength="1"/>
+              <line x1="12" y1="100" x2="288" y2="100" pathLength="1"/>
+              <line x1="12" y1="200" x2="288" y2="200" pathLength="1"/>
+            </g>
+            <line id="strike" pathLength="1"/>
+          </svg>
+        </div>
+        <p class="status" id="status" aria-live="polite"></p>
+        <button class="btn btn-primary" id="next" type="button"><i data-icon="rotate-ccw"></i><span data-it="Un'altra">Next round</span></button>
+      </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-    <script src="/games/shared/legacy.js" crossorigin="anonymous"></script>
-    <script src="main.js"></script>
+      <div class="banner" id="banner" aria-hidden="true"></div>
+
+      <div class="overlay" id="menu">
+        <div class="panel">
+          <p class="kicker" data-it="Giochi · Da tavolo">Games · Board</p>
+          <h1>Tic Tac <span class="serif grad">Toe</span></h1>
+          <p class="lead" data-it="Tre in fila e vinci. Contro un amico sullo stesso schermo o contro il computer.">Three in a row wins. Against a friend on the same screen, or against the computer.</p>
+          <div class="modes">
+            <button class="mode" type="button" data-mode="easy"><i data-icon="bot"></i><span><b>Computer</b><small data-it="Sbaglia. Ogni tanto.">Makes mistakes. Sometimes.</small></span></button>
+            <button class="mode" type="button" data-mode="hard"><i data-icon="brain"></i><span><b data-it="Imbattibile">Unbeatable</b><small data-it="Al massimo pareggi.">Best case, a draw.</small></span></button>
+            <button class="mode" type="button" data-mode="duo"><i data-icon="users"></i><span><b data-it="Due giocatori">Two players</b><small data-it="Stesso schermo, a turno.">Same screen, take turns.</small></span></button>
+          </div>
+          <p class="hint" data-it="Tocca una casella o premi 1-9 · Esc chiude il menu">Tap a square or press 1-9 · Esc closes the menu</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="bar">
+    <span data-it="Fatto da <a href=&quot;/&quot;>Davide Mariotti</a>">Made by <a href="/">Davide Mariotti</a></span>
+    <a href="https://ko-fi.com/Z0X32ATNHL" data-it="Offrimi un caffè">Buy me a coffee</a>
+  </div></footer>
+
+  <script src="/games/shared/arcade.js"></script>
+  <script src="main.js"></script>
 </body>
-
 </html>

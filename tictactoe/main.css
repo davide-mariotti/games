@@ -1,120 +1,56 @@
-/* - - - - - - - - - - */
-/* - - Tic Tac Toe - - */
-/* - - - - - - - - - - */
+/* Tic-Tac-Toe: only what the shared arcade kit (/games/shared/arcade.css) doesn't cover */
+.hud .best { margin-top: .3rem; }
+.stage.won::after { opacity: 1; }
 
-.tictactoe-page-container {
-  max-width: 800px;
-  margin: 0 auto;
-}
+.arena { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.1rem; padding: 4.5rem 1rem 1.25rem; }
 
-#tictactoe-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rem;
-}
+/* score and turn: the player who moves glows */
+.players { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; }
+.players > div { display: flex; align-items: center; gap: .5rem; padding: .45rem .85rem; border-radius: 999px; border: 1px solid var(--line); background: rgb(255 255 255 / .03); font-size: .85rem; color: var(--muted); transition: border-color .3s, box-shadow .3s, color .3s; }
+.players b { font: 600 1.05rem "Geist Mono", monospace; color: var(--ink); font-variant-numeric: tabular-nums; }
+.players b.bump { display: inline-block; }
+.players svg { width: 1.05rem; height: 1.05rem; }
+.players span:empty { display: none; }
+#p-X.on { border-color: rgb(47 227 127 / .6); color: var(--ink); box-shadow: 0 0 24px -6px rgb(47 227 127 / .7); }
+#p-O.on { border-color: rgb(236 243 238 / .5); color: var(--ink); box-shadow: 0 0 24px -6px rgb(236 243 238 / .5); }
 
-.turn-container {
-  display: flex;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 50px;
-  padding: 5px;
-  position: relative;
-  width: 200px;
-}
+/* the board: 9 buttons under one SVG with the # and the winning line */
+.board { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); width: min(26rem, 100%, max(13rem, 100svh - 22rem)); aspect-ratio: 1; }
+.lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; fill: none; stroke-linecap: round; filter: drop-shadow(0 0 6px rgb(47 227 127 / .55)); }
+.lines line { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.grid line { stroke: rgb(47 227 127 / .45); stroke-width: 2.5; animation: draw .7s var(--ease) forwards; }
+.grid line:nth-child(2) { animation-delay: .08s; } .grid line:nth-child(3) { animation-delay: .16s; } .grid line:nth-child(4) { animation-delay: .24s; }
+#strike { stroke: var(--lime); stroke-width: 7; opacity: 0; }
+#strike.on { opacity: 1; animation: draw .45s var(--ease) .15s forwards; }
 
-.turn-box {
-  flex: 1;
-  text-align: center;
-  padding: 10px 0;
-  font-weight: 800;
-  font-size: 1.2rem;
-  z-index: 2;
-  transition: color 0.3s;
-}
+.cell { display: grid; place-items: center; border: 0; border-radius: 1rem; background: none; transition: background .25s; }
+.cell:not(.full):hover { background: rgb(255 255 255 / .04); }
+.cell.full, .board.done .cell { cursor: default; }
+.cell.x { color: var(--accent); } .cell.o { color: var(--ink); }
+.mark { width: 62%; height: 62%; overflow: visible; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; filter: drop-shadow(0 0 8px currentColor); transition: opacity .5s; }
+.mark * { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw .35s var(--ease) forwards; }
+.mark :nth-child(2) { animation-delay: .12s; }
+.mark circle { transform: rotate(-90deg); transform-origin: center; transform-box: fill-box; } /* draw from the top */
+.board.done .cell:not(.win) .mark { opacity: .28; }
+.cell.win .mark { animation: glow 1s var(--ease) .3s 3; }
 
-.turn-box.active {
-  color: black;
-}
+.status { min-height: 1.5em; text-align: center; font-size: .95rem; color: var(--muted); }
+#next { visibility: hidden; }
+#next.on { visibility: visible; animation: blur-in .6s var(--ease) both; }
 
-.turn-indicator {
-  position: absolute;
-  top: 5px;
-  left: 5px;
-  width: calc(50% - 5px);
-  height: calc(100% - 10px);
-  background: var(--color-primary);
-  border-radius: 50px;
-  z-index: 1;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+/* mode picker in the menu */
+.modes { display: grid; gap: .5rem; margin-top: 1.75rem; }
+.mode { display: flex; align-items: center; gap: .9rem; padding: .85rem 1rem; border-radius: 1rem; border: 1px solid var(--line-strong); background: rgb(255 255 255 / .03); text-align: left; transition: border-color .25s, background .25s, transform .25s var(--ease); }
+.mode:hover, .mode:focus-visible { border-color: rgb(47 227 127 / .55); background: rgb(47 227 127 / .07); transform: translateY(-1px); }
+.mode svg { width: 1.5rem; height: 1.5rem; flex: none; color: var(--accent); filter: drop-shadow(0 0 6px rgb(47 227 127 / .5)); }
+.mode b { display: block; font-weight: 600; }
+.mode small { display: block; margin-top: .1rem; font-size: .82rem; color: var(--muted); }
 
-.turn-indicator.o-turn {
-  transform: translateX(100%);
-}
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes glow { 50% { transform: scale(1.1); filter: drop-shadow(0 0 18px currentColor); } }
 
-.main-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  gap: 15px;
-  width: 100%;
-  max-width: 450px;
-  aspect-ratio: 1 / 1;
-  margin: 0 auto;
-}
-
-.box {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-sm);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: clamp(2rem, 10vw, 4rem);
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.2s;
-  height: 100%;
-}
-
-.box:hover:not(:empty) {
-  cursor: default;
-}
-
-.box:hover:empty {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.box.winner {
-  background: var(--color-primary);
-  color: black;
-  box-shadow: 0 0 20px var(--color-primary-glow);
-}
-
-#results {
-  font-size: 2rem;
-  font-weight: 800;
-  color: var(--color-primary);
-  margin: 1rem 0;
-  min-height: 3rem;
-}
-
-.game-info {
-  margin-top: 3rem;
-  padding: 2rem;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: var(--radius-md);
-  text-align: left;
-}
-
-.game-info h3 {
-  color: var(--color-primary);
-  margin-bottom: 1rem;
-}
-
-.game-info li {
-  margin-bottom: 0.5rem;
-  opacity: 0.8;
+@media (max-width: 560px) {
+  .arena { gap: .9rem; padding-inline: .75rem; }
+  .board { width: min(26rem, 100%, max(13rem, 100svh - 19.5rem)); } /* no outer margin on phones: room for a bigger board */
+  .players > div { padding: .4rem .7rem; font-size: .8rem; }
 }

@@ -34,7 +34,7 @@ function setupPage() {
   }
   document.querySelectorAll('[data-icon]').forEach((el) => (el.innerHTML = svgIcon(el.dataset.icon)));
   $('game').setAttribute('aria-label', UI_TXT.area);
-  $('pause').setAttribute('aria-label', UI_TXT.pause);
+  $('pause')?.setAttribute('aria-label', UI_TXT.pause); // not every game pauses (Tic-Tac-Toe)
   const mute = $('mute');
   const paint = () => {
     mute.innerHTML = svgIcon(muted ? 'volume-x' : 'volume-2');
