@@ -15,7 +15,8 @@
      "text": "Se preferisci ignorare la capanna e proseguire lungo la Via di Ruanon",
      "section": 273
     }
-   ]
+   ],
+   "image": "public/img/book04/sec001.webp"
   },
   "2": {
    "text": "<p>Perquisisci i corpi dei banditi morti e scopri i seguenti oggetti:</p><ul><li>Spada</li><li>Mazza</li><li>Daga</li><li>Martello</li><li>12 Corone d'Oro</li><li>Zaino</li><li>Cibo a sufficienza per 2 Pasti</li></ul><p>Puoi prendere uno qualsiasi di questi oggetti, ma ricordati di segnarli sul tuo Registro di Guerra.</p><p>Raccogliendo la mappa che giace sul tavolo insanguinato, noti che la stanza in cui ti trovi è cerchiata da un anello d'inchiostro nero. La mappa rivela che una porta nella parete di fondo si apre su un passaggio che conduce direttamente in superficie. Ansioso di lasciare quella camera di morte, attraversi la porta e corri lungo il passaggio verso un lontano raggio di luce solare. Ci vogliono alcuni secondi prima che i tuoi occhi si abituino al bagliore del sole, ma a poco a poco ti rendi conto di essere finalmente fuggito dalle miniere di Maaken e di trovarti tra le colline occidentali, a meno di due miglia da Ruanon.</p><p>Tuttavia, alcuni Guerrieri Banditi pattugliano un ingresso delle miniere, appena sotto la cengia rocciosa su cui ora ti trovi accovacciato. Se vuoi raggiungere Ruanon vivo, devi evitare a ogni costo queste pattuglie.</p><p>Aspettando che le pattuglie nemiche spariscano dalla vista, scendi lungo uno stretto sentiero che porta a un boschetto di alberi fitti. Ti concedi solo una breve pausa per riprendere fiato prima di rimetterti in cammino attraverso il bosco verso Ruanon.</p>",
@@ -47,7 +48,8 @@
      "text": "Continua",
      "section": 62
     }
-   ]
+   ],
+   "image": "public/img/book04/sec003.webp"
   },
   "4": {
    "text": "<p>Riconosci i funghi come Calacena. Le spore di questi funghi rosa sono molto ricercate da illusionisti e maghi, sebbene si dica che possano provocare terribili allucinazioni e persino follia. Mentre avanzi con cautela lungo il corridoio, fai molta attenzione a non calpestare né sfiorare i funghi carichi di spore.</p><p>Il tunnel prosegue ininterrotto per diverse miglia, prima di sboccare finalmente in una lunga galleria deserta.</p>",
@@ -87,7 +89,8 @@
      "text": "Continua",
      "section": 154
     }
-   ]
+   ],
+   "image": "public/img/book04/sec007.webp"
   },
   "8": {
    "text": "<p>I tuoi uomini legano la barca a un anello di ferro arrugginito prima di seguirti su per i gradini di pietra verso l'arcata. Mentre raggiungi uno stretto sporto in cima alla scalinata di granito, senti strani suoni provenire dall'oscurità davanti a te, simili al sibilo di un getto di vapore. Dura pochi secondi, prima che lo schiocco di una frusta e la voce di un uomo che impreca lo interrompano bruscamente.</p>",
@@ -127,7 +130,8 @@
      "text": "Lascia la torre di guardia",
      "section": 59
     }
-   ]
+   ],
+   "image": "public/img/book04/sec010.webp"
   },
   "11": {
    "text": "<p>Hai percorso meno di venti metri quando raggiungi una parete di roccia solida. È un vicolo cieco. Il tunnel è stato scavato solo di recente, e non puoi proseguire oltre in questa direzione. Devi tornare al bivio.</p><p>Scegli un numero dalla Tabella del Destino.</p>",
@@ -192,7 +196,8 @@
      "text": "Se vinci il combattimento",
      "section": 146
     }
-   ]
+   ],
+   "image": "public/img/book04/sec014.webp"
   },
   "15": {
    "text": "<p>Hai cavalcato meno di cento metri quando noti impronte di zoccoli fresche nella polvere del sentiero tortuoso.</p>",
@@ -255,7 +260,8 @@
      "text": "Continua",
      "section": 341
     }
-   ]
+   ],
+   "image": "public/img/book04/sec020.webp"
   },
   "21": {
    "text": "<p>Dopo mezz'ora, uno dei tuoi uomini segnala di aver avvistato una pista più avanti. Lo stretto sentiero sterrato si dirige verso est e verso ovest.</p>",
@@ -348,7 +354,8 @@
      "text": "Se vinci il combattimento",
      "section": 321
     }
-   ]
+   ],
+   "image": "public/img/book04/sec026.webp"
   },
   "27": {
    "text": "<p>Salti giù dal carro e scatti verso una fila di alberi fitti a meno di venti iarde dalla pista. La fortuna è con te, perché le guardie banditesche non si accorgono della tua audace fuga e i carri proseguono il loro cammino verso l'argano di carico.</p><p>Fermandoti solo il tempo di riprendere fiato, ringrazi in silenzio lo sconosciuto che ti ha aiutato, prima di proseguire tra gli alberi.</p>",
@@ -408,7 +415,8 @@
      "text": "Se il tuo numero è da 5 a 9",
      "section": 329
     }
-   ]
+   ],
+   "image": "public/img/book04/sec031.webp"
   },
   "32": {
    "text": "<p>La orrenda creatura si scioglie dalle tue gambe e affonda nell'acqua. Sei euforico per la vittoria, ma i polmoni ti bruciano come fuoco. Ti arrampichi verso l'alto finché non raggiungi la superficie, boccheggiante e ansimante.</p><p>L'unico segno rimasto in superficie della barca a remi e dei tuoi uomini è un remo spezzato che galleggia lì vicino. Vi agganci il braccio e derivi con la corrente verso la sponda opposta. Un controllo dello Zaino e delle tasche rivela che non hai perso nulla durante la lotta nell'acqua, ma questa scoperta è un magro conforto ora che la tua valorosa compagnia non esiste più.</p><p>Rafforzando la tua determinazione contro i pericoli sconosciuti che potrebbero attenderti, decidi di raggiungere Ruanon e svelare il velo di mistero che la circonda. Ma prima ti concedi un ultimo sguardo al fiume nero prima di entrare nel tunnel ovest.</p>",
@@ -497,7 +505,8 @@
      "text": "Se decidi di proseguire verso Ruanon",
      "section": 247
     }
-   ]
+   ],
+   "image": "public/img/book04/sec037.webp"
   },
   "38": {
    "text": "<p>Non resta alcun carico all'interno del guscio carbonizzato del carro. Il legno è annerito, e le parti metalliche si sono deformate e vescicate per il calore. Tuttavia, nonostante il danno, trovi tra le ceneri prove sufficienti a confermare i tuoi sospetti. Questo è il relitto di un carro da battaglia sommlending; uno dei tre partiti per Ruanon con la truppa del Capitano D'Val oltre un mese fa.</p><p>Mentre ti trovi nel carro, scrollandoti la cenere dalle mani, uno dei tuoi uomini grida improvvisamente di dolore. Alzi lo sguardo appena in tempo per vederlo cadere da cavallo, un disco di acciaio affilato conficcato nel petto. «Imboscata! Al riparo!» gridi, mentre altri dischi mortali fischiano dagli alberi per reclamare altre vittime. Cavalli spaventati galoppano in ogni direzione, i tuoi uomini aggrappati disperatamente alle redini. Gli aggressori nascosti svaniscono rapidamente come sono comparsi, ma non prima che tre dei tuoi uomini restino morti sulla strada.</p><p>Dopo aver seppellito i tuoi caduti, devi decidere la strategia migliore; perché ora restano al tuo fianco solo quattro uomini e il nemico nascosto potrebbe tornare in qualsiasi momento per portare a termine la sua opera malvagia.</p>",
@@ -510,7 +519,8 @@
      "text": "Se vuoi evitare la strada principale e continuare per la pista orientale",
      "section": 15
     }
-   ]
+   ],
+   "image": "public/img/book04/sec038.webp"
   },
   "39": {
    "text": "<p>La freccia arca nel cielo annerito dal fumo e trafigge la corazza scintillante dell'ufficiale. Senti il suo urlo di dolore risuonare sopra il frastuono della battaglia e vedi i suoi occhi crudeli tremolare e chiudersi. Sviene e scivola giù dalla sella, la tua freccia conficcata nel profondo del cuore.</p>",
@@ -617,7 +627,8 @@
      "text": "Se non possiedi questa abilità",
      "section": 188
     }
-   ]
+   ],
+   "image": "public/img/book04/sec044.webp"
   },
   "45": {
    "text": "<p>Riconosci la linfa di gnadurn che gocciola dalle loro lance. È un veleno letale. Non osi rischiare di ingaggiare battaglia con questi banditi, perché anche la minima scalfittura da una delle loro armi avvelenate potrebbe essere fatale. Balzando in piedi, corri via dagli alberi verso Ruanon.</p>",
@@ -640,7 +651,8 @@
      "text": "Se vinci questo combattimento",
      "section": 281
     }
-   ]
+   ],
+   "image": "public/img/book04/sec046.webp"
   },
   "47": {
    "text": "<p>Riesci a inspirare una boccata d'aria prima che le acque scure si richiudano sul tuo viso rivolto verso l'alto. Un tentacolo ti sfiora il piede, e colpisci appena in tempo per evitare che ti avvinghi. La creatura è gravemente ferita, ma è determinata a reclamare la tua vita in cambio della propria ferita.</p>",
@@ -782,7 +794,8 @@
      "text": "Se vuoi nasconderti nell'ombra della parete rocciosa del tunnel",
      "section": 286
     }
-   ]
+   ],
+   "image": "public/img/book04/sec055.webp"
   },
   "56": {
    "text": "<p>Colpisci la guardia aprendole una profonda ferita al collo. L'uomo urla e si volta per affrontarti, una spada corta in pugno.</p>",
@@ -988,7 +1001,8 @@
       ]
      }
     }
-   ]
+   ],
+   "image": "public/img/book04/sec067.webp"
   },
   "68": {
    "text": "<p>Un solo colpo netto con il taglio della mano basta per spaccare il lucchetto della porta del capanno delle barche. La tua curiosità è presto ricompensata dalla vista di una barca a remi capovolta, appoggiata su due cavalletti di legno. Sotto di essa si trova un secchio di pece. Dallo strato di polvere che ricopre lo scafo, giudichi che sia rimasta indisturbata per parecchi mesi.</p>",
@@ -1060,7 +1074,8 @@
      "text": "Prosegui",
      "section": 348
     }
-   ]
+   ],
+   "image": "public/img/book04/sec071.webp"
   },
   "72": {
    "text": "<p>Le pianure spoglie delle Wildlands non offrono alcun riparo in cui nasconderti dall'orda di banditi. Sai che, per evitare uno scontro con un nemico che ti supera enormemente in numero, devi dividere la tua compagnia e cercare di distanziarli.</p><p>Distacchi una squadra di dieci ranger che ti seguono, e mandi il resto verso ovest, sperando che possano attirare i banditi verso i Monti Durncrag.</p><p>Con un ultimo sguardo al nemico, guidi i tuoi dieci ranger in una corsa mortale lungo la Via di Ruanon.</p>",
@@ -1259,7 +1274,8 @@
      "text": "Continua",
      "section": 273
     }
-   ]
+   ],
+   "image": "public/img/book04/sec084.webp"
   },
   "85": {
    "text": "<p>Cerchi di estrarre l'arma, ma la creatura è un'assassina rapida e letale. Le sue zanne cave ti perforano la spina dorsale, drenandoti il sangue vitale e paralizzandoti il corpo. Senti il tonfo della tua arma che cade a terra, ma non provi dolore mentre crolli in avanti, sfracellandoti il volto contro la dura pietra.</p><p>La tua vita e la tua missione finiscono qui.</p>",
@@ -1392,7 +1408,8 @@
      "text": "Se vinci il combattimento",
      "section": 2
     }
-   ]
+   ],
+   "image": "public/img/book04/sec093.webp"
   },
   "94": {
    "text": "<p>Improvvisamente la barca sobbalza in avanti e vieni catapultato nel vuoto. Precipiti per quella che sembra un'eternità prima di colpire l'acqua profonda con una forza tale da farti sprofondare per oltre venti piedi. L'acqua gelida ti stordisce e ti toglie le forze. Hai disperatamente bisogno d'aria. Lotti per raggiungere la superficie, ma lo Zaino ti trascina verso il basso: devi liberartene, o annegherai di certo.</p><p>Quando riemergi, vieni afferrato dalla corrente veloce e trascinato via dalla cascata. Poco dopo vieni sospinto su un banco di ghiaia in fondo a un ripido burrone.</p><p>Hai perso lo Zaino e tutto ciò che conteneva, oltre alla barca e ai tuoi uomini. Ma nonostante questa disgrazia, sei ancora vivo e relativamente illeso.</p>",
@@ -1465,7 +1482,8 @@
      "text": "Continua",
      "section": 215
     }
-   ]
+   ],
+   "image": "public/img/book04/sec100.webp"
   },
   "101": {
    "text": "<p>Segui il tunnel per oltre due ore prima di arrivare in un'enorme caverna. La sala tetra è divisa da un fiume sotterraneo che scompare in un ampio arco nella parete sud. Sulla sponda opposta, riesci appena a distinguere la sagoma di un altro passaggio che conduce a ovest. Una piccola barca a remi è tirata in secca su questa sponda del fiume, e dietro il masso coperto di muschio a cui è legata trovi due paia di remi.</p>",
@@ -1562,7 +1580,8 @@
      "text": "Se vuoi proseguire verso la torre di guardia",
      "section": 310
     }
-   ]
+   ],
+   "image": "public/img/book04/sec107.webp"
   },
   "108": {
    "text": "<p>Il capo dei Guardiani del Tunnel abbaia un ordine ai suoi uomini, che si fermano immediatamente sul posto. È chiaro che è stato detto loro di non intromettersi in questo combattimento, poiché sembra che il loro capo ti voglia tutto per sé.</p><p>Indossa un elmo alto e piumato e una fascia rossa splendente sul petto. Con un movimento rapido, punta l'alabarda alla tua testa e attacca.</p>",
@@ -1695,7 +1714,8 @@
      "text": "Se vinci il combattimento",
      "section": 295
     }
-   ]
+   ],
+   "image": "public/img/book04/sec114.webp"
   },
   "115": {
    "text": "<p>Mentre scivoli sotto l'arco del tunnel meridionale, ti stringi addosso il mantello Ramas e alzi il cappuccio. Il soffitto perde acqua, e grosse gocce macchiate di minerale piovono sulla tua barca affollata, striando di un bruno ruggine i capelli e le tuniche dei tuoi uomini.</p><p>Remate per oltre un miglio prima di emergere finalmente in una piccola grotta. Una rampa di scale di pietra sale dal fiume fino a un arco nella parete rocciosa.</p>",
@@ -1870,7 +1890,8 @@
      "text": "Se vuoi correre indietro verso la torre di guardia",
      "section": 107
     }
-   ]
+   ],
+   "image": "public/img/book04/sec124.webp"
   },
   "125": {
    "text": "<p>Un sorriso ti attraversa il volto mentre dai un poderoso strattone alla corda. Ti volti fiducioso per osservare i tuoi inseguitori precipitare nel pozzo della miniera spalancato. Purtroppo l'unica cosa a cadere è la pesante saracinesca che ora ha sigillato l'ingresso del tunnel. I tuoi nemici ridacchiano di gioia e sguainano le armi per colpire.</p><p>Non puoi evitarli e devi combatterli uno alla volta mentre balzano giù dal ponte.</p>",
@@ -2162,7 +2183,8 @@
      "text": "Se vuoi tentare di entrare nel tempio tramite la scalinata di marmo incustodita",
      "section": 270
     }
-   ]
+   ],
+   "image": "public/img/book04/sec142.webp"
   },
   "143": {
    "text": "<p>Per quanto colpisci con forza il puntello, non cede. Improvvisamente i tuoi inseguitori sbucano dal tunnel buio e ti attaccano.</p><p>Sebbene siano solo in due, altri li seguono da vicino. Devi affrontarli uno alla volta.</p>",
@@ -2208,7 +2230,8 @@
      "text": "Se vuoi proseguire nonostante la stanchezza",
      "section": 162
     }
-   ]
+   ],
+   "image": "public/img/book04/sec145.webp"
   },
   "146": {
    "text": "<p>Il bandito precipita nell'acqua impetuosa e scompare alla vista. Balzi di pietra in pietra all'inseguimento dei due banditi sopravvissuti all'imboscata, che ora corrono verso la riva opposta per avvertire gli altri banditi nascosti nel carro. Mentre i banditi emergono dal carro, con orrore noti che sono tutti armati di archi, che puntano sui tuoi ranger in avanzata con mortale precisione.</p><p>Mentre gridi un avvertimento, una freccia dalla punta di ferro ti sfiora il cuoio capelluto e vieni scaraventato all'indietro nelle acque scure e impetuose del fiume Xane.</p>",
@@ -2246,7 +2269,8 @@
      "text": "Prosegui",
      "section": 137
     }
-   ]
+   ],
+   "image": "public/img/book04/sec148.webp"
   },
   "149": {
    "text": "<p>Un terribile senso di colpa ti pervade quando riconosci questi amuleti. Sono i simboli di un ordine monastico noto come «I Redentori», un ordine silenzioso devoto al pellegrinaggio, alla preghiera e alle arti della guarigione.</p><p>Maledici il tuo gesto avventato e rimetti con cura gli amuleti al collo dei sacri uomini.</p>",
@@ -2395,7 +2419,8 @@
      "text": "Prosegui",
      "section": 204
     }
-   ]
+   ],
+   "image": "public/img/book04/sec159.webp"
   },
   "160": {
    "text": "<p>Una scorta di cinque ranger ti accompagna lungo lo stretto sentiero tortuoso che conduce alla capanna. Le rozze pareti di pietra sono ricoperte da un muschio umido, nel quale è incassata una curiosa porta ovale. Non ci sono finestre. Sei sceso da cavallo e ti stai avvicinando alla porta quando, all'improvviso, una voce d'uomo chiama dall'interno della capanna: «Entra, Lupo Solitario, ti stavo aspettando.»</p>",
@@ -2521,7 +2546,8 @@
      "text": "Se non possiedi questo Oggetto Speciale",
      "section": 85
     }
-   ]
+   ],
+   "image": "public/img/book04/sec168.webp"
   },
   "169": {
    "text": "<p>Mentre scosti il fitto fogliame, precipiti improvvisamente a capofitto oltre il ciglio di un ripido dirupo e atterri con un tonfo su un'ampia pista forestale sottostante. A meno di tre metri di distanza, un bandito è inginocchiato a esaminare lo zoccolo del suo cavallo, intento a estrarre con un lungo pugnale ricurvo una pietra aguzza incastrata nel ferro. Il rumore della tua caduta lo allarma, e si volta con l'arma alzata, pronto ad attaccare.</p><p>Se vinci il combattimento, noti che un gruppo di banditi si sta avvicinando da nord. Li scorgi appena in tempo per allontanarti in fretta.</p>",
@@ -2614,7 +2640,8 @@
      "text": "Prosegui",
      "section": 148
     }
-   ]
+   ],
+   "image": "public/img/book04/sec174.webp"
   },
   "175": {
    "text": "<p>Non hai percorso ancora un miglio quando il disastro colpisce. Senza preavviso, un ranger davanti a te lancia un grido acuto: un disco d'acciaio affilato come un rasoio gli si è conficcato nel petto. Altri dischi mortali fendono l'aria, sibilando tutt'intorno a te. Prima che tutti voi cadiate vittime degli assassini nascosti, guidi i tuoi uomini via al galoppo.</p><p>Quando finalmente freni il tuo cavallo sudato, ti trovi a più di tre chilometri dal luogo dell'imboscata, e solo quattro dei tuoi uomini sono rimasti al tuo fianco. La sosta deve essere breve, poiché il nemico potrebbe già essere all'inseguimento. Con il terribile suono dei dischi d'acciaio mortali ancora nelle orecchie, guidi i resti della tua compagnia verso sud lungo la strada maestra.</p>",
@@ -2654,7 +2681,8 @@
      "text": "Prosegui",
      "section": 245
     }
-   ]
+   ],
+   "image": "public/img/book04/sec178.webp"
   },
   "179": {
    "text": "<p>Il puntello comincia a scheggiarsi e a spezzarsi in due. Una scossa attraversa il pavimento, facendoti inciampare e cadere, ma ritrovi rapidamente l'equilibrio. Mentre corri verso la salvezza, un diluvio di terra e pietre si riversa nel tunnel alle tue spalle. Un'onda d'urto dell'esplosione ti colpisce in pieno sulla schiena e ti schiaccia al suolo; l'aria è soffocata dalla polvere. Ti rialzi barcollando e prosegui, ma ti occorre mezz'ora per raggiungere un tratto del tunnel dove l'aria è limpida e immobile e le torce ardono ancora.</p>",
@@ -2724,7 +2752,8 @@
       "kaiArt": "Mimetismo"
      }
     }
-   ]
+   ],
+   "image": "public/img/book04/sec183.webp"
   },
   "184": {
    "text": "<p>Sei a poco più di dieci iarde dal nemico quando questi fa fuoco. Per miracolo non vieni colpito, ma ora devi combattere da solo, poiché tre dei tuoi uomini giacciono morti e l'altro non può più combattere: un dardo gli ha frantumato il polso. Mentre attacchi, i feroci guerrieri gettano via le balestre scariche ed estraggono le spade, e ti ritrovi respinto verso il ponte da sei spadaccini infuriati.</p>",
@@ -2845,7 +2874,8 @@
      "text": "Se sei ancora vivo dopo due round di combattimento, o se hai già vinto entro i primi due round",
      "section": 311
     }
-   ]
+   ],
+   "image": "public/img/book04/sec193.webp"
   },
   "194": {
    "text": "<p>Il colpo al petto ti toglie il fiato e vieni scaraventato all'indietro nell'acqua gelida. Riemergi, ma appena in tempo per un respiro prima che un tentacolo ti si avvolga intorno alle gambe e ti trascini sotto.</p><p>Pesca un numero dalla Tabella del Destino e annotalo a margine del tuo Registro di Guerra (in questo caso lo 0 vale 10 anziché zero). Questo numero rappresenta i round di combattimento che puoi resistere sott'acqua prima di cominciare a perdere ulteriori punti Resistenza per mancanza di ossigeno. Se possiedi l'Arte Ramas della Telecinesi, puoi aggiungere 2 al numero pescato.</p><p>Combatti normalmente. Se lo scontro dura più a lungo del numero di round che puoi resistere sott'acqua, perderai altri 2 punti Resistenza per ogni round di combattimento successivo, a causa della mancanza di ossigeno.</p>",
@@ -2884,7 +2914,8 @@
      "text": "Se non vuoi interrogare oltre l'uomo, puoi prepararti per la notte di sonno",
      "section": 324
     }
-   ]
+   ],
+   "image": "public/img/book04/sec195.webp"
   },
   "196": {
    "text": "<p>Un fulmine squarcia il cielo tempestoso, illuminando le sagome dei banditi mentre si insinuano nella stalla. Accovacciato sul balcone, fai segno ai tuoi uomini di prepararsi. Lasciandoti cadere sul tetto della stalla, scopri con sgomento che le tegole d'argilla sono sottili come veli e si spezzano sotto il tuo peso; sfondi il fragile tetto e precipiti nel fieno sottostante. Fortunatamente non ti fai male nella caduta e ti rialzi rapidamente, ma un bandito si trova a pochi centimetri dal tuo viso, la spada alzata per colpire.</p>",
@@ -2960,7 +2991,8 @@
      "text": "Se vuoi evitarli, correndo attraverso la pianura aperta verso Ruanon, a ottocento iarde di distanza",
      "section": 307
     }
-   ]
+   ],
+   "image": "public/img/book04/sec200.webp"
   },
   "201": {
    "text": "<p>I funghi sono morbidi e secchi, e hanno un sapore orribile! Conati di vomito ti scuotono mentre i funghi secchi e polverosi assorbono tutta la saliva della tua bocca. Vieni colto da ondate di nausea che ti fanno cadere nel panico, e ti graffi disperatamente la lingua cercando di raschiare via i funghi dalla bocca.</p>",
@@ -3141,7 +3173,8 @@
       }
      }
     }
-   ]
+   ],
+   "image": "public/img/book04/sec209.webp"
   },
   "210": {
    "text": "<p>Provi una sensazione di grande disagio riguardo a questa città. Finora hai visto solo donne e bambini trascinarsi lungo la strada; non c'è stata alcuna traccia di uomini. Gli abitanti sembrano tutti nervosi ed evitano di guardarti negli occhi. L'istinto ti dice di girare i tacchi e andartene il più in fretta possibile.</p>",
@@ -3328,7 +3361,8 @@
      "text": "Se desideri evadere il combattimento",
      "section": 128
     }
-   ]
+   ],
+   "image": "public/img/book04/sec223.webp"
   },
   "224": {
    "text": "<p>Puoi sentire il respiro affannoso delle guardie vicino a te. Improvvisamente, il tunnel si restringe e si divide in due.</p>",
@@ -3627,7 +3661,8 @@
      "text": "Se vuoi allontanarti scendendo le scale",
      "section": 83
     }
-   ]
+   ],
+   "image": "public/img/book04/sec245.webp"
   },
   "246": {
    "text": "<p>Facendo molta attenzione a tastare il pavimento davanti a te con la tua arma, avanzi molto lentamente nel buio, ignaro degli occhi che osservano ogni tuo movimento. Nascosti nell'oscurità ci sono i globi opachi e diabolici di un Daemonak: un macabro e spettrale vampiro. Il suo attacco è rapido e silenzioso, indolore eppure letale. Prima ancora di renderti conto che il parassita si è attaccato alla tua schiena, hai già perso 8 punti Resistenza.</p>",
@@ -3696,7 +3731,8 @@
       "kaiArt": "Scherma"
      }
     }
-   ]
+   ],
+   "image": "public/img/book04/sec249.webp"
   },
   "250": {
    "text": "<p>Noti che il tunnel di destra è stato scavato di recente, e percepisci che non è ancora stato completato. Piuttosto che rischiare un vicolo cieco, prosegui lungo il tunnel di sinistra.</p>",
@@ -3849,7 +3885,8 @@
       }
      }
     }
-   ]
+   ],
+   "image": "public/img/book04/sec258.webp"
   },
   "259": {
    "text": "<p>«Andatevene!» grida una voce nervosa. «Questa è una taverna, non una caserma!» grida un'altra. Provi a ragionare con loro, ma sono irremovibili: non ti lasceranno entrare. Non ti resta altro che proseguire lungo la via.</p>",
@@ -4077,7 +4114,8 @@
      "text": "Se vuoi ignorarli e lasciarli passare",
      "section": 126
     }
-   ]
+   ],
+   "image": "public/img/book04/sec273.webp"
   },
   "274": {
    "text": "<p>Barraka estrae una scimitarra affilata come un rasoio, tenendo la lama lucente come uno specchio nell'altra mano. Avanza verso di te con grazia letale; percepisci la sua abilità guerriera, il suo nervo gelido come il ghiaccio. Il tuo scontro sarà duro e all'ultimo sangue.</p>",
@@ -4205,7 +4243,8 @@
      "text": "Prosegui",
      "section": 350
     }
-   ]
+   ],
+   "image": "public/img/book04/sec283.webp"
   },
   "284": {
    "text": "<p>Ordini ai tuoi uomini di formare una linea e avanzare verso i banditi in arrivo. Sono a meno di cento iarde di distanza quando dai l'ordine di carica. Il vento ti sferza il viso, portando l'eco delle grida di guerra attraverso la pianura mentre ti avvicini al nemico. Mentre le forze si scontrano, resti scioccato dall'impatto. Il tuo cavallo si scontra con il fianco di una cavalcatura bandita, scaraventando a terra sia essa che il cavaliere. Vacilli in sella e non riesci a evitare un colpo di lancia che ti apre una ferita alla coscia. Perdi 3 punti di Resistenza prima di voltarti per affrontare il tuo attaccante.</p>",
@@ -4298,7 +4337,8 @@
      "text": "Se vuoi radunare i difensori prima che il nemico raggiunga la barricata",
      "section": 86
     }
-   ]
+   ],
+   "image": "public/img/book04/sec289.webp"
   },
   "290": {
    "text": "<p>Le rovine sono ricoperte di erbacce e radici, ma riesci a distinguere abbastanza chiaramente la forma del santuario interno del tempio. L'enorme baldacchino di marmo è ancora intatto e offrirà un ottimo riparo dalla tempesta. Mentre leghi il cavallo a un arbusto avvizzito, alzi lo sguardo e vedi due uomini nascosti sotto il baldacchino, vestiti con lunghe tuniche nere. Ordini loro di uscire e identificarsi, ma non si muovono né rispondono al tuo richiamo.</p>",
@@ -4315,7 +4355,8 @@
      "text": "Se decidi di riporre l'arma e avvicinarti a loro con la mano tesa in segno di amicizia",
      "section": 78
     }
-   ]
+   ],
+   "image": "public/img/book04/sec290.webp"
   },
   "291": {
    "text": "<p>Il passaggio conduce a una porta rinforzata con chiodi di ferro. Appoggiando l'orecchio al legno rozzo, senti il suono di voci.</p>",
@@ -4434,7 +4475,8 @@
      "text": "Se vinci il combattimento",
      "section": 121
     }
-   ]
+   ],
+   "image": "public/img/book04/sec299.webp"
   },
   "300": {
    "text": "<p>Un urlo di dolore e terrore riempie l'aria. Il cecchino si abbatte a terra mentre le mascelle di un Cane da Guerra si serrano intorno al suo collo. Altri cani, attirati dalle sue urla raccapriccianti, lo fanno presto a pezzi. Alzi lo sguardo e vedi un uomo correre verso di te dalla barricata. Ha uno scudo in una mano e un arco lungo nell'altra: è il Capitano D'Val.</p><p>Ti raggiunge, senza fiato per la corsa, ed estrae una freccia dalla faretra. I Cani da Guerra, stanchi della loro vittima, sono in cerca di nuovo divertimento e stanno rivolgendo la loro attenzione verso di te. D'Val punta e scocca, tendendo un'altra freccia non appena l'arco è vuoto. I Cani da Guerra cadono e crollano a terra intorno a te, abbattuti dai dardi mortali di D'Val. Il capitano ti afferra per un braccio e ti issa sulla spalla con un solo movimento fluido, prima di portarti di corsa verso la barricata. Altri corrono ad aiutarlo, ma gli arcieri banditi sono ora a portata di tiro e gli uomini sono respinti da una pioggia di frecce. Le aste rosse fischiano tutt'intorno. Finalmente raggiungete la barricata; un carro viene spostato di lato e vieni portato attraverso l'apertura. Il Capitano D'Val è allo stremo delle forze; vacilla e i suoi uomini si affrettano a sostenerti prima che ti lasci cadere a terra.</p>",
@@ -4543,7 +4585,8 @@
      "text": "Se vinci il combattimento",
      "section": 127
     }
-   ]
+   ],
+   "image": "public/img/book04/sec308.webp"
   },
   "309": {
    "text": "<p>Segui il tunnel per tre ore prima di arrivare a una grande sala dove più tunnel, a profondità diverse, si incontrano. Una serie di ampie rampe di pietra collega ogni tunnel a quelli immediatamente sopra e sotto. Quattro livelli più in basso, squadre di uomini spingono carri carichi di minerale. Altri, vestiti con armature rosse, sorvegliano gli spintori dei carri e li incitano con fruste e maledizioni.</p><p>Il tunnel in cui ti trovi ora è al livello più alto. Ti rendi conto che l'unico modo per proseguire è scendere la rampa fino a un tunnel a un livello inferiore. Con tuo disappunto, noti che ogni rampa è sorvegliata da uomini armati. Avanzando con cautela, sbirci oltre il bordo della rampa: due guardie siedono vicino all'ingresso del tunnel sottostante. Ridono e ridacchiano, indicando un fiasco di vino vuoto ai loro piedi. Dopo averle osservate per diversi minuti, decidi che sono probabilmente troppo ubriache per accorgersi di te. Decidi di lanciarti verso il tunnel.</p><p>Pesca un numero dalla Tabella del Destino. Se possiedi l'Arte Ramas del Mimetismo, aggiungi 4 al numero pescato.</p>",
@@ -4626,7 +4669,8 @@
      "text": "Se non vuoi entrare nella capanna e preferisci proseguire la tua missione",
      "section": 258
     }
-   ]
+   ],
+   "image": "public/img/book04/sec314.webp"
   },
   "315": {
    "text": "<p>Alla luce tremolante della tua torcia, vedi che il tunnel è sorretto da un incrocio di puntelli e travi. La roccia è umida, e un sottile rivolo d'acqua macchiata di minerale scorre lungo il pavimento del tunnel. Presto raggiungi un bivio dove il tunnel prosegue a sinistra e a destra.</p>",
@@ -4686,7 +4730,8 @@
      "text": "Se non possiedi una Pergamena",
      "section": 57
     }
-   ]
+   ],
+   "image": "public/img/book04/sec318.webp"
   },
   "319": {
    "text": "<p>Il cibo è delizioso. Mangi a sazietà e poi ti prepari per una buona notte di sonno. All'alba, tu e la tua compagnia salutate i comici girovaghi e proseguite la vostra missione verso Ruanon.</p><p>Pesca un numero dalla Tabella del Destino.</p>",
@@ -4811,7 +4856,8 @@
      "text": "Prosegui",
      "section": 120
     }
-   ]
+   ],
+   "image": "public/img/book04/sec328.webp"
   },
   "329": {
    "text": "<p>Il fiume ti riempie le orecchie, gli occhi e il naso. Nella tua disperata lotta per respirare tossisci senza controllo. Accecato dall'acqua, non vedi il grosso masso fluviale che incombe davanti a te. Con uno schianto raccapricciante sbatti la testa contro la pietra inflessibile e affondi sotto il torrente impetuoso.</p><p>La tua vita e la tua missione terminano qui.</p>",
@@ -4906,7 +4952,8 @@
      "text": "Se non possiedi nessuna di queste due Arti Ramas, dovrai lanciare un attacco a sorpresa contro la guardia",
      "section": 147
     }
-   ]
+   ],
+   "image": "public/img/book04/sec335.webp"
   },
   "336": {
    "text": "<p>La freccia vola dritta e precisa verso il bandito, ma scivola via sulla sua corazza d'acciaio lucidata. Per nulla scosso da questa scampata di misura dalla morte, egli scaglia il suo giavellotto, inchiodando al suolo il soldato indifeso. Stai per scoccare un'altra freccia quando scorgi una minacciosa sagoma nera sfrecciare nel cielo; precipita verso il basso e atterra sul tetto della torre di guardia.</p><p>Getti via l'arco ed estrai la tua arma mentre corri su per le scale per indagare.</p>",
@@ -5008,7 +5055,8 @@
       "maxResistenza": 13
      }
     }
-   ]
+   ],
+   "image": "public/img/book04/sec343.webp"
   },
   "344": {
    "text": "<p>Il tuo colpo ha spezzato la lancia del cavaliere. Mentre fa voltare il cavallo, egli getta via l'arma spezzata ed estrae uno spadone ricurvo. Il suo sorriso è malvagio, e mostra una fila di denti anneriti e irregolari. Sputa un grido di battaglia e sprona di nuovo il cavallo verso di te.</p>",
@@ -5077,7 +5125,8 @@
   },
   "350": {
    "text": "<p>Mentre Barraka muore, il vento si alza improvvisamente d'intensità, riempiendo il tempio di un lamento di disperazione. Senti lo spirito gelido e malevolo del Signore delle Tenebre Vashna avvolgerti in un abbraccio di ghiaccio, ma percepisci che è impotente a farti del male. Il sacrificio è stato sventato; è condannato a rimpiangere per sempre una vittoria che sarebbe potuta essere sua.</p><p>Sul pavimento nero del tempio giace la Daga di Vashna. Mentre la raccogli e la infili nella cintura (segnala sul tuo Registro di Guerra come Oggetto Speciale), la fiamma blu maligna tremola e si spegne. Finché possiederai questa lama malvagia, il Signore delle Tenebre Vashna e la sua legione di guerrieri morti resteranno imprigionati nel Baratro della Perdizione.</p><p>Liberi la bella Madelon dall'altare e la porti attraverso i corridoi del tempio che conducono in superficie. Mentre emergi tra le rovine illuminate dalla luna, uno spettacolo sorprendente ti si para davanti. I guerrieri di Barraka fuggono dalla città fantasma in ogni direzione, inseguiti da vicino da un esercito di cavalieri. La luce della luna piena e le torce di questi cavalieri illuminano lo stemma del sole che decora le loro tuniche. La notizia deve essere giunta a Holmgard, perché sono l'esercito sommlending, guidato dallo stesso Re Ulnar. I tuoi compatrioti lodano il tuo coraggio e ardimento, le loro grida acclamanti sovrastando l'eco di Maakengorge, poiché ancora una volta ti sei dimostrato un vero eroe di Sommerlund. Mentre consegni Madelon tra le braccia in attesa di suo padre, la sua gioia travolgente ti riempie di un profondo senso di soddisfazione. Sei davvero degno del titolo di «cavaliere Ramas». Hai portato a termine la tua pericolosa missione, ma l'epica saga di Lupo Solitario - ultimo dei cavalieri Ramas - è lungi dall'essere conclusa. Una nuova e mortale sfida ti attende nel Libro Quinto della serie di Lupo Solitario, intitolato: Ombra sulla Sabbia.</p>",
-   "isVictory": true
+   "isVictory": true,
+   "image": "public/img/book04/sec350.webp"
   }
  }
 }

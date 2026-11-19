@@ -19,7 +19,8 @@
      "text": "Se vuoi correre verso la galea",
      "section": 104
     }
-   ]
+   ],
+   "image": "public/img/book05/sec001.webp"
   },
   "2": {
    "text": "<p>Senza fiato per lo sforzo del combattimento, fai un passo indietro mentre l'Elix finalmente si accascia e muore. Lentamente, i suoi occhi verde vetro si appannano e diventano opachi come una fredda e dura giadina. Attorno alla gola insanguinata della creatura pende una Chiave d'Oro legata a una catena. Scopri presto che la Chiave d'Oro apre la porta d'acciaio di una camera blindata in fondo alla farmacia.</p><p>In alto su uno scaffale, appena dietro la porta, trovi una piccola scatola che contiene ciò che cerchi: l'erba di Oede. Pochi secondi dopo aver premuto le splendide foglie dorate sulla tua spalla ferita, una sensazione di formicolio ti pervade tutto il braccio. Il torpore si dissolve presto, e sia il braccio che la spalla sono liberi dagli orribili microbi del Morbo delle Membra.</p><p>Nella scatola resta erba di Oede sufficiente per un'ulteriore applicazione. È una sostanza potente che può essere usata contro molte malattie mortali, oppure, se ingerita dopo un combattimento, per ripristinare 10 punti Resistenza. Se vuoi conservare l'erba di Oede, segnala sul tuo Registro di Guerra come Oggetto nello Zaino. Dovresti anche ripristinare i punti Combattività che avevi temporaneamente perso a causa del Morbo delle Membra.</p><p>Dopo aver trascinato l'Elix morto nella camera blindata, chiudi a chiave la porta d'acciaio dall'interno. Noti che in realtà ci sono due porte nella camera blindata: quella da cui sei entrato e una porta più piccola nella parete opposta. La Chiave d'Oro apre anche la nuova porta, che conduce a una stretta scalinata, debolmente illuminata da torce fissate alle pareti.</p><p>La salita è ripida e faticosa. Sospetti che questi gradini facciano parte di una via segreta verso la camera blindata, e i tuoi sospetti si confermano quando arrivi in quello che sembra un vicolo cieco. Un'ispezione più attenta rivela una stretta porta di bronzo incassata a filo nella parete, di aspetto semplice a eccezione di un piccolo buco della serratura vicino al pavimento. Mentre inserisci e giri la Chiave d'Oro, sei tranquillamente fiducioso che la porta di bronzo si apra.</p>",
@@ -132,7 +133,8 @@
      "text": "Continua",
      "section": 69
     }
-   ]
+   ],
+   "image": "public/img/book05/sec010.webp"
   },
   "11": {
    "text": "<p>Per raggiungere la porta nord senza essere visto, devi muoverti con cautela intorno alla sala, spostandoti da un pilastro all'altro.</p><p>Scegli un numero dalla Tabella del Destino. Se possiedi l'Arte Ramas di Mimetismo o Caccia, sottrai 2 dal numero scelto.</p>",
@@ -300,7 +302,8 @@
       "restoreHalfDamageTaken": true
      }
     }
-   ]
+   ],
+   "image": "public/img/book05/sec020.webp"
   },
   "21": {
    "text": "<p>I tuoi riflessi fulminei ti hanno salvato dal colpo. Ti getti avanti e ti rotoli, così l'ago trafigge il tuo mantello ma non la pelle. Tuttavia, le guardie armate di tridente si chiudono attorno a te, convinte che l'ago abbia colpito il segno, e vieni tranquillizzato. Nell'istante in cui abbassano le armi, attacchi.</p>",
@@ -797,7 +800,8 @@
      "text": "Se vuoi imboccare il canale che si apre di fronte a te",
      "section": 13
     }
-   ]
+   ],
+   "image": "public/img/book05/sec051.webp"
   },
   "52": {
    "text": "<p>Rigiri il corpo con la punta dello stivale e perquisisci le vesti, scoprendo i seguenti oggetti:</p><ul><li>4 Corone d'Oro</li><li>Chiavi del Carceriere (Oggetto Speciale)</li><li>Pugnale</li><li>Spada</li></ul><p>Se desideri tenere uno qualsiasi di questi oggetti, ricordati di segnarli sul tuo Registro di Guerra. (Le Chiavi del Carceriere vanno portate alla cintura.)</p>",
@@ -844,7 +848,8 @@
      "text": "Se vuoi proseguire per un nuovo vicolo che porta verso il Grande Palazzo",
      "section": 179
     }
-   ]
+   ],
+   "image": "public/img/book05/sec054.webp"
   },
   "55": {
    "text": "<p>La temperatura sale costantemente finché non sei madido di sudore. Davanti a te scorgi una camera colma di vapore che sale dal pavimento ribollente. Stai per entrarvi quando noti il pericolo che ti attende: la passerella di pietra finisce bruscamente, dopo pochi metri dentro la camera. Dieci piedi più in basso, distesa davanti a te come la superficie di un enorme calderone ribollente, c'è un <i>tar-sorkh</i>: un geyser di fango.</p><p>Questi geyser sono comuni in Vassagonia. Gran parte dell'impero desertico è instabile e, sebbene sia soggetto a tremori sismici costanti, questi raramente provocano grandi distruzioni. I Vassagoniani chiamano questi tremori «Tasa-Dophiem», che significa «Gli Dèi che Lottano».</p><p>Questo particolare geyser di fango è stato messo a un uso pratico. Fornisce una fonte costante di calore per le abitazioni costruite sopra la camera. Il vapore del <i>tar-sorkh</i> sale in un paio di enormi camini circolari nel soffitto a cupola, che a loro volta riscaldano gli edifici sovrastanti. L'unica via d'uscita da questa camera è arrampicarsi lungo uno di questi camini. Sebbene non ci siano scale, la parete della camera scavata nella roccia offre molti appigli.</p>",
@@ -899,7 +904,8 @@
      "text": "Se vinci il combattimento",
      "section": 2
     }
-   ]
+   ],
+   "image": "public/img/book05/sec057.webp"
   },
   "58": {
    "text": "<p>Segui un passaggio rettilineo di pietra rosata, che presto termina in un vestibolo vuoto. Nella parete a nord è incastonata una grande porta di legno, ricoperta di placche di bronzo incise e tempestata di chiodi di bronzo. Al centro della porta è incastonata una curiosa serratura, cinta da un bellissimo intaglio raffigurante uno scorpione dalla lunga coda. Guardando più da vicino la serratura, scorgi una serie di numerali vassagoniani, numerati da 1 a 200, incisi sulla serratura. Riconosci il congegno: è una serratura a combinazione Cloeasiana.</p><p>Se conosci il numero corretto che apre la porta di bronzo, devi recarti a quella sezione.</p>",
@@ -980,7 +986,8 @@
      "text": "Se vinci il combattimento",
      "section": 177
     }
-   ]
+   ],
+   "image": "public/img/book05/sec064.webp"
   },
   "65": {
    "text": "<p>La guardia si accascia a terra, il collo spezzato dal colpo sferrato con il taglio della mano, ma mentre ti volti vedi che l'altro uomo si è ripreso dal tuo pugno e sta strisciando sul pavimento, la mano tesa per recuperare la sua spada.</p>",
@@ -1033,7 +1040,8 @@
      "text": "Se decidi di ignorarle, lasciare la bottega e proseguire lungo il vicolo",
      "section": 160
     }
-   ]
+   ],
+   "image": "public/img/book05/sec068.webp"
   },
   "69": {
    "text": "<p>Ti risvegli in grande disagio; ogni muscolo del tuo corpo sembra annodato e contuso. Forzi ad aprire le palpebre incrostate di sudore secco e osservi con terrore lo squallido ambiente che ti circonda. Sei disteso sul duro pavimento di pietra di una cella. Contro la parete di fondo, sotto una finestra sbarrata da grate di ferro, c'è una bassa branda di legno coperta di stracci sudici. Scarafaggi, alcuni grandi come topi campagnoli, scorrazzano lungo una grondaia maleodorante che scompare in una grata nel pavimento. (Cancella dal tuo Registro di Guerra tutte le Armi, gli Oggetti Speciali, le Corone d'Oro, e il tuo Zaino con tutto il suo contenuto, ma annotali altrove nel caso tu debba ritrovarli in seguito.)</p><p>Scopri di avere le mani libere e lentamente ti tiri su fino a sederti, appoggiando la schiena alla porta della cella. Una debole corrente d'aria dal corridoio fuori è l'unico sollievo dal caldo soffocante e dall'aria viziata della cella. In lontananza senti passi che si avvicinano. Poi un tintinnio di chiavi e il cigolio di cardini. Una porta si chiude con un tonfo sordo. Altri passi; si fanno sempre più forti. Si fermano fuori dalla porta della cella e una voce forte tuona: «Dormi in servizio, Sefrou? Ti risveglierai dall'altra parte di questa porta se il capitano ti coglie!»</p><p>La sedia striscia sul pavimento, e una voce sorpresa, piena di indignazione, risponde: «Maledetto Hadj! Lo Zakhan non vuole che il Nordico sia portato nella Grande Sala prima del tramonto. Mi hai derubato di due ore di sonno.»</p><p>«Sta' zitto, Sefrou» ringhia la prima voce «e ascolta bene. Vengo ora dall'armeria. Sono stati trovati alcuni oggettini interessanti addosso al Nordico, direi che valgono un bel po' d'oro. Sarebbe un peccato lasciarli andare sprecati, eh?»</p><p>Le due guardie ridacchiano avidamente e discutono a lungo del bel tempo che si potranno godere in città, una volta venduto il tuo equipaggiamento.</p><p>«Do' un'occhiata al nostro amico» dice una delle guardie. «Chissà se sta gradendo la nostra ospitalità.»</p><p>Uno spioncino si apre sopra la tua testa e senti un ansito scioccato. «È sparito! È sparito! Per il Majhan, ci rimetteremo la testa!» Ti rendi improvvisamente conto che non devi farti vedere così vicino alla porta.</p><p>«Fammi vedere» sibila l'altra guardia, ansiosa di controllare di persona. Senti il clic di una chiave nella serratura; questa potrebbe essere la tua occasione per fuggire.</p>",
@@ -1046,7 +1054,8 @@
      "text": "Se vuoi allontanarti dalla porta e metterti in piedi al centro della cella",
      "section": 85
     }
-   ]
+   ],
+   "image": "public/img/book05/sec069.webp"
   },
   "70": {
    "text": "<p>Prosegui per circa un miglio finché non puoi più andare avanti: un'enorme grata di ferro blocca il tunnel. La carcassa in decomposizione di una lucertola gigante è stata trascinata contro le sbarre. Le ossa sono chiaramente visibili dove la carne morta è marcita o è stata divorata. Le sbarre sono saldamente fissate; sarà impossibile proseguire in questa direzione.</p><p>Vicino alla lucertola morta, una stretta piattaforma di pietra sporge dalla parete. Oltre la piattaforma, noti un basso arco che conduce a una scalinata che risale fuori dalla fogna.</p><p>Il suono della voce di Maouk arriva lungo il tunnel. Sta spronando i suoi Sharnazim nella tua direzione.</p>",
@@ -1325,7 +1334,8 @@
      "text": "Se vinci e il combattimento dura più di 4 round",
      "section": 180
     }
-   ]
+   ],
+   "image": "public/img/book05/sec091.webp"
   },
   "92": {
    "text": "<p>Corri a perdifiato lungo il selciato, ma sei presto costretto a fermarti. In fondo alla strada compare la cavalleria; grida e ti carica, tre di fronte in fila. Maouk sibila una maledizione. Sei sconvolto da quanto suoni vicina la sua voce, come se fosse a un solo passo da te. Ti volti di scatto per affrontarlo, solo per vedere che è ancora fermo dove è apparso la prima volta. Tiene alto in mano un dardo; sibila un'altra maledizione e scaglia il proiettile in aria.</p>",
@@ -1508,7 +1518,8 @@
      "text": "Se decidi di arrenderti",
      "section": 176
     }
-   ]
+   ],
+   "image": "public/img/book05/sec104.webp"
   },
   "105": {
    "text": "<p>La tua attenzione è attratta da un busto di marmo in una nicchia, uno dei tanti allineati lungo la parete meridionale. Un'ispezione più attenta del busto rivela una cerniera alla base del collo. La testa si inclina all'indietro, rivelando una minuscola leva.</p>",
@@ -1732,7 +1743,8 @@
      "text": "Continua",
      "section": 137
     }
-   ]
+   ],
+   "image": "public/img/book05/sec119.webp"
   },
   "120": {
    "text": "<p>La daga sibila nell'aria e si conficca nel tuo petto. Sussulti per il dolore improvviso, artigliando l'elsa della daga con mani tremanti nel tentativo disperato di estrarre la lama mortale. Mentre barcolli all'indietro, la guardia si lancia in avanti, un sorriso di trionfo che le si allarga sul volto brutale. Strappi via la lama e la rivolgi contro la guardia mentre questa si getta su di te. Lei vede il pericolo, ma troppo tardi: la lama le ha già trafitto il cuore.</p>",
@@ -1786,7 +1798,8 @@
      "text": "Se vinci il combattimento",
      "section": 198
     }
-   ]
+   ],
+   "image": "public/img/book05/sec123.webp"
   },
   "124": {
    "text": "<p>Ti lanci giù dal davanzale della finestra e ti abbatti a piedi uniti sulle guardie, travolgendole con la sorpresa del tuo attacco. Combatti con rapidità e abilità, uccidendo tre soldati prima che possano ritrovare l'equilibrio. Tuttavia, il rumore dello scontro allerta la sala mensa, e una dozzina di altri soldati dello Zakhan si uniscono alla battaglia. Vieni presto sopraffatto dal puro numero degli avversari, ed è solo il rispetto per il tuo coraggio e la tua abilità in combattimento a impedire loro di ucciderti sul posto.</p><p>Vieni disarmato e scortato a forza fino a una cella, dove ti lasciano ad attendere lo Zakhan.</p>",
@@ -2290,7 +2303,8 @@
      "text": "Continua",
      "section": 182
     }
-   ]
+   ],
+   "image": "public/img/book05/sec155.webp"
   },
   "156": {
    "text": "<p>Dopo esserti concentrato sulla serratura per diversi minuti, ti rendi conto che è collegata a un allarme. Se giri la serratura sul numero sbagliato, l'allarme scatterà, avvertendo l'intera guardia del palazzo.</p>",
@@ -2418,7 +2432,8 @@
      "text": "Se sei ancora vivo dopo esserti arrampicato oltre il nido, o se combatti i Ragni del Vapore e vinci",
      "section": 114
     }
-   ]
+   ],
+   "image": "public/img/book05/sec162.webp"
   },
   "163": {
    "text": "<p>Mentre aspetti che la guardia ritorni, l'altro bullo ti tormenta e ti deride. Descrive con gusto tutte le orribili torture che ti attendono ed è enormemente deluso quando l'altra guardia ritorna a mani vuote. «Lo Zakhan non vuole che il nostro amico del nord venga danneggiato. Ha in serbo qualcosa di speciale per lui questa sera», ringhia.</p><p>Smorfie malvagie si allargano sui loro volti mentre si voltano per lasciare la cella. Ora entrambi ti danno le spalle.</p>",
@@ -2554,7 +2569,8 @@
      "text": "Se vuoi proseguire lungo il passaggio senza acquistare nulla",
      "section": 113
     }
-   ]
+   ],
+   "image": "public/img/book05/sec169.webp"
   },
   "170": {
    "text": "<p>La padronanza congiunta di queste Arti Ramas ti permette di sgattaiolare oltre le guardie senza essere notato. Nel momento in cui esse riprendono le loro corrette posizioni di guardia, sei già riuscito a farti strada, in salvo, nei giardini del palazzo.</p>",
@@ -2651,7 +2667,8 @@
      "text": "Se vuoi evitarli arrampicandoti sulla stretta scalinata di pietra",
      "section": 43
     }
-   ]
+   ],
+   "image": "public/img/book05/sec177.webp"
   },
   "178": {
    "text": "<p>Sei a metà delle scale quando la guardia si accorge di cosa stai facendo. Balza in piedi e sguaina la spada; ormai non puoi più evitarlo e devi combattere fino alla morte.</p>",
@@ -2829,7 +2846,8 @@
      "text": "Se vinci il combattimento",
      "section": 111
     }
-   ]
+   ],
+   "image": "public/img/book05/sec190.webp"
   },
   "191": {
    "text": "<p>Riesci a farti strada, centimetro dopo centimetro, lungo la fila di remi finché non raggiungi la battagliola della nave, dove mani impazienti ti afferrano per il mantello e ti tirano in salvo. La voce di Maouk rimbomba sull'acqua. «Consegnatemi il Signore Kai. Lo Zakhan lo comanda. Le vostre vite e quelle di tutti i vostri cari saranno perdute se disobbedite a quest'ordine!»</p><p>L'equipaggio si guarda a vicenda con dolore e sgomento: sanno che le parole di Maouk non sono una minaccia vana. Non puoi aspettarti che questi uomini sacrifichino le proprie famiglie per te, quindi devi decidere rapidamente un piano alternativo.</p>",
@@ -2883,7 +2901,8 @@
      "text": "Se vinci il combattimento",
      "section": 35
     }
-   ]
+   ],
+   "image": "public/img/book05/sec194.webp"
   },
   "195": {
    "text": "<p>Una fucina è stata costruita al centro di un'enorme camera circolare, il cui camino a imbuto si innalza fino al soffitto. Il caldo era diventato insopportabile già da tempo, ma ora ti sembra di essere entrato dritto in una fornace ardente.</p><p>Due uomini, nudi a eccezione di piccoli perizomi, azionano i mantici che alimentano la fucina. Il sudore cola dai loro corpi, e si fermano spesso per bere mestoli d'acqua da una vasca incassata nel pavimento di pietra. Un armaiolo martella una striscia di ferro rovente su un'incudine vicino alle fiamme. È enorme: le sue spalle massicce e muscolose e il suo petto possente sono larghi quanto quelli degli altri due uomini messi insieme.</p><p>Gli uomini ai mantici smettono di lavorare e lasciano la camera: uno dalla porta nella parete nord, l'altro dalla porta nella parete ovest. L'uomo grande continua a martellare sull'incudine.</p>",
@@ -2964,7 +2983,8 @@
      "text": "Inizia la tua avventura al 201",
      "section": 201
     }
-   ]
+   ],
+   "image": "public/img/book05/sec200.webp"
   },
   "201": {
    "text": "<p>Improvvisamente scorgi due guerrieri che strisciano verso di te da un passaggio alla tua destra. Sono vestiti di un'armatura nero corvino e vesti scarlatte, e le loro orribili maschere di morte li identificano come guerrieri Drakkarim. Sono uomini, ma uomini malvagi, malvagi quanto i Signori delle Tenebre che servono.</p><p>Uno di loro tiene al guinzaglio un Akataz dalle zanne rasoio, un cane da guerra dalla pelle coriacea, che tira sulla catena. Il Drakkar sibila e l'Akataz balza alla tua gola.</p>",
@@ -3275,7 +3295,8 @@
      "text": "Se vinci il combattimento",
      "section": 353
     }
-   ]
+   ],
+   "image": "public/img/book05/sec223.webp"
   },
   "224": {
    "text": "<p>Il grande uccello nero batte le ali possenti, gracchiando roco nel recinto a cupola. Due occhi neri, feroci e freddi, ti fissano con uno sguardo mortale mentre ti avvicini al suo trespolo.</p><p>Afferrando il pomo della sella, ti issi, ma improvvisamente c'è un lampo di artigli affilati come rasoi. Istintivamente, ti ripari il volto mentre un bagliore di luce solare arancione si riflette sul becco ricurvo dell'Itikar, poiché fende l'aria a pochi centimetri sopra la tua testa.</p><p>Se non possiedi né la Disciplina Kai né l'Oggetto Speciale, scegli un numero dalla Tabella del Destino. Se hai raggiunto il rango Kai di Aspirante o superiore, aggiungi 2 al numero scelto.</p>",
@@ -3409,7 +3430,8 @@
      "text": "Se vinci il combattimento",
      "section": 290
     }
-   ]
+   ],
+   "image": "public/img/book05/sec231.webp"
   },
   "232": {
    "text": "<p>Cerchi di schivare mentre la lama letale ti si avventa contro, ma nell'oscurità non puoi essere certo della direzione del suo volo. Vieni colpito al petto, il colpo ti toglie l'aria dai polmoni. Luci lampeggiano davanti ai tuoi occhi, e un'esplosione ti rimbomba nelle orecchie. Cadi in ginocchio, e una sensazione di torpore si diffonde nel tuo petto. Attraverso una foschia di nebbia vorticosa, vedi il Drakkar scaraventato all'indietro, la corazza squarciata da un colpo di balestra nanica. Banedon appare; il suo volto è grigio cenere. Le sue labbra si muovono, ma non riesci a sentire cosa stia dicendo. Immagini di Sommerlund fluttuano nella tua mente e poi svaniscono lentamente mentre l'oblio ti avvolge.</p><p>La tua vita e l'ultima speranza di Sommerlund finiscono qui.</p>",
@@ -3483,7 +3505,8 @@
      "text": "Continua",
      "section": 376
     }
-   ]
+   ],
+   "image": "public/img/book05/sec237.webp"
   },
   "238": {
    "text": "<p>Sfuggi al combattimento e scatti lungo il corridoio opposto, ma il nemico ti insegue, e lo scricchiolio di stivali chiodati di ferro ti risuona nelle orecchie. Corri giù per una scalinata, attraverso un arco d'argento e lungo un balcone che si affaccia sul palazzo inferiore.</p><p>Scorgi la sagoma del Signore delle Tenebre Haakon nella sala sottostante, il pugno chiodato alzato. Un Drakkar appare dal nulla e ti balza addosso, la spada alzata sopra il suo elmo a forma di teschio. C'è uno schianto assordante, e un fulmine blu guizza da una pietra nella mano del Signore delle Tenebre e si scaglia verso di te. Il Drakkar si lancia e ti ferisce l'avambraccio (perdi 1 punto Resistenza), ma ora si trova sulla traiettoria del fulmine. In un lampo di luce, il Drakkar scompare; restano solo cenere e il fetore rancido di carne bruciata.</p><p>Alla fine del balcone vedi un altro arco e una scalinata.</p>",
@@ -3552,7 +3575,8 @@
      "text": "Se riesci a ridurre i punti Resistenza dell'Itikar a zero o meno",
      "section": 217
     }
-   ]
+   ],
+   "image": "public/img/book05/sec240.webp"
   },
   "241": {
    "text": "<p>Una volta fuori dalla grotta, tu e Banedon non perdete tempo e vi affrettate verso Ikaresh. Mentre vi avvicinate alla periferia della città, passate davanti a una piccola capanna rotonda dove una capra sta mangiando da una mangiatoia vicino alla porta. Un uomo appare sulla soglia buia e vi dà il benvenuto; si tocca la fronte in un saluto di amicizia e vi invita a entrare nella sua umile dimora.</p>",
@@ -3641,7 +3665,8 @@
       "combatTied": true
      }
     }
-   ]
+   ],
+   "image": "public/img/book05/sec244.webp"
   },
   "245": {
    "text": "<p>Ti togli il Triangolo di Pietra Blu dal collo e lo premi nell'incavo nella parete. È un incastro perfetto. Senti il suono della pietra che striscia sulla pietra, e la porta si apre lentamente rivelando una camera. È scarsamente illuminata, ma vedi che la spessa polvere sul pavimento di marmo è coperta da innumerevoli impronte. Mentre entri, scorgi un rozzo trono di pietra, rivolto verso la parete sul lato opposto della camera.</p><p>Dietro di te la porta di pietra si richiude con una rapidità inquietante.</p>",
@@ -3683,7 +3708,8 @@
      "text": "Se è 3-9",
      "section": 383
     }
-   ]
+   ],
+   "image": "public/img/book05/sec247.webp"
   },
   "248": {
    "text": "<p>Un piccolo mercante robusto sta vendendo la sua merce da una bancarella vicino all'arco. I suoi piccoli occhi lucenti scintillano sotto un turbante ridicolmente sovradimensionato. Mentre ti avvicini, si lancia verso di te, cercando disperatamente, con un fiume di affermazioni sfrenate, di convincerti a comprare la sua merce palesemente scadente. Sembra sorpreso quando lo interrompi con la tua domanda. «Tipasa?» risponde. «Sì, so dove vive.»</p><p>Solleva un vistoso panciotto di tela di sacco rosa e arancione e te lo offre. «Sarebbe un degno regalo per il tuo stimato amico,» suggerisce, gli occhi che continuano a posarsi sulla tua Borsa. «Solo 5 Corone d'Oro, padrone.»</p><p>Ti rendi conto che dovrai prima acquistare questo ridicolo indumento prima che il mercante ti dica dove vive Tipasa.</p>",
@@ -3767,7 +3793,8 @@
      "text": "Se vinci il combattimento",
      "section": 335
     }
-   ]
+   ],
+   "image": "public/img/book05/sec253.webp"
   },
   "254": {
    "text": "<p>L'aria gelida ti sferza il volto mentre precipiti verso il Lago Inrahim. I cavalieri di Kraan, la nave volante e l'orizzonte lontano si fondono in un caleidoscopio di forme e immagini. Temi che queste saranno le ultime cose che vedrai mai.</p><p>Ti sei preparato alla morte e ti senti calmo e rilassato. Improvvisamente, senti il tuo corpo avvolto da una massa di fibre appiccicose. C'è uno scossone tremendo, che ti lascia senza fiato e stordito. (Perdi 2 punti Resistenza.) Sta accadendo l'impossibile: non stai più cadendo, ma salendo!</p><p>Sei stato catturato da una rete di fili appiccicosi, come una mosca in una ragnatela. Sali verso il cielo, in direzione della nave volante, con la stessa velocità con cui stavi cadendo. Tre nani barbuti, vestiti con vivaci giubbe da battaglia imbottite, ti issano a bordo di un bilanciere che corre lungo tutta la lunghezza dello scafo. Non c'è tempo per esprimere la tua gratitudine, perché la piccola nave volante è sotto l'attacco dei cavalieri di Kraan.</p><p>All'estremità del bilanciere, un nano è impegnato in un corpo a corpo con un Drakkar ringhiante. Sta perdendo lo scontro. Mentre corri in suo aiuto, un altro dei guerrieri malvagi atterra al centro dell'imbarcazione, sopra la piattaforma fortificata.</p>",
@@ -4099,7 +4126,8 @@
      "text": "Se vinci il combattimento",
      "section": 213
     }
-   ]
+   ],
+   "image": "public/img/book05/sec280.webp"
   },
   "281": {
    "text": "<p>Mentre ti volti per andartene, il vaxeler ti chiede di aspettare. Da un fagotto di stracci nascosto sotto il ponte, tira fuori una mazza tempestata di gemme. L'arma è scolpita nell'argento massiccio e adornata di smeraldi e diamanti lungo l'asta. &laquo;Prendila, ti scongiuro, come segno della mia eterna gratitudine.&raquo;</p><p>Se vuoi accettare questo dono, segna la Mazza Ingioiellata sul tuo Registro di Guerra come Oggetto Speciale (che porti infilata nella cintura) prima di lasciare la grotta.</p>",
@@ -4352,7 +4380,8 @@
      "text": "Se vinci il combattimento",
      "section": 203
     }
-   ]
+   ],
+   "image": "public/img/book05/sec299.webp"
   },
   "300": {
    "text": "<p>Ti svegli poco dopo l'alba al suono del russare dei nani e al basso ronzio dello Skyrider. Raccogli il tuo equipaggiamento e sali in coperta, dove trovi tutto immerso nell'ombra, perché lo Skyrider è sospeso sotto un enorme sperone di arenaria che sporge dal fianco di una montagna, migliaia di piedi sopra il fondovalle. Banedon è al timone, ma non è più in trance.</p><p>&laquo;Cavalieri Kraan&raquo; dice, indicando la valle sbiancata dal sole oltre le ombre. &laquo;Sono arrivati con l'alba.&raquo;</p><p>Osservi questo paesaggio alieno, una valle di montagna piena di pilastri di massi enormi e precariamente in equilibrio. I Vassagoniani chiamano questo posto il Koos, “gli aghi”. Le colonne rocciose si innalzano così in alto nel cielo che una frana sembra inevitabile. Appollaiati su due delle colonne ci sono dei Kraan, i loro cavalieri Drakkarim che scrutano la valle con cannocchiali. Passa un'ora prima che si levino in volo e scompaiano.</p><p>&laquo;Serra la vela di boma, Nostromo Nolrim&raquo; ordina Banedon, la voce a malapena udibile sopra il crescente ronzio dello Skyrider. &laquo;Ci aspetta una corsa veloce.&raquo;</p>",
@@ -4368,7 +4397,8 @@
      "text": "Se non hai questo Oggetto Speciale",
      "section": 247
     }
-   ]
+   ],
+   "image": "public/img/book05/sec300.webp"
   },
   "301": {
    "text": "<p>Usando le fasce di ferro come punti d'appoggio, ti arrampichi fino in cima alla porta. Lunghe punte sporgono dalla trave di legno che l'attraversa, ciascuna ricoperta di un catrame nero e oleoso. Proprio mentre stai scavalcando le punte, le guardie sparano con le balestre.</p><p>Pesca un numero dalla Tabella del Destino. Se hai raggiunto il rango Ramas di Guardiano o superiore, sottrai 2 al numero pescato. Se possiedi l'Arte Ramas della Caccia, sottrai 1 a questo numero.</p>",
@@ -4446,7 +4476,8 @@
      "text": "Continua",
      "section": 247
     }
-   ]
+   ],
+   "image": "public/img/book05/sec306.webp"
   },
   "307": {
    "text": "<p>«Sì, sì. Sono Soushilla» risponde lei.</p><p>«Sai dove possiamo trovare Tipasa il Vagabondo?» chiede Banedon.</p><p>La vecchia non risponde, si limita a tendere la ciotola dell'elemosina in attesa. Banedon perde un'altra Corona prima che lei risponda alla domanda.</p>",
@@ -4473,7 +4504,8 @@
      "text": "Continua",
      "section": 206
     }
-   ]
+   ],
+   "image": "public/img/book05/sec309.webp"
   },
   "310": {
    "text": "<p>Mentre scavalchi i corpi senza vita, noti una Chiave di Rame appesa a una catena al collo di uno di loro. Afferri la Chiave e te la infili in tasca, poi ti precipiti giù per i gradini verso una fioca luce in basso. Segna la Chiave di Rame sul tuo Registro di Guerra come Oggetto Speciale.</p><p>Un piccolo fuoco, sul quale arrostisce un pollo allo spiedo, illumina una stanza di guardia alla base della torre. Sullo schienale di una sedia di ferro battuto è appesa una Borraccia d'Acqua, e accanto giace uno Spadone affilatissimo. Puoi prendere uno di questi oggetti, se lo desideri, e segnarlo sul tuo Registro di Guerra (la Borraccia è un Oggetto da Zaino).</p><p>Senti i Drakkarim precipitarsi giù per le scale della torre. Saranno presto sopra di te.</p>",
@@ -4590,7 +4622,8 @@
      "text": "Se vinci il combattimento",
      "section": 333
     }
-   ]
+   ],
+   "image": "public/img/book05/sec316.webp"
   },
   "317": {
    "text": "<p>Il sangue ti rimbomba nelle orecchie mentre balzi su per i gradini di marmo. Venti passi più avanti c'è un pianerottolo con una porta di pietra incassata nel muro. Le scale continuano a salire fino a una passerella merlata, alla cui estremità si trova un'altra porta di pietra, identica alla prima. Improvvisamente la porta del primo pianerottolo si spalanca e una guardia di palazzo si volta di scatto per affrontarti.</p><p>«Majhan!» grida, cercando a tastoni l'elsa della spada.</p>",
@@ -4643,7 +4676,8 @@
      "text": "Se vuoi lasciare la caverna e proseguire verso Ikaresh",
      "section": 281
     }
-   ]
+   ],
+   "image": "public/img/book05/sec321.webp"
   },
   "322": {
    "text": "<p>Le scale sono alte e ripide. Ansimi in cerca di fiato e costringi le gambe doloranti a salire, perché i Drakkarim sono a meno di una dozzina di gradini da te. In cima alla torre, un arco aperto conduce a una piattaforma dove si erge un enorme tamburo. Viene usato dalla guardia della torre per inviare messaggi alle altre torri del palazzo. Una pelle sbiancata è tesa sulla sua superficie, e una mazza di legno nero pende dal fianco.</p>",
@@ -4669,7 +4703,8 @@
      "text": "Se è 3-9",
      "section": 312
     }
-   ]
+   ],
+   "image": "public/img/book05/sec323.webp"
   },
   "324": {
    "text": "<p>Sei a meno di tre metri dalla sentinella quando percepisce che qualcosa non va. Si volta per affrontarti proprio mentre stai sferrando l'attacco.</p><p>Se vinci il combattimento, nascondi il corpo ed entra nella tomba.</p>",
@@ -4796,7 +4831,8 @@
      "text": "Se non possiedi l'Oggetto Speciale",
      "section": 348
     }
-   ]
+   ],
+   "image": "public/img/book05/sec333.webp"
   },
   "334": {
    "text": "<p>Sei in combattimento con due guerrieri dal volto severo. Bloccano la scala e devi combatterli entrambi come un unico nemico.</p>",
@@ -4879,7 +4915,8 @@
      "text": "Se desideri rifiutare la sua offerta e proseguire verso Ikaresh",
      "section": 272
     }
-   ]
+   ],
+   "image": "public/img/book05/sec337.webp"
   },
   "338": {
    "text": "<p>Usando le tecniche di combattimento a mani nude insegnate dai tuoi maestri Ramas, afferri per la gola la guardia sorpresa e la scagli oltre il muretto basso ai margini del pianerottolo. Il suo grido di terrore riempie l'aria finché non si schianta sulle lastre di pietra sottostanti.</p>",
@@ -4956,7 +4993,8 @@
      "text": "Se desideri dirigerti a est verso la città di Chula",
      "section": 244
     }
-   ]
+   ],
+   "image": "public/img/book05/sec343.webp"
   },
   "344": {
    "text": "<p>Il volto del vecchio è una maschera di piaghe verdi e putrescenti. Le pupille dei suoi occhi sono gialle, e le sue labbra grigie e lacere pendono a brandelli. Soffre di vaxelus, una malattia infettiva che marcisce la pelle e attacca i nervi, causando orribili mutilazioni e deformità. È stato scacciato dalla sua comunità, bandito in questa grotta dove deve trascinare i suoi ultimi anni di vita nella miseria e nella solitudine.</p>",
@@ -4985,7 +5023,8 @@
      "text": "Se desideri correre su per le scale",
      "section": 317
     }
-   ]
+   ],
+   "image": "public/img/book05/sec345.webp"
   },
   "346": {
    "text": "<p>Sul bordo della strada, un vecchio vende un assortimento di tappeti e coperte dal retro di un carro. Banedon gli si avvicina e i due conversano per diversi minuti. Alla fine, il mago porge al vecchio un anello; il suo volto rugoso si illumina di gioia. Banedon torna da te con buone notizie.</p><p>«La casa con la porta blu—in fondo al vicolo che abbiamo superato poco fa. Tipasa vive lì.»</p><p>Mentre ripercorrete i vostri passi ed entrate nel vicolo squallido, senti il vecchio gridare deluso: l'anello si è appena dissolto sul suo dito.</p><p>In fondo al vicolo trovi la casa con la porta blu.</p>",
@@ -5078,7 +5117,8 @@
      "text": "Se vinci il combattimento",
      "section": 400
     }
-   ]
+   ],
+   "image": "public/img/book05/sec353.webp"
   },
   "354": {
    "text": "<p>Ti getti sul ponte, ma la lama dell'ascia ti colpisce alla coscia, tracciando una linea cremisi sulla pelle. Perdi 2 punti Resistenza. Improvvisamente un fragoroso boato rimbomba e il Drakkar viene scaraventato all'indietro, la corazza squarciata dai colpi dei nani. Emette un lungo, agonizzante grido di morte mentre scompare alla vista, precipitando nell'oscurità che circonda la nave volante in corsa.</p><p>Da Barrakeesh, un rombo di tuono attraversa la pianura che si oscura. È carico di una minaccia latente, come se la città stessa maledicesse la tua fuga. Banedon compare al tuo fianco, il volto segnato dalla preoccupazione per le tue condizioni. Mentre ti porge una mano tremante per aiutarti ad alzarti, noti che la benda di fortuna che gli fascia la ferita è intrisa di sangue. È pallido e debole, vicino al collasso.</p>",
@@ -5232,7 +5272,8 @@
       "maxRounds": 3
      }
     }
-   ]
+   ],
+   "image": "public/img/book05/sec361.webp"
   },
   "362": {
    "text": "<p>Il fumo è fresco e profumato. Purtroppo non si può dire lo stesso dei tuoi ospiti. I loro lunghi cappotti di pelle di dougga sono profumati con un muschio che non ha alcun fascino per le narici sommlending.</p><p>Una giovane appare con un vassoio pieno di tazze di jala fumante. «1 Corona ciascuna,» dice, posando il vassoio sul tavolo.</p>",
@@ -5410,7 +5451,8 @@
      "text": "Continua",
      "section": 320
     }
-   ]
+   ],
+   "image": "public/img/book05/sec373.webp"
   },
   "374": {
    "text": "<p>Mentre precipiti verso terra, un turbine di colori ti lampeggia davanti agli occhi, mentre i cavalieri di Kraan, la nave volante e l'orizzonte lontano si fondono in un caleidoscopio di forme e immagini, che temi saranno le ultime cose che vedrai mai.</p><p>Ti sei preparato alla morte e sei calmo e rilassato, quando all'improvviso senti il tuo corpo avvolto da una massa di fibre appiccicose. C'è uno scossone tremendo, che ti lascia senza fiato e stordito. Sta accadendo l'impossibile: non stai più cadendo, ma salendo!</p><p>Una rete di fili aderenti ti ha catturato come una mosca in una ragnatela. Sali verso il cielo, verso la nave volante, veloce quanto sei caduto. Tre nani barbuti, vestiti con giubbe imbottite dai colori vivaci, ti issano a bordo di un bilanciere che corre lungo tutta la lunghezza dello scafo. Tuttavia non c'è tempo per esprimere la tua gratitudine, poiché la piccola nave volante è sotto attacco dei cavalieri di Kraan.</p><p>All'estremità del bilanciere, un nano è impegnato in un corpo a corpo con un Drakkar ringhiante. Sta chiaramente perdendo. Mentre corri in suo aiuto, un altro dei guerrieri malvagi atterra al centro dell'imbarcazione, sopra la piattaforma fortificata.</p>",
@@ -5438,7 +5480,8 @@
      "text": "Se vinci il combattimento, entri nella torre",
      "section": 396
     }
-   ]
+   ],
+   "image": "public/img/book05/sec375.webp"
   },
   "376": {
    "text": "<p>A quaranta passi lungo la strada si trova una caserma, un lungo edificio imbiancato a calce con brutte finestre quadrate. Un soldato siede assopito nel sole della sera con la lancia posata in grembo. Alcuni bambini gli lanciano contro frutti di larnuma svuotati, cercando di infilarli sulla punta della lancia. Di fronte alla caserma c'è una taverna con una fila di dougga sellati legati a una sbarra vicino alla porta principale. I ragli di questi cavalli delle sabbie rivaleggiano con il frastuono di baldoria che proviene dalla porta della taverna.</p>",
@@ -5801,11 +5844,13 @@
      "text": "Continua",
      "section": 323
     }
-   ]
+   ],
+   "image": "public/img/book05/sec399.webp"
   },
   "400": {
    "text": "<p>Esamini il pavimento dove è caduto il Signore delle Tenebre Haakon, ma non ci sono tracce del suo corpo. L'atmosfera è stranamente calma e serena, come se una grande e malvagia ombra fosse stata sollevata. (Se hai perso la Spada del Sole nello scontro con il Signore delle Tenebre, ora puoi recuperarla.)</p><p>Ti volti e cammini verso il trono dove sedeva Haakon, aspettando che tu apparissi. Oltre di esso si trova un portale, un'antica iscrizione scolpita in profondità nella pietra rosso sangue. Sotto l'incisione è impressa l'impronta di una mano umana. L'istinto e l'intuizione guidano la tua mano verso la porta; l'incisione le si adatta come un guanto.</p><p>Silenziosamente il portale scorre all'indietro, rivelando il tuo destino: il <em>Libro del Magnakai</em>. Posato su un piedistallo, il libro giace aperto, i suoi segreti rivelati solo ai tuoi occhi. Mentre sollevi il libro sacro, l'aria stessa pulsa con la vibrazione della forza racchiusa nella sua copertina dorata come il sole. Con il cuore che batte forte, chiudi il libro e ti affretti a lasciare la camera.</p><p>Quando raggiungi le colline pedemontane del Koneshi, Banedon ha già completato con successo la sua missione; lui e Tipasa ti stanno aspettando. Nel vederti apparire, stringendo il <em>Libro del Magnakai</em>, riescono a stento a contenere la loro eccitazione.</p><p>«Questa notte di trionfo» dice Banedon, giubilante, «annuncerà una nuova alba di speranza per il Sommerlund. I Kai sono rinati.»</p><p>La missione è ora conclusa. Hai trovato il <em>Libro del Magnakai</em> e liberato Magnamund dall'ombra del Signore delle Tenebre Haakon. Ma per te, Maestro Kai Lupo Solitario, la storia è appena cominciata.</p><p>Il tuo destino segue il sentiero dei Gran Maestri. Per scoprire i loro segreti e affrontare la prima avvincente missione dei Magnakai, inizia il tuo viaggio con il Libro 6 della serie di Lupo Solitario, intitolato:</p><p><em>I Regni del Terrore</em></p>",
-   "isVictory": true
+   "isVictory": true,
+   "image": "public/img/book05/sec400.webp"
   }
  }
 }
