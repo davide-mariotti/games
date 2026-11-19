@@ -204,6 +204,62 @@ and writhing tentacles.
 Dhorgaan (Libro 5): a glowing serpent-like monster condensed from a vortex
 of greenish vapour, filled with grey death-mist, with two crimson points
 of light for eyes.
+
+Bandit Warrior / Guerriero Bandito (Libro 4): a rough Southlands bandit
+warrior in Barraka's service, weathered face and unkempt dark beard,
+mismatched leather armour over a rusty mail shirt, a dark ragged cloak, a
+dented round shield and a heavy notched sword; some wear necklaces of
+small shrunken skulls.
+
+Doomwolf / Lupo della Perdizione (Libro 3): a huge snarling wolf bred by
+the Ice Barbarians of Kalte, larger than a pony, with shaggy ice-grey fur
+matted with frost, burning yellow eyes and long bared fangs.
+
+Vassagonian Warrior / Guerriero Vassagoniano (Libri 4 e 5): a tall desert
+warrior of Vassagonia with dark tanned skin and a short black beard, a
+spiked steel helm wrapped in a black turban cloth, a long scale-mail coat
+over flowing black robes, a polished steel shield and a curved razor-sharp
+scimitar.
+
+War Dog / Cane da Guerra (Libri 4 e 5): a massive, lean Vassagonian
+war-hound with short dark brindled fur, a heavy spiked iron collar, a wide
+slavering jaw full of teeth and eyes that glow red in the light of battle.
+
+City Guard / Guardia Cittadina (Libri 1 e 2): a burly town watchman of the
+northern port cities, stubbled face, an open steel helm, a padded gambeson
+under a short mail shirt and a faded tabard, armed with a halberd and a
+short sword at his belt.
+
+Street Thief / Ladro (Libro 2): a lean, shifty cutthroat of the docks of
+Ragadorn, a hooded threadbare coat over dark rags, a scarred unshaven face
+with a cruel grin, a long curved dagger in his hand.
+
+Zombie / Zombie (Libro 2): a spectral undead sailor from the Darklord
+ghost ships, grey rotting flesh stretched over bone, empty glowing eye
+sockets, tattered sea-soaked clothes and rusted shackles, twisted hands
+reaching forward.
+
+Szall / Szall (Libro 2): a small, hunched, lizard-like humanoid of the
+Durenor wilds, about the height of a child, with mottled grey-green scaly
+skin, wide yellow eyes, a wide lipless mouth, ragged hide clothes and a
+crude rune-carved spear.
+
+Stoneworm / Verme di Pietra (Libro 4): a colossal blind worm that bores
+through rock, its ringed body as thick as a mine tunnel, grey stony hide,
+and a round gaping maw ringed with rows of grinding teeth.
+
+Black Bear / Orso Nero (Libro 1): an enormous black bear of the Sommerlund
+forests, rearing in rage and pain, thick shaggy black fur, open jaws and
+long curved claws.
+
+Winged Serpent / Serpente Alato (Libro 1): a long serpent with grey-green
+scales and two wide leathery wings, a horned reptilian head and a forked
+tongue, still dusted with fragments of the stone statue it burst from.
+
+Mole-Spider / Ragno-talpa (Libro 1): a slimy, pale, eyeless spider-like
+creature the size of a dog, with long hairy legs, writhing tentacles
+around its mouth, living in dark tunnels and dropping on its prey from the
+ceiling.
 ```
 
 **Nota sui Drakkarim.** Nei Libri 1-4 il ritratto `ritratto-drakkar.txt` li mostra come uomini-rettile. Il Libro 5 li descrive invece come uomini in armatura nera e vesti scarlatte, con maschere di morte: dal Libro 5 in poi si usa la voce "Drakkarim (Libro 5)" qui sopra, senza il vecchio ritratto. Le immagini già fatte dei libri precedenti restano come sono.
@@ -224,7 +280,7 @@ Nessuno strumento (ChatGPT, Nano Banana) garantisce da solo la stessa
 identica "faccia" di un personaggio/creatura da un prompt all'altro con il
 solo testo. Per questo, PRIMA di generare le scene, genera un ritratto di
 riferimento per ogni soggetto ricorrente — sono già pronti in
-`riferimenti/` (25 in totale): `ritratto-lupo-solitario.txt`, uno per
+`riferimenti/` (41 in totale): `ritratto-lupo-solitario.txt`, uno per
 ciascuna creatura del bestiario "storico" (Kraan, Giak, Vordak, Drakkar,
 Gurgaz, Tigerwolf, dal Libro 1), uno per ciascuna new-entry del Libro 2
 (Helghast, Zlanbeast, Vonotar, Rhygar, Lord Axim), e uno per ciascuna

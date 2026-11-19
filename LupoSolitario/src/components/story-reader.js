@@ -10,13 +10,32 @@ import { icon, esc, noEmoji, rollDigits, sfx, replay } from '../ui/kit.js';
 const WEAPON_NAME = /^(Pugnale|Lancia|Mazza|Daga|Martello|Spada|Ascia|Asta|Spadone|Arco|Tridente|Sciabola)\b/i;
 export const isWeapon = (name) => WEAPONS.includes(name) || WEAPON_NAME.test(name);
 
-// Enemy portraits (public/img/portraits/<slug>.webp), matched on the start of a word of the enemy's name
-const PORTRAITS = ['akraaneonor', 'baknar', 'barbaro-dei-ghiacci', 'barraka', 'demone-di-ghiaccio', 'drakkar', 'elix', 'giak',
-  'gurgaz', 'helghast', 'kalkoth', 'kraan', 'tigerwolf', 'vonotar', 'vordak', 'zlanbeast'];
-export function portraitFor(name) {
-  const slug = '-' + String(name).toLowerCase().normalize('NFD').replace(/[̀-ͯ']/g, '').replace(/[^a-z]+/g, '-') + '-';
-  const hit = PORTRAITS.find((p) => slug.includes('-' + p));
-  return hit ? `public/img/portraits/${hit}.webp` : null;
+// Combat thumbnails (public/img/portraits/<slug>.webp): the first rule whose pattern matches the enemy's name
+// (lower case, no accents, words joined by "-") and that applies to the current book. One picture per kind of enemy:
+// the same "Guardia" is a city watchman in Book 2, a bandit in Book 4, a Vassagonian in Book 5.
+const SAME_NAME = ['akraaneonor', 'baknar', 'barbaro-dei-ghiacci', 'barraka', 'demone-di-ghiaccio', 'elix', 'giak', 'gurgaz', 'helghast',
+  'kalkoth', 'kraan', 'tigerwolf', 'vonotar', 'vordak', 'zlanbeast', 'haakon', 'itikar', 'kwaraz', 'dhorgaan', 'szall', 'zombie'];
+const PORTRAIT_RULES = [
+  ['drakkarim', /drakkar/, [5]], // Book 5 describes them as men in death masks
+  ['guerriero-vassagoniano', /vassagonian|sharnazim|guardi|carcerier|sentinell|cavaliere|corriere/, [5]],
+  ['guerriero-bandito', /bandit|guardi/, [4]],
+  ['guardia-cittadina', /guardi|sergente|caporale|soldat/, [1, 2]],
+  ['guerriero-vassagoniano', /vassagonian/],
+  ['cane-da-guerra', /can[ei]-da-guerra|akataz/],
+  ['lupo-della-perdizione', /lup[oi]-della-perdizione/],
+  ['ladro', /ladr|bull[io]|imbroglion/],
+  ['verme-di-pietra', /verme-di-pietra/],
+  ['serpente-alato', /serpente-alato/],
+  ['ragno-talpa', /ragno-talpa/],
+  ['orso-nero', /(^|-)orso/],
+  ['yas', /(^|-)yas(-|$)/],
+  ['drakkar', /drakkar/],
+  ...SAME_NAME.map((p) => [p, new RegExp(`(^|-)${p}`)]),
+];
+export function portraitFor(name, book = 0) {
+  const slug = String(name).toLowerCase().normalize('NFD').replace(/[̀-ͯ']/g, '').replace(/[^a-z]+/g, '-').replace(/^-|-$/g, '');
+  const hit = PORTRAIT_RULES.find(([, re, books]) => re.test(slug) && (!books || books.includes(book)));
+  return hit ? `public/img/portraits/${hit[0]}.webp` : null;
 }
 
 const NEXT_BOOK = { 1: 'Fuoco sulle Acque', 2: 'Le Caverne di Kalte', 3: 'Il Baratro della Perdizione', 4: 'Ombra sulla Sabbia' };
@@ -678,7 +697,7 @@ export class StoryReader {
       ? combatManager.combatData.fleeAfterRounds - combat.rounds.length : 0;
     const pct = (v, max) => Math.max(0, Math.min(1, v / (max || 1)));
     const heroP = pct(c.resistenza, c.resistenzaMax);
-    const foe = portraitFor(combat.enemy);
+    const foe = portraitFor(combat.enemy, state.bookNumber);
     const queue = combatManager.enemyQueue.length;
     return `
       <section class="combat" id="combat">

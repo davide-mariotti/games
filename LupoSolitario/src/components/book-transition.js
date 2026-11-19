@@ -304,6 +304,7 @@ export class BookTransition {
     return `
       <p class="kicker">Libro ${this.n}</p>
       <h2 class="title" style="margin-top:.6rem"><span class="grad">${this.book.title}</span></h2>
+      <img class="section-image" src="public/img/covers/book${this.n}.webp" alt="" onerror="this.remove()">
       <div class="prose">${this.book.story.map((p) => `<p>${p}</p>`).join('')}</div>
       <p class="note">${this.book.note}</p>
       <div class="stack"><button class="btn btn-primary" type="button" data-go="gold">Prepara il viaggio${icon('arrow-right')}</button></div>`;

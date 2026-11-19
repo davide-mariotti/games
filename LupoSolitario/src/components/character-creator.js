@@ -49,11 +49,35 @@ export const ITEM_IMAGES = {
   'Pozione Magica': 'public/img/oggetti/pozione-magica.webp',
   'Pozione Curativa': 'public/img/oggetti/pozione-curativa.webp',
   'Pozione di Laumspur': 'public/img/oggetti/pozione-di-laumspur.webp',
+  'Spada del Sole': 'public/img/oggetti/spada-del-sole.webp',
+  'Triangolo di Pietra Blu': 'public/img/oggetti/triangolo-di-pietra-blu.webp',
+  'Disco di Pietra Blu': 'public/img/oggetti/triangolo-di-pietra-blu.webp',
+  "Bracciale d'Oro": 'public/img/oggetti/bracciale-d-oro.webp',
+  'Corda': 'public/img/oggetti/corda.webp',
+  'Torcia': 'public/img/oggetti/torcia.webp',
+  'Acciarino': 'public/img/oggetti/acciarino.webp',
+  'Lancia Magica': 'public/img/oggetti/lancia-magica.webp',
+  'Gemma Vordak': 'public/img/oggetti/gemma-vordak.webp',
+  'Cristallo Luminoso': 'public/img/oggetti/cristallo-luminoso.webp',
+  'Mazza Ingioiellata': 'public/img/oggetti/mazza-ingioiellata.webp',
+  'Cubo di Cristallo Nero': 'public/img/oggetti/cubo-di-cristallo-nero.webp',
+  'Fiala di Acqua Santa': 'public/img/oggetti/fiala-di-acqua-santa.webp',
+  'Pergamena': 'public/img/oggetti/pergamena.webp',
+  'Stella di Cristallo': 'public/img/oggetti/stella-di-cristallo.webp',
 };
+// Names the books write in several ways ("Chiave di Rame", "Elmo d'Argento (+2 Combattività)"...): matched on how they start.
+const ITEM_PREFIXES = [
+  ['Chiav', 'public/img/oggetti/chiave.webp'],
+  ["Elmo d'Argento", 'public/img/oggetti/elmo-d-argento.webp'],
+  ['Pozione di Alether', 'public/img/oggetti/pozione-di-alether.webp'],
+  ['Pozione Alether', 'public/img/oggetti/pozione-di-alether.webp'],
+  ['Fiala di Alether', 'public/img/oggetti/pozione-di-alether.webp'],
+];
+const itemArt = (name) => ITEM_IMAGES[name] || ITEM_PREFIXES.find(([p]) => String(name).startsWith(p))?.[1];
 
 // Picture for an item (weapon, Kai art or object): its artwork, or a Lucide glyph.
 export function thumbHTML(name, kind = 'item') {
-  const art = kind === 'art' ? KAI_ARTS.find((a) => a.name === name)?.image : (WEAPON_IMAGES[name] || ITEM_IMAGES[name]);
+  const art = kind === 'art' ? KAI_ARTS.find((a) => a.name === name)?.image : (WEAPON_IMAGES[name] || itemArt(name));
   if (art) return `<img src="${art}" alt="" loading="lazy">`;
   const glyph = kind === 'weapon' ? 'sword' : kind === 'art' ? 'sparkles' : /pozione|fiala|olio/i.test(name) ? 'flask-conical' : /mappa/i.test(name) ? 'map' : kind === 'special' ? 'gem' : 'backpack';
   return `<span class="glyph">${icon(glyph)}</span>`;
@@ -121,6 +145,7 @@ export class CharacterCreator {
     return `
       <p class="kicker">Libro 1 · Creazione del personaggio</p>
       <h2 class="title" style="margin-top:.6rem">Benvenuto, <span class="grad">giovane Ramas.</span></h2>
+      <img class="section-image" src="public/img/covers/book1.webp" alt="" onerror="this.remove()">
       <div class="prose">
         <p>Sei l'ultimo sopravvissuto del monastero di Ramas. Prima di partire, la Tabella del Destino deciderà quanto sei forte, quanto resisti e cosa porti con te.</p>
         <p>Poi sceglierai cinque Arti Ramas. Scegli bene: ti accompagneranno per tutti e cinque i libri.</p>
