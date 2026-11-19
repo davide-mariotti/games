@@ -14,7 +14,8 @@ export const isWeapon = (name) => WEAPONS.includes(name) || WEAPON_NAME.test(nam
 // (lower case, no accents, words joined by "-") and that applies to the current book. One picture per kind of enemy:
 // the same "Guardia" is a city watchman in Book 2, a bandit in Book 4, a Vassagonian in Book 5.
 const SAME_NAME = ['akraaneonor', 'baknar', 'barbaro-dei-ghiacci', 'barraka', 'demone-di-ghiaccio', 'elix', 'giak', 'gurgaz', 'helghast',
-  'kalkoth', 'kraan', 'tigerwolf', 'vonotar', 'vordak', 'zlanbeast', 'haakon', 'itikar', 'kwaraz', 'dhorgaan', 'szall', 'zombie'];
+  'kalkoth', 'kraan', 'tigerwolf', 'vonotar', 'vordak', 'zlanbeast', 'haakon', 'itikar', 'kwaraz', 'dhorgaan', 'szall', 'zombie',
+  'viveka', 'javek', 'hammerfist', 'serpe-glaciale', 'progenie-della-cripta'];
 const PORTRAIT_RULES = [
   ['drakkarim', /drakkar/, [5]], // Book 5 describes them as men in death masks
   ['guerriero-vassagoniano', /vassagonian|sharnazim|guardi|carcerier|sentinell|cavaliere|corriere/, [5]],
@@ -23,7 +24,11 @@ const PORTRAIT_RULES = [
   ['guerriero-vassagoniano', /vassagonian/],
   ['cane-da-guerra', /can[ei]-da-guerra|akataz/],
   ['lupo-della-perdizione', /lup[oi]-della-perdizione/],
-  ['ladro', /ladr|bull[io]|imbroglion/],
+  ['ladro', /ladr|bull[io]|imbroglion|balord|assassin/],
+  ['barbaro-dei-ghiacci', /barbar[oi]-dei-ghiacci/],
+  ['cavaliere-della-montagna-bianca', /montagna-bianca|dorier|ganon/],
+  ['demone-del-tunnel', /demon[ei]-del-tunnel/],
+  ['piovra-gigante', /piovra|meresquid/],
   ['verme-di-pietra', /verme-di-pietra/],
   ['serpente-alato', /serpente-alato/],
   ['ragno-talpa', /ragno-talpa/],
@@ -148,7 +153,8 @@ export class StoryReader {
       <article class="card ${fresh ? '' : 'still'}">
         <p class="kicker section-num">Sezione <b>${currentSection}</b></p>
         ${section.title ? `<h2 class="title section-title">${noEmoji(section.title)}</h2>` : ''}
-        ${section.image ? `<img src="${section.image}" alt="" class="section-image" loading="lazy">` : ''}
+        ${section.image ? `<img src="${section.image}" alt="" class="section-image" loading="lazy">`
+          : section.isDeathSection ? `<img src="public/img/death/book${state.bookNumber}.webp" alt="" class="section-image" onerror="this.remove()">` : ''}
         <div class="prose">${section.text}</div>`;
 
     if (inCombat && combatState) {

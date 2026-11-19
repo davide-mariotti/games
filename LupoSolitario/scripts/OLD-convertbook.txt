@@ -64,7 +64,7 @@ FASE 1 — Studio dello schema e del motore (fai TU questa fase, non delegarla)
   (gamerulz.htm, discplnz.htm, equipmnt.htm, tssf.htm/story-so-far,
   cmbtrulz.htm, random.htm, footnotz.htm, levels.htm) per capire le regole
   SPECIFICHE di questo libro: nuove discipline Kai (di solito no, sono fisse
-  finché non arrivi ai Gran Maestri), nuovi meccanismi (es. "niente Caccia
+  fino al Libro 5; dal 6 ci sono le Arti Magnakai), nuovi meccanismi (es. "niente Caccia
   perché sei in un deserto di ghiaccio" nel Libro 3), nuovo elenco
   equipaggiamento per la transizione dal libro precedente (leggi bene quanti
   oggetti si possono scegliere - non è sempre "esattamente 2", il Libro 4 ne
@@ -349,7 +349,7 @@ NOTE
   più rapido. La FASE 2 (audit meccaniche) invece va SEMPRE rifatta da capo
   su ogni libro nuovo: le primitive esistono già, ma quali ricorrono in
   QUESTO libro cambia sempre.
-- Se in futuro si arriva ai Gran Maestri (Libro 6+) o ad altre discipline
+- Dal Libro 6 inizia la saga Magnakai (Libri 6-12, poi Gran Maestro dal 13) con altre discipline
   aggiuntive, la FASE 1/3 dovrà controllare anche src/components/
   character-creator.js (elenco KAI_ARTS, e quindi anche KAI_ART_NAMES in
   validate-book.mjs) perché a quel punto potrebbe servire una modifica più

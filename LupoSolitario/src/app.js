@@ -166,6 +166,7 @@ class App {
     el.innerHTML = `
       <div class="ending lose" style="margin-top:0">
         <p class="kicker">${esc(title || 'Fine')}</p>
+        <img class="section-image" src="public/img/death/book${n}.webp" alt="" onerror="this.remove()">
         <p class="big" style="margin-top:.6rem">Fine.</p>
         <p>${esc(message)}</p>
         <div class="stack">

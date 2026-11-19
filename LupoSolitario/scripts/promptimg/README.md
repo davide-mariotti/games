@@ -12,13 +12,13 @@ e per le icone di Arti Ramas/Armi/Oggetti nella creazione del personaggio.
   Oggetti, e il motivo della scelta del formato quadrato 1:1. Leggilo prima
   di generare qualsiasi immagine, e aggiornalo se decidi di cambiare stile
   in futuro (poi rigenera i prompt).
-- `riferimenti/` — 41 ritratti di riferimento: Lupo Solitario, le 6 creature
+- `riferimenti/` — 49 ritratti di riferimento: Lupo Solitario, le 6 creature
   del bestiario "storico" dal Libro 1 (Kraan, Giak, Vordak, Drakkar, Gurgaz,
   Tigerwolf), le 5 new-entry del Libro 2 (Helghast, Zlanbeast, Vonotar,
   Rhygar, Lord Axim), le 6 new-entry del Libro 3 (Barbaro dei Ghiacci,
   Kalkoth, Baknar, Demone di Ghiaccio, Akraa'Neonor, Loi-Kymar) e le 4
   new-entry del Libro 4 (Barraka, Capitano D'Val, Elix, Madelon) e le 3
-  del Libro 5 (Banedon, Signore delle Tenebre Haakon, Itikar), più 16 tipi di nemico
+  del Libro 5 (Banedon, Signore delle Tenebre Haakon, Itikar), più 24 tipi di nemico
   (19/11) che il gioco usa anche come miniature nel combattimento (`public/img/portraits/`).
   Le miniature (256 px, volto per le persone, centro per le bestie) si fanno con
   `node scripts/portrait-thumbs.mjs` (ffmpeg, salta quelle che esistono); quale miniatura va a quale
@@ -43,12 +43,14 @@ e per le icone di Arti Ramas/Armi/Oggetti nella creazione del personaggio.
   schermata di creazione del personaggio.
 - `creazione-personaggio/armi/` — 10 icone, una per arma (Pugnale, Daga,
   Lancia, Mazza, Martello, Spada, Spada Corta, Ascia, Asta, Spadone).
-- `creazione-personaggio/oggetti/` — 26 icone: le 9 degli oggetti concessi dalla creazione del
-  personaggio e dalle transizioni tra libri, più 17 Oggetti Speciali e da Zaino ricorrenti nei
+- `creazione-personaggio/oggetti/` — 36 icone: le 9 degli oggetti concessi dalla creazione del
+  personaggio e dalle transizioni tra libri, più 27 Oggetti Speciali e da Zaino ricorrenti nei
   libri (Spada del Sole, chiavi, Corda, Torcia, Elmo d'Argento...). Gli altri oggetti unici hanno
   un'icona generica.
 - `copertine/` — 5 copertine, una per libro (`public/img/covers/bookN.webp`), mostrate all'inizio
   di ogni libro: creazione del personaggio per il Libro 1, passaggio tra libri per gli altri.
+- `morte/` — 5 illustrazioni della morte, una per libro (`public/img/death/bookN.webp`): sezioni di morte
+  senza immagine propria e schermata "Fine." dopo una sconfitta.
 - `bookNN/` — stessa struttura per i libri successivi, quando li genererai
   (vedi "Estendere ad altri libri" sotto — Libro 2 è già un esempio reale
   di come si fa).

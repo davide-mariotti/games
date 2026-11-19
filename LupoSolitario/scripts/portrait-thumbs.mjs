@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const BEASTS = ['lupo-della-perdizione', 'cane-da-guerra', 'verme-di-pietra', 'kwaraz', 'yas', 'dhorgaan', 'orso-nero', 'serpente-alato',
-  'ragno-talpa', 'itikar'];
+  'ragno-talpa', 'itikar', 'javek', 'serpe-glaciale', 'demone-del-tunnel', 'piovra-gigante', 'progenie-della-cripta'];
 const SKIP = ['banedon', 'capitano-dval', 'loi-kymar', 'lord-axim', 'madelon', 'rhygar']; // allies: never fought
 const src = join(ROOT, 'public/img/potrait'), out = join(ROOT, 'public/img/portraits');
 for (const file of readdirSync(src).filter((f) => f.endsWith('.webp'))) {

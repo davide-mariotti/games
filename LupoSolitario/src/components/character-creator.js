@@ -34,7 +34,7 @@ export const WEAPON_IMAGES = {
   'Spadone': 'public/img/weapon/spadone.webp',
 };
 
-// Only the items handed out at creation and between books have artwork; the many one-off items found in the books get a glyph.
+// Artwork for the starting items and the ones that matter across the books; the other one-off items get a glyph.
 export const ITEM_IMAGES = {
   'Elmo': 'public/img/oggetti/elmo.webp',
   'Cotta di Maglia': 'public/img/oggetti/cotta-di-maglia.webp',
@@ -64,6 +64,20 @@ export const ITEM_IMAGES = {
   'Fiala di Acqua Santa': 'public/img/oggetti/fiala-di-acqua-santa.webp',
   'Pergamena': 'public/img/oggetti/pergamena.webp',
   'Stella di Cristallo': 'public/img/oggetti/stella-di-cristallo.webp',
+  "Medaglione d'Onice": 'public/img/oggetti/medaglione-d-onice.webp',
+  'Sfera di Fuoco': 'public/img/oggetti/sfera-di-fuoco.webp',
+  'Effigie': 'public/img/oggetti/effigie.webp',
+  'Prisma': 'public/img/oggetti/prisma.webp',
+  'Erba di Oede': 'public/img/oggetti/erba-di-oede.webp',
+  'Clessidra': 'public/img/oggetti/clessidra.webp',
+  'Diamante': 'public/img/oggetti/diamante.webp',
+  'Arco Jakan': 'public/img/oggetti/arco.webp',
+  'Cerbottana': 'public/img/oggetti/cerbottana.webp',
+  'Freccetta Soporifera': 'public/img/oggetti/cerbottana.webp',
+  'Dardo Soporifero': 'public/img/oggetti/cerbottana.webp',
+  'Farsetto di Maglia': 'public/img/oggetti/cotta-di-maglia.webp',
+  'Martello da Guerra': 'public/img/weapon/martello.webp',
+  'Bastone': 'public/img/weapon/asta.webp',
 };
 // Names the books write in several ways ("Chiave di Rame", "Elmo d'Argento (+2 Combattività)"...): matched on how they start.
 const ITEM_PREFIXES = [
@@ -72,6 +86,9 @@ const ITEM_PREFIXES = [
   ['Pozione di Alether', 'public/img/oggetti/pozione-di-alether.webp'],
   ['Pozione Alether', 'public/img/oggetti/pozione-di-alether.webp'],
   ['Fiala di Alether', 'public/img/oggetti/pozione-di-alether.webp'],
+  ['Lasciapassare', 'public/img/oggetti/lasciapassare.webp'],
+  ['Pozione di Laumspur', 'public/img/oggetti/pozione-di-laumspur.webp'],
+  ['Laumspur', 'public/img/oggetti/pozione-di-laumspur.webp'],
 ];
 const itemArt = (name) => ITEM_IMAGES[name] || ITEM_PREFIXES.find(([p]) => String(name).startsWith(p))?.[1];
 

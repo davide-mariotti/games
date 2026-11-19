@@ -19,7 +19,7 @@
 
 ### What it does
 
-- Books 1 to 5 of Joe Dever's Lone Wolf (Kai series), in the Italian edition, section by section, with illustrations in the first three.
+- Books 1 to 5 of Joe Dever's Lone Wolf (Kai series), in the Italian edition, section by section, illustrated: a cover for every book, painted scenes, enemy portraits in combat.
 - Keeps the Action Chart for you: Combat Skill, Endurance, Kai Disciplines, weapons, backpack, Gold Crowns, Special Items.
 - Rolls the Random Number Table and fights with the Combat Results Table as printed in the books, round by round.
 - Character creation for Book 1, and the "continuing your adventure" rules between one book and the next.
@@ -58,7 +58,7 @@ The code is [MIT](../LICENSE). The texts of Lone Wolf belong to Joe Dever's esta
 
 ### Cosa fa
 
-- I libri da 1 a 5 di Lupo Solitario (la saga dei Ramas) di Joe Dever, nell'edizione italiana, sezione per sezione, con le illustrazioni nei primi tre.
+- I libri da 1 a 5 di Lupo Solitario (la saga dei Ramas) di Joe Dever, nell'edizione italiana, sezione per sezione, illustrati: una copertina per libro, scene dipinte, il ritratto del nemico in combattimento.
 - Tiene il Registro di Guerra al posto tuo: Combattività, Resistenza, Arti Ramas, armi, zaino, Corone d'Oro, Oggetti Speciali.
 - Lancia la Tabella del Destino e combatte con la Tabella di Combattimento dei libri, round per round.
 - Creazione del personaggio nel Libro 1, e le regole di passaggio da un libro all'altro.

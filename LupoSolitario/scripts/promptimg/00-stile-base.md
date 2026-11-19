@@ -260,7 +260,39 @@ Mole-Spider / Ragno-talpa (Libro 1): a slimy, pale, eyeless spider-like
 creature the size of a dog, with long hairy legs, writhing tentacles
 around its mouth, living in dark tunnels and dropping on its prey from the
 ceiling.
+
+Knight of the White Mountain / Cavaliere della Montagna Bianca (Libro 2,
+anche Dorier e Ganon): a proud knight of Durenor in polished steel plate,
+a long white tabard and white cloak, a longsword and a stern bearded face.
+
+Viveka / Viveka (Libro 2): a young mercenary adventuress, lean and
+athletic, dark braided hair, fitted dark leather armour with steel
+pauldrons, a short sword.
+
+Javek / Javek (Libro 3): a giant two-headed serpent with dark green
+scales, curved yellow fangs dripping venom.
+
+Crystal Frostwyrm / Serpe Glaciale di Cristallo (Libro 3): a serpent with
+almost transparent ice-like skin, organs visible inside, a crystalline
+head with rows of crystal teeth.
+
+Tunnel Demon / Demone del Tunnel (Libro 4): huge, slimy and squat, warts
+glowing sickly green, clawed hopping feet, bat wings, razor teeth.
+
+Giant Meresquid / Piovra Gigante (Libro 4): a many-tentacled squid of the
+underground lakes, slick grey-green skin, a huge cold eye.
+
+Hammerfist the Armourer / Hammerfist l'Armaiolo (Libro 5): a hulking
+scarred armourer in dark plate and forge apron, his right forearm ending
+in a steel fist shaped like a war hammer.
+
+Crypt Spawn / Progenie della Cripta (Libro 5): living shadow conjured by
+a Darklord, black mist with bat-like wings, tentacles, pale-blue eyes.
 ```
+
+I ritratti di questi 8 (20/11) sono stati generati allegando la scena del libro in cui compaiono
+(riga "Base da riutilizzare: public/img/bookNN/secNNN.webp"), così il nemico ha lo stesso aspetto nella scena e nella miniatura
+del combattimento.
 
 **Nota sui Drakkarim.** Nei Libri 1-4 il ritratto `ritratto-drakkar.txt` li mostra come uomini-rettile. Il Libro 5 li descrive invece come uomini in armatura nera e vesti scarlatte, con maschere di morte: dal Libro 5 in poi si usa la voce "Drakkarim (Libro 5)" qui sopra, senza il vecchio ritratto. Le immagini già fatte dei libri precedenti restano come sono.
 
@@ -280,7 +312,7 @@ Nessuno strumento (ChatGPT, Nano Banana) garantisce da solo la stessa
 identica "faccia" di un personaggio/creatura da un prompt all'altro con il
 solo testo. Per questo, PRIMA di generare le scene, genera un ritratto di
 riferimento per ogni soggetto ricorrente — sono già pronti in
-`riferimenti/` (41 in totale): `ritratto-lupo-solitario.txt`, uno per
+`riferimenti/` (49 in totale): `ritratto-lupo-solitario.txt`, uno per
 ciascuna creatura del bestiario "storico" (Kraan, Giak, Vordak, Drakkar,
 Gurgaz, Tigerwolf, dal Libro 1), uno per ciascuna new-entry del Libro 2
 (Helghast, Zlanbeast, Vonotar, Rhygar, Lord Axim), e uno per ciascuna
@@ -350,6 +382,10 @@ border or frame, no UI elements.
   pronte da copiare e incollare. Queste SONO già collegate nel codice
   (`ITEM_IMAGES`/`WEAPON_IMAGES` in `character-creator.js`) - appena il file
   immagine esiste al percorso giusto, appare automaticamente in-app.
+- `copertine/libro-N-*.txt` → la copertina di ogni libro (`public/img/covers/bookN.webp`).
+- `morte/libro-N-*.txt` → l'illustrazione della morte di ogni libro (`public/img/death/bookN.webp`): il mantello e
+  la spada di Lupo Solitario abbandonati nel paesaggio di quel libro, nessun corpo (Gemini rifiuta le scene con corpi senza vita).
+  Il gioco la mostra nelle sezioni di morte senza illustrazione propria e nella schermata "Fine." dopo una sconfitta.
 - Dopo aver generato un'immagine di sezione, salvala come
   `public/img/book0N/secNNN.png` (sostituendo l'eventuale file esistente), lancia
   `python scripts/to-webp.py` (lo converte in WebP e aggiorna i riferimenti), poi `node scripts/link-images.mjs`, che collega ogni `secNNN.webp` alla sua
