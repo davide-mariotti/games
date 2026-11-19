@@ -15,7 +15,8 @@
 #p-O.on { border-color: rgb(236 243 238 / .5); color: var(--ink); box-shadow: 0 0 24px -6px rgb(236 243 238 / .5); }
 
 /* the board: 9 buttons under one SVG with the # and the winning line */
-.board { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); width: min(26rem, 100%, max(13rem, 100svh - 22rem)); aspect-ratio: 1; }
+/* three equal rows: with auto rows a cell with a mark grew taller than the drawn # until every row had one */
+.board { position: relative; display: grid; grid-template: repeat(3, minmax(0, 1fr)) / repeat(3, minmax(0, 1fr)); width: min(26rem, 100%, max(13rem, 100svh - 22rem)); aspect-ratio: 1; }
 .lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; fill: none; stroke-linecap: round; filter: drop-shadow(0 0 6px rgb(47 227 127 / .55)); }
 .lines line { stroke-dasharray: 1; stroke-dashoffset: 1; }
 .grid line { stroke: rgb(47 227 127 / .45); stroke-width: 2.5; animation: draw .7s var(--ease) forwards; }
