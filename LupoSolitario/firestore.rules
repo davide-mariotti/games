@@ -1,32 +1,18 @@
 rules_version = '2';
+// Lupo Solitario: cloud saves only (src/save-manager.js), users/{uid}/saves/{saveId}. Each player reads and writes
+// only their own; everything else is closed. Same as the rules published on luposolitario-dm.
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Helper function to check if user is authenticated
-    function isAuthenticated() {
-      return request.auth != null;
+    match /{document=**} {
+      allow read, write: if false;
     }
-    
-    // Helper function to check if user owns the document
-    function isOwner(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
-    }
-    
-    // User data rules
+
     match /users/{userId} {
-      // Users can read and write their own profile
-      allow read, write: if isOwner(userId);
-      
-      // User saves
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
       match /saves/{saveId} {
-        allow read, write: if isOwner(userId);
+        allow read, write: if request.auth != null && request.auth.uid == userId;
       }
-    }
-    
-    // Book data is public (read-only)
-    match /books/{bookId} {
-      allow read: if true;
-      allow write: if false;
     }
   }
 }

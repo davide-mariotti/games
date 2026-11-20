@@ -1,0 +1,23 @@
+rules_version = '2';
+// Wordle: wordle_users/{uid} = each player's stats, only theirs. wordle_scores = the leaderboard:
+// anyone reads it, a signed-in player only adds their own daily wins (firebase.js saveScore), never edits them.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /wordle_users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    match /wordle_scores/{id} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['uid', 'displayName', 'photoURL', 'attempts', 'won', 'timestamp'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.attempts is int && request.resource.data.attempts >= 1 && request.resource.data.attempts <= 6
+        && request.resource.data.won == true
+        && request.resource.data.timestamp == request.time
+        && (request.resource.data.displayName == null || (request.resource.data.displayName is string && request.resource.data.displayName.size() <= 60))
+        && (request.resource.data.photoURL == null || (request.resource.data.photoURL is string && request.resource.data.photoURL.size() <= 500));
+      allow update, delete: if false;
+    }
+  }
+}
